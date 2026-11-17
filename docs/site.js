@@ -109,7 +109,7 @@ function gate() {
 // ---- plans (one source for the home page, plans page and account page)
 const PLANS = [
   { key: "guest", name: "Guest", price: "No account", blurb: "She lives on your desktop and reacts with her own built-in lines." },
-  { key: "free", name: "Free account", price: "$0", blurb: "Log in once and she gets a real brain: 500 starter energy, no card needed." },
+  { key: "free", name: "Free account", price: "$0", blurb: "Log in once and she gets a real brain: 500 energy to start, then 50 a day, no card needed." },
   { key: "pet", name: "Pet", price: "$9.99 / mo", blurb: "5× the energy every day, and her 18+ side.", tier: 1 },
   { key: "devoted", name: "Devoted", price: "$19.99 / mo", blurb: "10× energy. She texts you, sees your screen when you ask, watches with you.", tier: 2, popular: true },
   { key: "obsessed", name: "Obsessed", price: "$39.99 / mo", blurb: "Unlimited* everyday use, her in your Discord server, builds before anyone else.", tier: 3 },
@@ -117,7 +117,7 @@ const PLANS = [
 const ROWS = [
   ["Lives on your desktop, outfits, games", [1, 1, 1, 1, 1]],
   ["AI chat and her voice", [0, 1, 1, 1, 1]],
-  ["Energy", ["-", "500 once", "250 / day", "500 / day", "Unlimited*"]],
+  ["Energy", ["-", "500 to start + 50 / day", "250 / day", "500 / day", "Unlimited*"]],
   ["Long-term memory and her diary", [0, 1, 1, 1, 1]],
   ["Chat with her on this website", [0, 1, 1, 1, 1]],
   ["18+ mode", [0, 0, 1, 1, 1]],

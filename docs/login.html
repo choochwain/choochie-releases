@@ -45,7 +45,7 @@
   box.querySelectorAll(".prov").forEach(wire);
   // the server always lands on account.html; remember to hop on to the chat afterwards
   box.addEventListener("click", () => { try { next === "chat.html" ? sessionStorage.setItem("choochie.next", "chat") : sessionStorage.removeItem("choochie.next"); } catch (e) {} });
-  if (okDev) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, and the app on this PC signs in by itself. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>, once."; }
+  if (okDev) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, and the app on this PC signs in by itself. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>, plus a little every day."; }
   // already signed in on this browser + coming from the app: connect this PC in one click
   if (okDev && Auth.signedIn) {
     const at = $("#lg-attach"); at.hidden = false;
