@@ -7,9 +7,8 @@
 <meta name="description" content="Log in to Choochie with Discord, Patreon or X to keep your energy and perks.">
 <meta name="theme-color" content="#120c0f">
 <link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
@@ -27,16 +26,16 @@
       <a class="prov x" data-p="x" href="#">Continue with X</a>
     </div>
     <p class="fine">Your Patreon plan comes from Patreon: log in with it, or link it on your account page later.</p>
-    <p class="note" style="margin-top:12px">Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images. 18+ only. By continuing you accept the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+    <p class="note" style="margin-top:12px">Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images. 18+ only. By continuing you accept the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
     <details class="smart"><summary>What each login stores</summary>
-      <p id="lg-stores">Only that login's user id and a display name, to recognise your account. No password and no posting or messaging on your behalf. <a href="privacy.html#signin">Full details in the Privacy Policy</a></p>
+      <p id="lg-stores">Only that login's user id and a display name, to recognise your account (Patreon also shares your Choochie membership tier). No e-mail, no password, no posting or messaging on your behalf, and the provider's access token isn't kept. Remove a login or delete your account any time on your account page. <a href="privacy.html#signin">Full details in the Privacy Policy</a></p>
     </details>
   </div>
 </div>
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=4"></script>
+<script src="site.js?v=5"></script>
 <script>
 (async () => {
   const q = new URLSearchParams(location.search), dev = q.get("dev") || "";

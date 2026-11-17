@@ -7,9 +7,8 @@
 <meta name="description" content="Chat with Choochie in your browser: type, send a picture, take a webcam snapshot or hold to talk. Uses Orbs, separate from your desktop energy.">
 <meta name="theme-color" content="#0f0a0d">
 <link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
@@ -44,6 +43,7 @@
     <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode (text only)</label>
     <span>Orbs power web chat; your desktop energy is separate. <button type="button" class="linkish" id="clear" style="font-size:13px">Clear chat</button></span>
   </div>
+  <p class="fine" style="margin:8px 4px 0;font-size:12px;text-align:center;color:var(--faint)">You're talking to an AI character, not a person - her replies can be wrong or inappropriate. Choochie isn't a substitute for professional help; if you're in crisis, contact your local emergency services. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
 </div>
 
 <div class="cam" id="cam" hidden role="dialog" aria-modal="true" aria-labelledby="cam-h">
@@ -61,7 +61,7 @@
   </div>
 </div>
 
-<script src="site.js?v=4"></script>
-<script src="chat.js?v=4"></script>
+<script src="site.js?v=5"></script>
+<script src="chat.js?v=5"></script>
 </body>
 </html>

@@ -4,20 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy · Choochie</title>
-<meta name="description" content="Choochie's Privacy Policy: what each sign-in provider shares, what we store and for how long, which AI providers we use, Google user data (Limited Use), and how to delete your data.">
+<meta name="description" content="Choochie's Privacy Policy: who we are, what we collect and why, who receives it, how long we keep it, Google user data (Limited Use), and how to delete your data.">
 <meta name="theme-color" content="#0f0a0d">
 <link rel="canonical" href="https://choochwain.github.io/choochie-releases/privacy.html">
 <link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header id="site-nav"></header>
 <main class="page">
 
-<section class="page-head"><h1>Privacy Policy</h1><p class="sub">What Choochie collects, why, where it goes, how long we keep it, and how to delete it. Last updated: 17 November 2026.</p></section>
+<section class="page-head"><h1>Privacy Policy</h1><p class="sub">What Choochie collects, why, who receives it, how long we keep it, and how to delete it. Last updated: 17 November 2026.</p></section>
 
 <div class="legal">
 <nav class="toc" aria-label="On this page">
@@ -25,154 +24,97 @@
   <a href="#summary">Summary</a>
   <a href="#contact">Who we are &amp; contact</a>
   <a href="#signin">Sign-in providers</a>
-  <a href="#account">Your account</a>
-  <a href="#webchat">Web chat</a>
-  <a href="#app">The desktop app</a>
+  <a href="#collect">What we collect &amp; why</a>
   <a href="#recipients">Who receives data</a>
   <a href="#google">Google user data</a>
   <a href="#website">This website</a>
-  <a href="#content">Content policy</a>
-  <a href="#retention">Retention</a>
+  <a href="#retention">How long we keep it</a>
   <a href="#delete">Delete your data</a>
-  <a href="#rights">Your rights</a>
-  <a href="#children">Children</a>
+  <a href="#children">Adults only</a>
   <a href="#changes">Changes</a>
 </nav>
 
 <div class="prose">
 
 <h2 id="summary">1. Summary</h2>
-<div class="callout"><p>Choochie is an AI desktop companion app for Windows with an optional web chat on this site. Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images. We never request or store your e-mail address or password, we don't keep provider access tokens after you sign in, and we don't store your chat messages, pictures or voice recordings. Her memory of you lives on your own PC. We don't sell data, run ads or use analytics trackers.</p></div>
+<div class="callout"><p>Choochie is an AI desktop companion app for Windows, with an optional web chat on this site. Sign-in only identifies your account and syncs your energy, Orbs and perks. We never ask for your e-mail address or password, we don't keep sign-in providers' access tokens, and we don't store your chat messages, pictures or voice messages. Her memory of you lives on your own PC. We don't sell your personal data, and there are no ads or tracking on this site or in the app.</p></div>
 
 <h2 id="contact">2. Who we are and how to contact us</h2>
-<p>The data controller for Choochie (the Windows app, its server and this website) is the independent developer who publishes Choochie at <a href="https://choochwain.github.io/choochie-releases/">choochwain.github.io/choochie-releases</a>.</p>
-<p><strong>E-mail:</strong> <a href="mailto:support.choochiespet@gmail.com">support.choochiespet@gmail.com</a> (privacy questions, data access and deletion requests - we answer within 30 days).</p>
-<p><strong>Also:</strong> open a ticket in <a href="https://discord.gg/Ndu38dVCma" target="_blank" rel="noopener">our Discord server</a> or message us on <a href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener">Patreon</a>. Please say "privacy request" so we can find it quickly. We answer privacy requests within 30 days.</p>
+<!-- Operator identity intentionally limited to e-mail contact (owner's decision). -->
+<p>Choochie (the Windows app, its server, the web chat and this website) is run by the developer of Choochie ("we"), who is responsible for the data described here.</p>
+<p>Contact: <a href="mailto:support.choochiespet@gmail.com">support.choochiespet@gmail.com</a>, or <a href="https://discord.gg/Ndu38dVCma" target="_blank" rel="noopener">our Discord server</a>. For privacy questions or to get a copy of, correct or delete your data, write "privacy request" and we'll answer within one month.</p>
 
-<h2 id="signin">3. Sign-in providers: what each one gives us</h2>
-<p>You can use Choochie's desktop pet without an account. To use the AI features you sign in with one of the providers below. For each one we ask for the smallest permission (scope) that identifies you. The provider's access token is used once, during sign-in, to read your profile, and then discarded: <strong>no access or refresh tokens are stored, and no e-mail address is requested or stored from any provider.</strong> We cannot post, send messages or act on your behalf on any of these services.</p>
+<h2 id="signin">3. Sign-in providers</h2>
+<p>You can use the desktop pet without an account. For the AI features and the web chat you sign in with Discord, Patreon, X or - if it is offered on the <a href="login.html">login page</a> - Google. We ask for the smallest permission that identifies you. The provider's access token is used once while you sign in and is not stored. We can't post, send messages or act for you on these services.</p>
 <div class="table-wrap"><table class="data-table">
-  <thead><tr><th scope="col">Provider</th><th scope="col">Permission we ask for</th><th scope="col">What we read</th><th scope="col">What we store</th></tr></thead>
+  <thead><tr><th scope="col">Provider</th><th scope="col">Permission</th><th scope="col">What we read and keep</th></tr></thead>
   <tbody>
-    <tr><th scope="row">Discord</th><td><code>identify</code></td><td>Your Discord user id and display name (or username if you have no display name)</td><td>Discord user id; the display name (max 40 characters) as your account name if the account has none yet</td></tr>
-    <tr><th scope="row">Patreon</th><td><code>identity</code>, <code>identity.memberships</code></td><td>Your Patreon user id and first name; for memberships of Choochie's own Patreon campaign only: patron status, entitled tier amount, next charge date</td><td>Patreon user id; first name as your account name if none yet; a pledge record (tier level, the date it runs until, when it was checked) - not the amount</td></tr>
-    <tr><th scope="row">X</th><td><code>users.read</code>, <code>tweet.read</code> (OAuth 2.0 with PKCE; X requires <code>tweet.read</code> to read your own profile)</td><td>Your X user id and @username (X also returns your display name; we don't use it). We never read or post your posts.</td><td>X user id; the @username as your account name if none yet</td></tr>
-    <tr><th scope="row">Google</th><td><code>openid</code>, <code>profile</code></td><td>Your Google account identifier (<code>sub</code>) and given name (or name)</td><td>Google account identifier; your first name as your account name if none yet</td></tr>
+    <tr><th scope="row">Discord</th><td><code>identify</code></td><td>Your Discord user id and display name</td></tr>
+    <tr><th scope="row">Patreon</th><td><code>identity</code>, <code>identity.memberships</code></td><td>Your Patreon user id and first name; for Choochie's own Patreon page only, your membership tier and until when it runs (not the amount you pay)</td></tr>
+    <tr><th scope="row">X</th><td><code>users.read</code>, <code>tweet.read</code></td><td>Your X user id and @username (X requires <code>tweet.read</code> to read your own profile; we never read or post your posts)</td></tr>
+    <tr><th scope="row">Google (if offered)</th><td><code>openid</code>, <code>profile</code></td><td>Your Google account identifier and first name</td></tr>
   </tbody>
 </table></div>
-<p>Your account name comes from the first login that has one; later logins don't change it. It is shown to you on this website and is given to the AI in web chat so she can call you by name. You can link several providers to one account and remove any of them on your <a href="account.html">account page</a> (the last remaining login can't be removed - delete the account instead).</p>
-<p>When you sign in, your browser keeps a signed session token (valid for 60 days). The server checks its signature and does not keep a list of sessions.</p>
+<p>The name from your first login becomes your account name. You can remove a login on your <a href="account.html">account page</a> (not your last one - delete the account instead), and revoke Choochie's access in your Discord, Patreon, X or Google account settings.</p>
 
-<h2 id="account">4. What your account stores</h2>
-<p>Our server stores, in its database (Upstash Redis):</p>
+<h2 id="collect">4. What we collect and why</h2>
 <ul>
-  <li><strong>Account record:</strong> a random account id, your account name, when the account was created, the user id of each linked sign-in provider, the device ids of up to 10 PCs signed in to the account, and the amount of starter energy granted.</li>
-  <li><strong>Login index:</strong> provider + provider user id → account id, so we can find your account when you sign in.</li>
-  <li><strong>Energy and Orbs:</strong> extra energy on the account (starter energy plus anything bought), and your web-chat Orb balance with the date of its last daily refill.</li>
-  <li><strong>Patreon pledge:</strong> for Patreon logins, your tier level and until when it runs (also updated by Patreon's membership notifications).</li>
-  <li><strong>PC links:</strong> which PCs are signed in, and - if you sign in with Patreon from the app - a link from that PC to your Patreon id.</li>
-  <li><strong>Anti-abuse:</strong> one-way hashes (SHA-256, shortened) of PCs that already received a starter energy grant, so starter grants can't be farmed.</li>
-  <li><strong>Roadmap:</strong> your votes per month and any ideas you post (linked to your account id).</li>
-</ul>
-<p><strong>Why:</strong> to run your account and give you the energy, Orbs and perks you're entitled to (performance of our agreement with you), and to prevent abuse of free grants (legitimate interest).</p>
-
-<h2 id="webchat">5. Web chat on this website</h2>
-<ul>
-  <li><strong>What you send:</strong> your message (max 800 characters), up to 16 earlier turns that your browser sends back for context (text only), and optionally one picture (JPEG/PNG/WebP, max 4 MB, downscaled in your browser first) and/or one voice message (max 60 seconds).</li>
-  <li><strong>What happens to it:</strong> text goes to the chat AI model; a picture goes to the vision AI model as part of that single request; a voice message goes to speech-to-text and the transcript comes back to you; if you turn on "speak replies", her reply text goes to text-to-speech and the audio comes back to you.</li>
-  <li><strong>Nothing is stored.</strong> Messages, pictures, audio, transcripts and replies are not written to our database, disk or logs. Pictures and audio exist only in server memory while your request is answered. The server keeps no chat history.</li>
-  <li><strong>In your browser:</strong> the last 50 messages are kept in this tab's session storage so the page survives a reload; they are deleted when you close the tab, or when you press "Clear chat".</li>
-  <li><strong>Camera and microphone</strong> are only used after you press the snapshot or hold-to-talk button and your browser asks for permission. A snapshot is shown to you first and only sent when you press send.</li>
-  <li><strong>Stored side effects:</strong> your Orb balance; anonymous daily counters (number of requests and AI tokens, no ids; kept 120 days); and, in memory only, rate-limit timestamps per account and IP address for the last 60 seconds.</li>
+  <li><strong>Your account</strong> - to run it and give you what you're entitled to: an account id, your account name, your linked logins, the PCs signed in to it (up to 10), your energy and Orbs balances, your Patreon tier, and your roadmap votes and ideas.</li>
+  <li><strong>Web chat</strong> - to answer you: your message, the recent conversation (sent by your browser for context) and, only if you choose, a picture, webcam snapshot or voice message. These are passed to our AI providers to create her reply and are not stored by us. Your browser keeps the conversation in this tab only, until you close it.</li>
+  <li><strong>Desktop app</strong> - your settings, her memories and your chat history stay on your PC. To create a reply, the app sends your message and, only when you turn them on or ask for them, screenshots, photos, webcam snapshots or your voice (only while you speak). Optional "notice what I'm doing" features read the active window's title and app name on your PC; only the type of app is sent, never titles or content, and password managers, banking and private windows are skipped.</li>
+  <li><strong>Payments</strong> - you pay on Patreon, Ko-fi or Streamlabs; we never see your card details. We receive what we need to give you what you paid for (your Patreon tier, or a Ko-fi payment confirmation).</li>
+  <li><strong>Security</strong> - to stop abuse (for example repeated free starter energy), we use short-term checks and keep a one-way fingerprint of PCs that already received starter energy. Our hosting provider keeps technical logs, which never contain your messages, pictures or audio.</li>
 </ul>
 
-<h2 id="app">6. The desktop app</h2>
-<h3>Stays on your PC</h3>
-<p>Her memory of you (facts, a conversation summary, recent turns), her diary, your settings and your chat history live in <code>%APPDATA%\ClinglyPet</code> on your computer. Delete that folder, or uninstall and delete it, and it's gone.</p>
-<h3>Sent to the server (only what's needed for a reply)</h3>
-<ul>
-  <li><strong>Device id:</strong> a random id created on first run, sent with each request to count energy and link your plan and account. Statistics only use a one-way hash of it.</li>
-  <li><strong>Chat:</strong> what you type or say, plus her instructions, which include the parts of her local memory relevant to the reply. The server forwards this to the AI provider and does not log or store it.</li>
-  <li><strong>Microphone (only when you turn it on):</strong> voice detection runs on your PC; only finished sentences are sent for speech-to-text, never silence or a continuous stream. Audio is not stored; only the text comes back.</li>
-  <li><strong>Screenshots and webcam (only when you trigger them):</strong> "look at my screen" (after a separate consent, captures only the front window), the optional supporter "peek" feature (off by default, needs screen consent), "watch &amp; play" (frames of the game window while it's on), a photo of her on your desktop, a webcam snapshot when you ask her to look at you, and photos you choose to send. Windows that look private (password managers, sign-in, checkout, banking, medical, incognito) are never captured, nor chat and mail apps unless you allow them, nor anything on your "never watch" list. Images go to the vision model for that one reply and are not stored.</li>
-  <li><strong>Her voice:</strong> her reply text goes to text-to-speech.</li>
-  <li><strong>Discord DMs (optional perk):</strong> we store your device id → Discord user id, username and link date until you unlink. DMs you send her wait in server memory (max 10) until the app fetches them.</li>
-  <li><strong>Discord server presence (when a server admin invites her):</strong> the last 100 lines of that channel's conversation with her (author id, display name, text, time) are kept until she is removed from the channel. Messages that don't involve her aren't stored.</li>
-  <li><strong>Desktop "pranks"</strong> (cursor tricks, minimising windows, wallpaper, the "virus" and ChoochieOS effects) run locally, are off by default and need your consent; they don't send anything to us.</li>
-</ul>
-<p><strong>Why:</strong> to provide the features you use (agreement with you) and, for camera, microphone and screen features, your consent, which you can withdraw at any time by switching the feature off.</p>
-
-<h2 id="recipients">7. Who receives data</h2>
+<h2 id="recipients">5. Who receives data</h2>
 <div class="table-wrap"><table class="data-table">
-  <thead><tr><th scope="col">Recipient</th><th scope="col">What</th><th scope="col">Why</th></tr></thead>
+  <thead><tr><th scope="col">Provider</th><th scope="col">Role</th><th scope="col">What it receives</th></tr></thead>
   <tbody>
-    <tr><th scope="row">Venice.ai</th><td>Chat text and her instructions (including your account name and relevant memory), pictures/screenshots for vision, voice audio for speech-to-text</td><td>Generating text replies, image understanding and transcripts. Venice generates text only for us; Choochie does not generate images.</td></tr>
-    <tr><th scope="row">Inworld</th><td>The text of her reply that is spoken</td><td>Generating her voice</td></tr>
-    <tr><th scope="row">Discord, Patreon, X, Google</th><td>Only the sign-in exchange you start (and, for Patreon, your membership status for Choochie's campaign)</td><td>Sign-in and perks</td></tr>
-    <tr><th scope="row">Render</th><td>Server hosting; server logs</td><td>Running the server</td></tr>
-    <tr><th scope="row">Upstash</th><td>The stored records in section 4</td><td>Database hosting</td></tr>
-    <tr><th scope="row">GitHub</th><td>This website and the app downloads are served by GitHub Pages / GitHub Releases, which receive your IP address when you visit</td><td>Website and download hosting</td></tr>
-    <tr><th scope="row">Ko-fi, Patreon</th><td>Payments you make there; we receive a pay code or a one-way hash of the payer's e-mail (never the address itself) and the amount</td><td>Crediting energy and plans</td></tr>
+    <tr><th scope="row">Venice.ai</th><td>AI provider</td><td>Chat text, pictures you send, and voice messages to turn into text</td></tr>
+    <tr><th scope="row">Inworld</th><td>AI voice provider</td><td>The text of her replies, to speak them</td></tr>
+    <tr><th scope="row">Render</th><td>Server hosting</td><td>Requests to our server</td></tr>
+    <tr><th scope="row">Upstash</th><td>Database hosting</td><td>Your account data</td></tr>
+    <tr><th scope="row">GitHub</th><td>Website and download hosting</td><td>Your IP address when you visit or download</td></tr>
+    <tr><th scope="row">Discord, Patreon, X, Google (if offered)</th><td>Sign-in</td><td>The sign-in you start</td></tr>
+    <tr><th scope="row">Patreon, Ko-fi, Streamlabs</th><td>Payments</td><td>Your payment, on their own sites</td></tr>
+    <tr><th scope="row">Discord</th><td>Messaging (optional)</td><td>Messages with her, if you link Discord or add her to a server</td></tr>
   </tbody>
 </table></div>
-<p>The AI provider can be changed in the server's configuration; if we switch to another provider we will update this page first. We don't sell or rent personal data, and we don't share it with advertisers or data brokers. Some of these providers are located in the United States, so your data may be processed outside your country; where the GDPR applies we rely on the providers' standard contractual clauses or equivalent safeguards.</p>
-<p><strong>Server logs</strong> never contain messages, images, audio or names. They contain event lines (for example "login discord (new account)", "account deleted"), upstream error codes, Ko-fi payment amounts, the first characters of an IP address after a wrong admin code, and, for her Discord server presence only, Discord guild, channel, author and message ids. Render keeps logs for a limited period under its own retention policy.</p>
+<p>Some of these providers may process data in countries other than yours. We don't sell or rent personal data and don't share it with advertisers. We may disclose data if the law requires it.</p>
 
-<h2 id="google">8. Google user data</h2>
-<p>If you choose "Continue with Google", we request only the <code>openid</code> and <code>profile</code> scopes. We use your Google account identifier to recognise your Choochie account on future sign-ins, and your given name as your display name in Choochie. We do not request your e-mail address, contacts, Drive, Gmail, photos or any other Google data, and we don't keep your Google access token after sign-in.</p>
+<h2 id="google">6. Google user data</h2>
+<p>If Google sign-in is offered and you choose "Continue with Google", we request only the <code>openid</code> and <code>profile</code> permissions. We use your Google account identifier to recognise your Choochie account when you sign in again, and your first name as your display name. We store only these two items, with your account, until you remove the Google login or delete your account. We don't request your e-mail address, contacts, Drive, Gmail, photos or any other Google data, and we don't keep your Google access token.</p>
 <div class="callout"><p>Choochie's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p></div>
-<p>In particular, data received from Google is used only to provide sign-in to Choochie; it is not used for advertising, not sold, not used to train or improve AI models, not used to generate images, and not shared with anyone except as needed to run the service (our hosting and database providers) or when required by law. No human reads it except when you ask us for help with your account or when required for security or by law. You can remove the Google login from your <a href="account.html">account page</a> at any time, and revoke Choochie's access in your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account settings</a>.</p>
+<p>Data from Google is used only to provide sign-in to Choochie. It is not used for advertising, not sold, not used to train AI models, and not shared except with our hosting and database providers to run the service, or where the law requires it. You can remove the Google login on your <a href="account.html">account page</a> and revoke access in your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account settings</a>. Choochie is not affiliated with or endorsed by Google.</p>
 
-<h2 id="website">9. This website</h2>
+<h2 id="website">7. This website</h2>
+<p>No cookies, ads, analytics or tracking. Your browser only stores what's needed to keep you signed in (for up to 60 days, or until you log out), remember your 18+ confirmation and chat settings, and keep your web chat in the current tab. Fonts and images are served from this site; the download and updates pages ask GitHub for the latest version.</p>
+
+<h2 id="retention">8. How long we keep it</h2>
 <ul>
-  <li><strong>No cookies, no ads, no analytics.</strong></li>
-  <li><strong>Local storage in your browser:</strong> your session token (if signed in), your account name for the header, that you confirmed you're 18+, and small preferences (such as "speak replies" and the 18+ chat toggle). Signing out or clearing site data removes them.</li>
-  <li><strong>Session storage:</strong> the last 50 web-chat messages, only in the current tab.</li>
-  <li><strong>Third-party requests:</strong> fonts are loaded from Google Fonts, and the download pages ask the GitHub API for the latest version; both receive your IP address and browser details as part of the request.</li>
+  <li><strong>Chat messages, pictures, audio:</strong> not stored - used only to create the reply.</li>
+  <li><strong>Account data:</strong> until you delete your account (roadmap vote rounds expire after about 400 days).</li>
+  <li><strong>Short-term anti-abuse checks:</strong> no more than a day. <strong>Technical logs:</strong> a limited period, under our hosting provider's policy.</li>
+  <li><strong>Starter-energy fingerprint:</strong> until you ask us to remove it.</li>
 </ul>
 
-<h2 id="content">10. Content policy</h2>
-<p>Choochie is a text and voice companion. <strong>She does not generate or edit images.</strong> The following is never allowed, in the app, the web chat or her Discord presence, and her instructions refuse it automatically:</p>
-<ul>
-  <li>Any sexual content involving minors, or characters presented as minors.</li>
-  <li>Creating, describing, editing or sexualising intimate imagery of real people, including photos users upload. Non-consensual intimate imagery and "deepfakes" are prohibited.</li>
-  <li>Uploading or showing her images of other people without their consent. Only send pictures of yourself, or of people who agreed.</li>
-</ul>
-<p>Anything with a picture attached is always answered in non-explicit mode. The optional 18+ mode is for adult supporters (Pet plan and up) who switch it on themselves, and it is text only. Accounts that break these rules are closed. See the <a href="terms.html">Terms of Service</a>.</p>
+<h2 id="delete">9. How to delete your data</h2>
+<p><strong>On the website:</strong> sign in, open your <a href="account.html">account page</a> and press <strong>Delete account</strong>. It's immediate and removes your account, all its logins, your energy and Orbs, your linked PCs' plan, tester and Patreon links, energy bought on those PCs, their payment codes and Discord links, your Patreon membership record and all your roadmap votes. Roadmap ideas you posted stay without your name. We keep only the one-way starter-energy fingerprint (so free energy can't be farmed); e-mail us to remove that too.</p>
+<p>Deletion is from our live database; we don't keep our own backups, and any backups held by our database provider follow its own retention.</p>
+<!-- OWNER TODO: confirm Upstash's backup retention for your plan. -->
+<p>You can ask to see a copy of your data or have it deleted by e-mailing <a href="mailto:support.choochiespet@gmail.com">support.choochiespet@gmail.com</a>. <strong>On your PC:</strong> uninstall Choochie and delete its data folder (<code>%APPDATA%ClinglyPet</code>). Cancel a Patreon membership on Patreon.</p>
 
-<h2 id="retention">11. How long we keep data</h2>
-<ul>
-  <li><strong>Chat messages, pictures, audio, transcripts:</strong> not stored (memory only, for the duration of the request).</li>
-  <li><strong>Account record, logins, energy, Orbs, PC links:</strong> until you delete the account, unlink that login or sign that PC out.</li>
-  <li><strong>Monthly roadmap votes:</strong> expire after 400 days.</li>
-  <li><strong>Anonymous daily statistics:</strong> 120 days.</li>
-  <li><strong>Rate-limit data:</strong> memory only, 60 seconds; starter-orb IP checks are cleared daily.</li>
-  <li><strong>Discord DM link / server channel memory:</strong> until you unlink, or until she is removed from the channel.</li>
-  <li><strong>Starter-energy hashes</strong> (one-way, anti-abuse; see section 12): kept until you ask us to remove them.</li>
-</ul>
+<h2 id="children">10. Adults only</h2>
+<p>Choochie (the app, this website and the web chat) is only for people aged 18 or over. If you believe someone under 18 has given us data, <a href="#contact">contact us</a> and we'll delete it.</p>
 
-<h2 id="delete">12. How to delete your data</h2>
-<p><strong>Delete your account yourself:</strong> sign in, open your <a href="account.html">account page</a> and press <strong>Delete account</strong>. This immediately removes your account record, every login link, the PCs linked to the account, your extra energy (including unspent bought energy), your Orb balance and this month's roadmap votes. Ideas you posted stay on the roadmap without your name or account link. Your session stops working at once.</p>
-<p><strong>Everything goes.</strong> The button also removes what is tied to your linked PCs and your Patreon login: each PC's plan, tester and Patreon links, energy bought on those PCs, their Ko-fi pay codes and Discord links, your Patreon pledge record, and your roadmap votes from every month. Suggestions you posted on the roadmap stay but lose any link to you. The only thing kept is a one-way hash of each PC that already received free starter energy (it cannot be turned back into a device id and stops free-energy farming). To remove even that, e-mail <a href="mailto:support.choochiespet@gmail.com">support.choochiespet@gmail.com</a>.</p>
-<p><strong>On your PC:</strong> uninstall Choochie (Settings &gt; Apps) and delete <code>%APPDATA%\ClinglyPet</code>. <strong>Discord DMs:</strong> unlink in the app. <strong>Provider access:</strong> you can also revoke Choochie in your Discord, Patreon, X or Google account settings.</p>
-
-<h2 id="rights">13. Your rights</h2>
-<p>Depending on where you live (for example under the EU/UK GDPR or California law), you have the right to access the data we hold about you, correct it, delete it, restrict or object to its processing, receive it in a portable format, and withdraw consent at any time (without affecting earlier processing). To use these rights, <a href="#contact">contact us</a>. If you're in the EU/EEA or UK you can also complain to your local data protection authority. We do not sell or "share" personal information for cross-context behavioural advertising.</p>
-
-<h2 id="children">14. Children</h2>
-<p>Choochie is for adults only: you must be 18 or older to use the app, the website and the web chat, and the 18+ mode additionally requires an adult supporter account and your own opt-in. The service is not directed to children, and we do not knowingly collect personal data from anyone under 13, or under 16 in the EU/EEA. If you believe a child has given us data, <a href="#contact">contact us</a> and we will delete the account and its data.</p>
-
-<h2>15. Security</h2>
-<p>All traffic to our server and this website is encrypted (HTTPS). Sessions are signed tokens; we keep no passwords and no provider tokens. Access to the database and server is limited to the developer.</p>
-
-<h2 id="changes">16. Changes to this policy</h2>
-<p>We'll update this page when Choochie's data practices change, and change the "last updated" date above. For significant changes we'll also post a notice in the app's update notes.</p>
+<h2 id="changes">11. Changes</h2>
+<p>We'll update this page and its date when our data practices change, and announce significant changes in the app's update notes.</p>
 
 </div>
 </div>
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=4"></script>
+<script src="site.js?v=5"></script>
 </body>
 </html>

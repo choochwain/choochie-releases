@@ -12,9 +12,8 @@
 <meta name="theme-color" content="#0f0a0d">
 <link rel="canonical" href="https://choochwain.github.io/choochie-releases/">
 <link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=4">
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -134,7 +133,7 @@
   </div>
   <div class="steps3">
     <div class="step reveal"><h3>Download &amp; install</h3><p>Grab the Windows installer. It installs per user, needs no admin rights and uninstalls like any app.</p></div>
-    <div class="step reveal" style="--d:.08s"><h3>Sign in, free</h3><p>Log in with Discord, Patreon, X or Google so she can keep your energy and perks. No card, no password to remember.</p></div>
+    <div class="step reveal" style="--d:.08s"><h3>Sign in, free</h3><p>Log in with Discord, Patreon or X (or Google, if offered) so she can keep your energy and perks. No card, no password to remember.</p></div>
     <div class="step reveal" style="--d:.16s"><h3>Say hi</h3><p>Type or talk to her. Turn on only the extras you want - mic, webcam, pranks, 18+ - each asks first.</p></div>
   </div>
 </section>
@@ -149,9 +148,9 @@
     <a class="tier reveal" href="login.html"><div class="tier-img"><img src="img/portrait-smirk.jpg" alt="" loading="lazy" style="object-position:center 38%;filter:saturate(.8) brightness(.8)"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 starter energy</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
     <a class="tier reveal" style="--d:.06s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-pet.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Pet</h3><div class="price">$9.99<small> / mo</small></div><p class="energy">250 energy every day</p><ul><li>Her 18+ side (opt-in, text only)</li><li>Send her pictures</li><li>3 roadmap votes a month</li></ul></div></a>
     <a class="tier featured reveal" style="--d:.12s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><span class="tag">Most popular</span><div class="tier-img"><img src="img/tier-devoted.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Devoted</h3><div class="price">$19.99<small> / mo</small></div><p class="energy">500 energy every day</p><ul><li>She texts you first on Discord</li><li>Looks at your screen or webcam when you ask</li><li>Watch &amp; play together</li></ul></div></a>
-    <a class="tier reveal" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited energy*</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
+    <a class="tier reveal" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited* everyday use</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
   </div>
-  <p class="fine" style="text-align:center;margin-top:18px">* A generous daily fair-use limit. Plans are billed by Patreon. <a href="plans.html">Compare every feature</a></p>
+  <p class="fine" style="text-align:center;margin-top:18px">* Generous daily fair-use limit to prevent abuse. Subscriptions renew monthly through Patreon until you cancel there. <a href="plans.html">Compare every feature</a></p>
 </section>
 
 <section id="safety">
@@ -164,16 +163,16 @@
     <div class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h4"/></svg></div><h3>Little data, kept short</h3><p>Her memory of you lives on your PC. Chats are sent to the AI provider to be answered and are not stored on her server. <a href="privacy.html">Privacy Policy</a></p></div>
     <div class="card reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4.9 4.9l14.2 14.2"/></svg></div><h3>Clear content rules</h3><p>Adults only, 18+ mode is opt-in and text only. No sexual content involving minors, no intimate imagery of real people. <a href="terms.html">Terms of Service</a></p></div>
   </div>
-  <div class="signin-note reveal"><span class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H2v3h3v3h3v-3h3.1A4 4 0 0 1 15 7zM16 11h.01"/></svg></span><p style="margin:0"><b>About sign-in:</b> Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+  <div class="signin-note reveal"><span class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H2v3h3v3h3v-3h3.1A4 4 0 0 1 15 7zM16 11h.01"/></svg></span><p style="margin:0"><b>About sign-in:</b> Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
 </section>
 
 <section id="faq">
   <div class="section-head reveal"><span class="kicker">FAQ</span><h2>Before you let her in</h2></div>
   <div class="faq reveal">
-    <details open><summary>What exactly is Choochie?</summary><p>A desktop companion app for Windows 10 and 11. An animated 3D anime character lives on a transparent overlay above your desktop and chats with you using an AI model (text) and a generated voice. She's fictional, and her replies are AI-generated.</p></details>
+    <details open><summary>What exactly is Choochie?</summary><p>A desktop companion app for Windows 10 and 11. An animated 3D anime character lives on a transparent overlay above your desktop and chats with you using an AI model (text) and a generated voice. You're talking to an AI character, not a person - her replies can be wrong or inappropriate.</p></details>
     <details><summary>Is it safe to run?</summary><p>Yes. She's a normal Windows app drawing on her own transparent overlay. She never deletes, moves or reads your files and never records your keyboard. Her "virus" and ChoochieOS pranks are visual effects on her overlay only, and every desktop trick is off until you turn it on and confirm.</p></details>
-    <details><summary>What does she have access to?</summary><p>Only what you allow: your mic (only while you speak), a screenshot of the window you ask her to look at, your webcam when you press "Let her see me". Window positions are used so she knows where to sit.</p></details>
-    <details><summary>Why do I sign in, and what does it share?</summary><p>Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images. We keep the provider's user id and a display name - <a href="privacy.html#signin">details in the Privacy Policy</a>.</p></details>
+    <details><summary>What does she have access to?</summary><p>Only what you allow: your mic (only while you speak), a screenshot of the window you ask her to look at, your webcam when you press "Let her see me". Window positions are used so she knows where to sit. Optional "notice what I'm doing" features read the active window's title and app name on your PC; only the type of app is sent to the AI, never titles or content.</p></details>
+    <details><summary>Why do I sign in, and what does it share?</summary><p>Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images. We keep the provider's user id and a display name - <a href="privacy.html#signin">details in the Privacy Policy</a>.</p></details>
     <details><summary>Does she make pictures?</summary><p>No. Choochie writes text and speaks; she does not generate or edit images. Pictures you choose to send her are only looked at to answer you and are not stored on her server.</p></details>
     <details><summary>What is energy? And Orbs?</summary><p>Everything she thinks, says and sees in the app costs a little energy; plans refill it every day. Orbs power web chat on this site; your desktop energy is separate.</p></details>
     <details><summary>Who can use it?</summary><p>Adults only (18+). The 18+ mode is a separate opt-in for supporters and stays text-only.</p></details>
@@ -195,7 +194,7 @@
 
 <footer id="site-foot"></footer>
 
-<script src="site.js?v=4"></script>
+<script src="site.js?v=5"></script>
 <script src="script.js?v=4"></script>
 </body>
 </html>

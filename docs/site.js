@@ -68,12 +68,12 @@ function renderChrome() {
   if (foot) foot.innerHTML = `
     <div class="foot-cols">
       <div class="foot-brand"><strong>Choochie</strong><p class="fine">An AI-powered 3D desktop companion for Windows 10 / 11: a bratty anime cat-girl who lives on your screen, talks, listens and remembers you. 18+ only.</p>
-        <p class="fine">Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+        <p class="fine">Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
       <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
       <div><strong>Community</strong><a href="${discordHref()}" target="_blank" rel="noopener">Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
       <div><strong>Legal</strong><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="privacy.html#delete">Delete your data</a><a href="privacy.html#contact">Contact</a></div>
     </div>
-    <div class="foot-note"><span>© ${new Date().getFullYear()} Choochie. Fictional character; replies are AI-generated.</span><span>Not affiliated with Discord, Patreon, X or Google.</span></div>`;
+    <div class="foot-note"><span>© ${new Date().getFullYear()} Choochie. Fictional character; replies are AI-generated.</span><span>Not affiliated with or endorsed by Discord, Patreon, X or Google.</span></div>`;
 }
 
 // ---- scroll reveal + hero parallax (skipped when the visitor prefers less motion)
@@ -112,7 +112,7 @@ const PLANS = [
   { key: "free", name: "Free account", price: "$0", blurb: "Log in once and she gets a real brain: 500 starter energy, no card needed." },
   { key: "pet", name: "Pet", price: "$9.99 / mo", blurb: "5× the energy every day, and her 18+ side.", tier: 1 },
   { key: "devoted", name: "Devoted", price: "$19.99 / mo", blurb: "10× energy. She texts you, sees your screen when you ask, watches with you.", tier: 2, popular: true },
-  { key: "obsessed", name: "Obsessed", price: "$39.99 / mo", blurb: "Unlimited energy, her in your Discord server, builds before anyone else.", tier: 3 },
+  { key: "obsessed", name: "Obsessed", price: "$39.99 / mo", blurb: "Unlimited* everyday use, her in your Discord server, builds before anyone else.", tier: 3 },
 ];
 const ROWS = [
   ["Lives on your desktop, outfits, games", [1, 1, 1, 1, 1]],
@@ -148,7 +148,7 @@ function renderPlans(el, current) {
       <thead><tr><th scope="col">What you get</th>${PLANS.map((p, i) => `<th scope="col"${current === i ? ' class="current"' : ""}>${p.name}</th>`).join("")}</tr></thead>
       <tbody>${ROWS.map(([label, vals]) => `<tr><th scope="row">${label}</th>${vals.map((v, i) => `<td${current === i ? ' class="current"' : ""}>${cell(v, i)}</td>`).join("")}</tr>`).join("")}</tbody>
     </table></div>
-    <p class="fine">* Unlimited = a generous daily fair-use limit. Every plan talks to the same brain - supporting only adds energy and features. Ko-fi treats buy extra energy that never expires. Patreon unlocks within seconds of logging in with it.</p>`;
+    <p class="fine">* Generous daily fair-use limit to prevent abuse. Plans are paid through Patreon (Patreon may add taxes where you live). Subscriptions renew monthly through Patreon until you cancel there. Every plan talks to the same brain - supporting only adds energy and features. Ko-fi treats buy extra energy that never expires. Patreon unlocks within seconds of logging in with it.</p>`;
 }
 
 // ---- latest release info from GitHub (used by home + downloads)

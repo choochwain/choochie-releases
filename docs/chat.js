@@ -9,7 +9,7 @@
   if (!Auth.signedIn) {
     $("#status").textContent = "sign in to talk to her";
     log.innerHTML = `<div class="signin-wall"><img src="${FACE}" alt=""><h2 style="font-size:26px">Sign in to talk to her</h2>
-      <p class="muted">A free account is enough. Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images.</p>
+      <p class="muted">A free account is enough. Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images.</p>
       <a class="btn btn-primary" href="login.html?next=chat">Sign in</a>
       <p class="fine" style="margin-top:14px">Orbs power web chat; your desktop energy is separate.</p></div>`;
     return;
