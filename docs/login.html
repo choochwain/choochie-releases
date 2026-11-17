@@ -18,18 +18,14 @@
 <div class="auth-card">
   <div class="panel">
     <h1 id="lg-title">Log in</h1>
-    <p class="muted" id="lg-sub">Pick a login. A login nobody has used here before makes a new account, and a new account gets <strong><span id="lg-starter">500</span> starter energy</strong>, once.</p>
+    <p class="muted" id="lg-sub">New here? Any login makes your account - with <strong><span id="lg-starter">500</span> starter energy</strong>.</p>
     <div id="lg-attach" hidden class="note good" style="margin-top:16px"></div>
     <div class="providers" id="lg-providers" aria-live="polite">
       <a class="prov discord" data-p="discord" href="#">Continue with Discord</a>
       <a class="prov patreon" data-p="patreon" href="#">Continue with Patreon</a>
       <a class="prov x" data-p="x" href="#">Continue with X</a>
     </div>
-    <p class="fine">Your Patreon plan comes from Patreon: log in with it, or link it on your account page later.</p>
-    <p class="note" style="margin-top:12px">Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images. 18+ only. By continuing you accept the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
-    <details class="smart"><summary>What each login stores</summary>
-      <p id="lg-stores">Only that login's user id and a display name, to recognise your account (Patreon also shares your Choochie membership tier). No e-mail, no password, no posting or messaging on your behalf, and the provider's access token isn't kept. Remove a login or delete your account any time on your account page. <a href="privacy.html#signin">Full details in the Privacy Policy</a></p>
-    </details>
+    <p class="fine" style="margin-top:16px">18+ only. By continuing you accept the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a> (<a href="privacy.html#signin">what we store</a>).</p>
   </div>
 </div>
 
@@ -70,7 +66,7 @@
   const on = providerMap(j);
   if (j.starter != null && $("#lg-starter")) $("#lg-starter").textContent = j.starter;
   if (on.google && !box.querySelector('[data-p="google"]')) { const a = document.createElement("a"); a.className = "prov google"; a.dataset.p = "google"; box.appendChild(a); wire(a); }
-  box.querySelectorAll(".prov").forEach(a => { if (!on[a.dataset.p]) { a.setAttribute("aria-disabled", "true"); a.title = "Not available yet"; a.lastChild.textContent += " (coming soon)"; } });
+  box.querySelectorAll(".prov").forEach(a => { if (!on[a.dataset.p] && a.dataset.p === "x") { a.hidden = true; return; } if (!on[a.dataset.p]) { a.setAttribute("aria-disabled", "true"); a.title = "Not available yet"; a.lastChild.textContent += " (coming soon)"; } });
 })();
 </script>
 </body>
