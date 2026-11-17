@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plans · Choochie</title>
+<meta name="description" content="Choochie's plans: free account, Pet, Devoted and Obsessed.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head">
+  <h1>Plans</h1>
+  <p class="sub">The pet is free. A free account gives her a brain. Supporting gives her more energy and unlocks her other sides. Everyone talks to the same AI.</p>
+</section>
+<section class="section" id="plans"><p class="skeleton">Loading…</p></section>
+<section class="section">
+  <div class="two">
+    <div class="panel"><h3>What is energy?</h3><p class="muted">Everything she thinks, says and sees costs a little. A reply is about 1, her voice about 1 per sentence, a look at your screen a few. When she's out she still walks around and uses her own lines - she just can't hold a conversation.</p></div>
+    <div class="panel"><h3>How do I unlock a plan?</h3><p class="muted">Join on Patreon, then <a href="login.html">log in with Patreon</a> here or in the app. Your plan shows up within seconds and follows you to every PC you sign in on.</p></div>
+  </div>
+</section>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+(async () => {
+  let cur = Auth.signedIn ? 1 : -1;
+  renderPlans($("#plans"), cur);
+  if (Auth.signedIn) { try { const v = await api("/pet/ai/v1/account"); renderPlans($("#plans"), planIndexFor(v)); } catch (e) {} }
+})();
+
+</script>
+</body>
+</html>

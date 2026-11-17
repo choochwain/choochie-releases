@@ -1,21 +1,8 @@
-// Fill this in with your server invite (e.g. "https://discord.gg/xxxxxxx"). Empty = "coming soon".
-const DISCORD_INVITE = "";
+// Discord invite lives in site.js (LINKS.discord).
+const DISCORD_INVITE = LINKS.discord;
 
-const REPO = "choochwain/choochie-releases";
+const REPO = LINKS.repo;
 const RELEASES = `https://github.com/${REPO}/releases`;
-
-// 18+ gate, remembered per browser
-(function gate() {
-  const g = document.getElementById("gate");
-  let ok = false;
-  try { ok = localStorage.getItem("choochie18") === "1"; } catch (e) {}
-  if (ok) return;
-  g.hidden = false; document.body.classList.add("locked");
-  document.getElementById("gate-yes").addEventListener("click", () => {
-    try { localStorage.setItem("choochie18", "1"); } catch (e) {}
-    g.hidden = true; document.body.classList.remove("locked");
-  });
-})();
 
 // Discord
 (function discord() {
@@ -41,4 +28,17 @@ const RELEASES = `https://github.com/${REPO}/releases`;
     meta.innerHTML = `${asset.name} · ${mb} MB${date ? " · " + date : ""} · <a href="${RELEASES}">all versions</a>`;
     hv.textContent = `Version ${rel.tag_name.replace(/^v/, "")} · ${mb} MB · Windows installer`;
   } catch (e) { fallback(); }
+})();
+
+// plans + latest update note
+(async function plans() {
+  renderPlans(document.getElementById("plans-box"), Auth.signedIn ? 1 : -1);
+  if (Auth.signedIn) { try { renderPlans(document.getElementById("plans-box"), planIndexFor(await api("/pet/ai/v1/account"))); } catch (e) {} }
+})();
+(async function latest() {
+  const el = document.getElementById("latest-note");
+  try { const r = (await releases()).find(x => !x.prerelease); if (!r) throw 0;
+    const first = (r.body || "").split(/\r?\n/).map(l => l.replace(/^[-*#\s]+/, "").trim()).filter(Boolean).slice(0, 3);
+    el.innerHTML = `<strong>${esc(r.name || r.tag_name)}</strong> · <span class="fine">${fmtDate(r.published_at)}</span>${first.length ? "<ul>" + first.map(l => `<li>${esc(l.replace(/\*\*/g, ""))}</li>`).join("") + "</ul>" : ""}`;
+  } catch (e) { el.textContent = "See the updates page."; }
 })();

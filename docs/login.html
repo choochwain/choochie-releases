@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in · Choochie</title>
+<meta name="description" content="Log in to Choochie with Patreon, Discord or Google.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<div class="auth-card">
+  <div class="panel">
+    <h1 id="lg-title">Log in</h1>
+    <p class="muted" id="lg-sub">Pick a login. A login nobody has used here before makes a new account, and a new account gets <strong><span id="lg-starter">500</span> starter energy</strong>, once.</p>
+    <div id="lg-attach" hidden class="note good" style="margin-top:16px"></div>
+    <div class="providers" id="lg-providers">
+      <a class="prov patreon" data-p="patreon" href="#">PATREON Continue with Patreon</a>
+      <a class="prov discord" data-p="discord" href="#">DISCORD Continue with Discord</a>
+      <a class="prov google" data-p="google" href="#">GOOGLE Continue with Google</a>
+    </div>
+    <p class="fine">Your Patreon plan comes from Patreon: log in with it, or link it on your account page later.</p>
+    <details class="smart"><summary>What each login stores</summary>
+      <p>Only that login's user id and your first name or display name. No e-mail address, no password, no access to your Patreon, Discord or Google account after you're signed in. Chat with her is never stored on her server. <a href="privacy.html">Privacy</a></p>
+    </details>
+  </div>
+</div>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+(async () => {
+  const q = new URLSearchParams(location.search), dev = q.get("dev") || "";
+  const okDev = /^[A-Za-z0-9-]{8,64}$/.test(dev);
+  document.querySelectorAll(".prov").forEach(a => { const p = a.dataset.p; a.innerHTML = ICONS[p] + "Continue with " + PROV_NAMES[p];
+    a.href = API + "/pet/ai/auth/start?p=" + p + (okDev ? "&dev=" + encodeURIComponent(dev) : ""); });
+  if (okDev) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, and the app on this PC signs in by itself. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>, once."; }
+  // already signed in on this browser + coming from the app: connect this PC in one click
+  if (okDev && Auth.signedIn) {
+    const box = $("#lg-attach"); box.hidden = false;
+    box.innerHTML = `You're already logged in as <strong>${esc(store.get("choochie.name") || "you")}</strong>. <div class="row" style="margin-top:10px"><button class="btn btn-primary btn-sm" id="lg-connect">Connect this PC</button><span class="fine">or pick another login below</span></div>`;
+    $("#lg-connect").addEventListener("click", async e => {
+      e.target.disabled = true;
+      try { await api("/pet/ai/v1/account/attach", { method: "POST", body: { dev } }); location.href = "account.html#app=1"; }
+      catch (err) { toast(err.message, true); e.target.disabled = false; }
+    });
+  }
+  try {
+    const r = await fetch(API + "/pet/ai/auth/providers"); const j = await r.json();
+    $("#lg-starter") && ($("#lg-starter").textContent = j.starter);
+    document.querySelectorAll(".prov").forEach(a => { if (!j.providers[a.dataset.p]) { a.setAttribute("aria-disabled", "true"); a.title = "Not available yet"; a.lastChild.textContent += " (soon)"; } });
+  } catch (e) { toast("Her server is waking up - logins work in a few seconds.", true); }
+})();
+
+</script>
+</body>
+</html>

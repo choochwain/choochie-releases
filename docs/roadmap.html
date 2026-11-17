@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap · Choochie</title>
+<meta name="description" content="What's being built for Choochie next - vote and suggest features.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head">
+  <h1>Roadmap</h1>
+  <p class="sub">What's next is up to you. Spend your votes on what you want most - votes reset every month.</p>
+</section>
+<div class="panel votes-bar" id="rm-bar"><span class="skeleton">Loading…</span></div>
+<section class="section" id="rm-working-wrap" hidden><h2>Working on now</h2><div class="rm-list" id="rm-working"></div></section>
+<section class="section"><h2>Up next - vote</h2><p class="muted">Ideas picked for development. The top of this list gets built first.</p><div class="rm-list" id="rm-official"></div></section>
+<section class="section"><h2>Your ideas</h2><p class="muted">Suggestions from the community. Popular ones move up to the official list.</p><div class="rm-list" id="rm-ideas"></div>
+  <div class="panel" style="margin-top:16px" id="rm-form-wrap">
+    <h3>Suggest something</h3>
+    <form id="rm-form">
+      <label class="field"><span>Name</span><input type="text" id="rm-title" maxlength="90" placeholder="e.g. She reacts when I'm gaming" required></label>
+      <ul class="matches" id="rm-matches" hidden></ul>
+      <label class="field"><span>Describe it</span><textarea id="rm-brief" maxlength="600" placeholder="What should she do, and why would it be fun?"></textarea></label>
+      <div class="row"><button class="btn btn-primary" type="submit">Send idea</button><span class="fine">Two ideas a day. Check the list first - voting on an existing idea counts more.</span></div>
+    </form>
+  </div>
+</section>
+<section class="section" id="rm-done-wrap" hidden><h2>Done</h2><div class="rm-list" id="rm-done"></div></section>
+<section class="section" id="rm-admin" hidden>
+  <div class="panel"><h3>Admin</h3>
+    <div class="row"><input type="text" id="ad-code" placeholder="Admin code" style="max-width:240px"><button class="btn btn-ghost btn-sm" id="ad-save">Use code</button></div>
+    <form id="ad-form" style="margin-top:12px"><label class="field"><span>Add official item</span><input type="text" id="ad-title" maxlength="90" placeholder="Title"></label><textarea id="ad-brief" maxlength="600" placeholder="Brief"></textarea><button class="btn btn-primary btn-sm" style="margin-top:8px">Add</button></form>
+  </div>
+</section>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+let data = null; const admin = new URLSearchParams(location.search).has("admin");
+const adminCode = () => store.get("choochie.admin") || "";
+async function rm(path, body) {
+  const h = {}; if (admin && adminCode()) h["x-admin-code"] = adminCode();
+  return api("/pet/ai/v1/roadmap" + path, body ? { method: "POST", body, headers: h } : { headers: h });
+}
+function item(it, rank) {
+  const left = data.me ? data.me.allowance - data.me.used : 0, done = it.status === "done";
+  return `<div class="rm-item ${it.status}">
+    ${rank ? `<span class="rm-rank">${rank}</span>` : "<span></span>"}
+    <div><h3>${esc(it.title)} ${it.own ? '<span class="pill">yours</span>' : ""}</h3>${it.brief ? `<p>${esc(it.brief)}</p>` : ""}
+      ${admin && adminCode() ? `<div class="admin-row">${["candidate", "working", "done"].map(s => `<button class="btn btn-ghost" data-st="${s}" data-id="${it.id}">${s}</button>`).join("")}${it.kind === "suggestion" ? `<button class="btn btn-ghost" data-promote="${it.id}">make official</button>` : ""}<button class="btn btn-ghost" data-del="${it.id}">delete</button></div>` : ""}
+      ${it.own && it.status === "candidate" && !(admin && adminCode()) ? `<button class="linkish" data-withdraw="${it.id}">Withdraw</button>` : ""}</div>
+    ${done ? `<span class="fine">${fmtDate(it.done)}</span>` : `<div class="vote">
+      <button class="vbtn" data-vote="-1" data-id="${it.id}" aria-label="Take back a vote" ${it.mine > 0 ? "" : "disabled"}>−</button>
+      <b title="votes this month">${it.votes}</b>
+      <button class="vbtn${it.mine ? " mine" : ""}" data-vote="1" data-id="${it.id}" aria-label="Vote" ${data.me && left > 0 ? "" : "disabled"}>+</button></div>`}
+  </div>`;
+}
+function draw() {
+  const by = (a, b) => b.votes - a.votes || a.at - b.at, it = data.items;
+  const list = (sel, arr, ranked, emptyText) => { $(sel).innerHTML = arr.length ? arr.map((x, i) => item(x, ranked ? i + 1 : 0)).join("") : `<p class="empty">${emptyText}</p>`; };
+  const working = it.filter(x => x.status === "working"), done = it.filter(x => x.status === "done").sort((a, b) => b.done - a.done);
+  $("#rm-working-wrap").hidden = !working.length; list("#rm-working", working, false, "");
+  list("#rm-official", it.filter(x => x.status === "candidate" && x.kind === "official").sort(by), true, "Nothing here yet - the first round opens soon.");
+  list("#rm-ideas", it.filter(x => x.status === "candidate" && x.kind === "suggestion").sort(by), true, "No ideas yet. Be the first.");
+  $("#rm-done-wrap").hidden = !done.length; list("#rm-done", done, false, "");
+  const month = new Date(data.round + "-01T00:00:00Z").toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  $("#rm-bar").innerHTML = data.me
+    ? `<strong>${month} round</strong><span class="pill hot">${data.me.allowance - data.me.used} of ${data.me.allowance} votes left</span><span class="fine">More votes come with each plan - <a href="plans.html">plans</a></span>`
+    : `<strong>${month} round</strong><span class="muted">Log in to vote and suggest.</span><a class="btn btn-primary btn-sm" href="login.html">Log in</a>`;
+  $("#rm-form-wrap").hidden = !data.me;
+}
+async function load() { try { data = await rm(""); draw(); } catch (e) { $("#rm-bar").innerHTML = `<span class="muted">${esc(e.message)}</span>`; } }
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-vote],[data-st],[data-del],[data-promote],[data-withdraw]"); if (!b) return;
+  try {
+    if (b.dataset.vote) data = await rm("/vote", { id: b.dataset.id, delta: +b.dataset.vote });
+    else if (b.dataset.st) data = await rm("/admin", { op: "status", id: b.dataset.id, status: b.dataset.st });
+    else if (b.dataset.promote) data = await rm("/admin", { op: "status", id: b.dataset.promote, status: "candidate", kind: "official" });
+    else if (b.dataset.del) { if (!confirm("Delete this item?")) return; data = await rm("/admin", { op: "delete", id: b.dataset.del }); }
+    else if (b.dataset.withdraw) { if (!confirm("Withdraw your idea?")) return; data = await rm("/withdraw", { id: b.dataset.withdraw }); }
+    draw();
+  } catch (err) { if (err.data && err.data.view) { data = err.data.view; draw(); } toast(err.message, true); }
+});
+// similar ideas while typing (simple word overlap)
+$("#rm-title").addEventListener("input", e => {
+  const words = new Set(e.target.value.toLowerCase().split(/\W+/).filter(w => w.length > 3)), box = $("#rm-matches");
+  const hits = !data || !words.size ? [] : data.items.filter(x => x.status !== "done" && x.title.toLowerCase().split(/\W+/).some(w => words.has(w))).slice(0, 4);
+  box.hidden = !hits.length; box.innerHTML = hits.length ? "<li><strong>Similar ideas - vote on one instead?</strong></li>" + hits.map(h => `<li>${esc(h.title)} (${h.votes} votes)</li>`).join("") : "";
+});
+$("#rm-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  try { data = await rm("/suggest", { title: $("#rm-title").value, brief: $("#rm-brief").value }); $("#rm-title").value = ""; $("#rm-brief").value = ""; $("#rm-matches").hidden = true; draw(); toast("Idea sent~"); }
+  catch (err) { toast(err.message, true); }
+});
+if (admin) {
+  $("#rm-admin").hidden = false; $("#ad-code").value = adminCode();
+  $("#ad-save").addEventListener("click", () => { store.set("choochie.admin", $("#ad-code").value.trim() || null); load(); toast("Admin code saved in this browser."); });
+  $("#ad-form").addEventListener("submit", async e => { e.preventDefault(); try { data = await rm("/admin", { op: "add", title: $("#ad-title").value, brief: $("#ad-brief").value }); $("#ad-title").value = ""; $("#ad-brief").value = ""; draw(); } catch (err) { toast(err.message, true); } });
+}
+load();
+
+</script>
+</body>
+</html>

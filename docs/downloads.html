@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download · Choochie</title>
+<meta name="description" content="Download Choochie for Windows 10 and 11.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head">
+  <h1>Download</h1>
+  <p class="sub">One installer for every plan. Your plan unlocks when you log in - no reinstall needed.</p>
+</section>
+<section class="section">
+  <div class="dl-grid">
+    <div class="panel dl-card">
+      <span class="pill">Stable</span>
+      <h2 id="st-title">Choochie</h2>
+      <p class="muted">The tested build. Updates itself when a new one is out.</p>
+      <a class="btn btn-primary btn-big btn-block" id="st-btn" href="https://github.com/choochwain/choochie-releases/releases/latest">Download for Windows</a>
+      <p class="meta" id="st-meta">Looking up the latest release…</p>
+    </div>
+    <div class="panel dl-card locked-card" id="ea">
+      <span class="pill hot">Early access</span>
+      <h2>Next build</h2>
+      <p class="muted">New features before everyone else. Expect the odd bug - and tell her about it.</p>
+      <div id="ea-body"><span class="lock">🔒 Obsessed plan</span><p class="fine">Log in with an Obsessed plan to see early-access builds.</p><a class="btn btn-ghost btn-block" id="ea-btn" href="login.html">Log in</a></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <h2>Install in a minute</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><span><strong>Run the installer.</strong> It installs just for you - no admin rights needed.</span></li>
+      <li><span><strong>Windows says "protected your PC"?</strong> The installer isn't code-signed yet. Click <em>More info</em>, then <em>Run anyway</em>.</span></li>
+      <li><span><strong>Follow her setup.</strong> She asks what you're okay with - every desktop trick is off until you say yes.</span></li>
+      <li><span><strong>Log in</strong> from the setup or her tray menu to give her a brain (free).</span></li>
+    </ol>
+  </div>
+</section>
+<section class="section">
+  <h2>Requirements</h2>
+  <div class="req">
+    <div class="stat"><b>Win 10 / 11</b><span>64-bit</span></div>
+    <div class="stat"><b>4 GB</b><span>RAM or more</span></div>
+    <div class="stat"><b>DX11 GPU</b><span>any from the last ~8 years</span></div>
+    <div class="stat"><b>Internet</b><span>for chat and voice</span></div>
+  </div>
+  <p class="fine" style="margin-top:12px">Uninstall from Settings &gt; Apps like any app. Her memory of you lives in <code>%APPDATA%\ClinglyPet</code> if you want to wipe that too. Stop her any time with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> or by typing <em>safeword</em>.</p>
+</section>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+(async () => {
+  let all = [];
+  try { all = await releases(); } catch (e) { $("#st-meta").innerHTML = 'See the <a href="https://github.com/' + LINKS.repo + '/releases">releases page</a>.'; }
+  const stable = all.find(r => !r.prerelease && setupAsset(r)), pre = all.find(r => r.prerelease && setupAsset(r));
+  if (stable) { const a = setupAsset(stable), ver = stable.tag_name.replace(/^v/, "");
+    $("#st-title").textContent = "Choochie " + ver; $("#st-btn").href = a.browser_download_url;
+    $("#st-meta").innerHTML = `${esc(a.name)} · ${(a.size / 1048576).toFixed(0)} MB · ${fmtDate(stable.published_at)} · <a href="updates.html">what's new</a>`; }
+  if (!Auth.signedIn) return;
+  try {
+    const v = await api("/pet/ai/v1/account"), ok = v.features.includes("earlyAccess"), body = $("#ea-body");
+    if (!ok) { body.innerHTML = `<span class="lock">🔒 Obsessed plan</span><p class="fine">You're on ${esc(v.tier > 0 ? v.tierName : "the free plan")}. Early access comes with Obsessed.</p><a class="btn btn-ghost btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">See it on Patreon</a>`; return; }
+    if (!pre || (stable && new Date(pre.published_at) < new Date(stable.published_at))) { body.innerHTML = `<p class="note good">You're in. There's no early build right now - the stable one is the newest.</p>`; return; }
+    const a = setupAsset(pre);
+    body.innerHTML = `<a class="btn btn-primary btn-block" href="${a.browser_download_url}">Download ${esc(pre.tag_name.replace(/^v/, ""))}</a><p class="meta">${esc(a.name)} · ${(a.size / 1048576).toFixed(0)} MB · ${fmtDate(pre.published_at)}</p>`;
+  } catch (e) {}
+})();
+
+</script>
+</body>
+</html>

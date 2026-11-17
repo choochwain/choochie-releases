@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Updates · Choochie</title>
+<meta name="description" content="Everything new in Choochie, newest first.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head">
+  <h1>Updates</h1>
+  <p class="sub">Every release, newest first. See what's next on the <a href="roadmap.html">roadmap</a>.</p>
+</section>
+<div class="toolbar">
+  <input type="search" id="up-q" placeholder="Search updates" aria-label="Search updates">
+  <select id="up-sort" aria-label="Sort"><option value="new">Newest first</option><option value="old">Oldest first</option></select>
+  <span class="fine" id="up-count"></span>
+</div>
+<div id="up-list"><p class="skeleton">Loading…</p></div>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+let all = [];
+function draw() {
+  const q = $("#up-q").value.trim().toLowerCase(), sort = $("#up-sort").value;
+  let list = all.filter(r => !q || (r.name + " " + r.tag_name + " " + (r.body || "")).toLowerCase().includes(q));
+  if (sort === "old") list = list.slice().reverse();
+  $("#up-count").textContent = list.length + " of " + all.length;
+  $("#up-list").innerHTML = list.length ? list.map((r, i) => `
+    <article class="panel release${(r.body || "").length > 600 ? " collapsed" : ""}">
+      <h3>${esc(r.name || r.tag_name)} ${r.prerelease ? '<span class="pill hot">Early access</span>' : i === 0 && sort === "new" && !q ? '<span class="pill">Latest</span>' : ""}</h3>
+      <div class="date">${fmtDate(r.published_at)} · ${esc(r.tag_name)}</div>
+      <div class="release-body">${md(r.body) || '<p class="fine">No notes for this one.</p>'}</div>
+      ${(r.body || "").length > 600 ? '<button class="linkish" data-more>Show all</button>' : ""}
+    </article>`).join("") : '<p class="empty">Nothing matches that.</p>';
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-more]"); if (b) { const art = b.closest(".release"); art.classList.toggle("collapsed"); b.textContent = art.classList.contains("collapsed") ? "Show all" : "Show less"; } });
+$("#up-q").addEventListener("input", draw); $("#up-sort").addEventListener("change", draw);
+releases().then(r => { all = r; draw(); }).catch(() => $("#up-list").innerHTML = '<p class="empty">Couldn\'t load updates - see the <a href="https://github.com/' + LINKS.repo + '/releases">releases page</a>.</p>');
+
+</script>
+</body>
+</html>

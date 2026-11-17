@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Choochie</title>
+<meta name="description" content="What Choochie stores and why.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head"><h1>Privacy</h1><p class="sub">Short version: her memories of you stay on your PC, and her server keeps as little as it can.</p></section>
+<div class="prose">
+<h2>On your PC</h2>
+<p>Her memory of you, your settings, her diary and your chat history live in <code>%APPDATA%\ClinglyPet</code> on your computer. Delete that folder and it's gone.</p>
+<h2>On her server</h2>
+<ul>
+<li><strong>Chat, voice and pictures</strong> are passed to the AI provider to be answered and are not stored or logged by her server. Audio from your mic is sent only for the sentence you speak and is never kept.</li>
+<li><strong>Your account</strong> (if you log in): a random account id, your display/first name, and the user id of each login you use (Patreon, Discord, Google). No e-mail address, no password, no access tokens are kept.</li>
+<li><strong>Your plan and energy</strong>: your Patreon pledge level and renewal date, how much energy you used today, extra energy you bought.</li>
+<li><strong>Your PC</strong>: a random install id the app makes, so energy and plans work. Counts of active installs are stored as one-way hashes for statistics.</li>
+<li><strong>Payments</strong>: Ko-fi purchases are matched by a pay code or a one-way hash of the e-mail address; the address itself isn't stored.</li>
+<li><strong>Roadmap</strong>: ideas you post and your votes for the current month.</li>
+</ul>
+<h2>Who else is involved</h2>
+<p>AI replies: Venice.ai. Her voice: Inworld. Logins: Patreon, Discord, Google. Hosting: Render (server), Upstash (database), GitHub Pages (this website and downloads). Each only receives what it needs for its part.</p>
+<h2>Your choices</h2>
+<p>You can remove logins, sign out every PC, or delete your account from your <a href="account.html">account page</a>. Deleting removes your account record, logins, extra energy and PC links right away.</p>
+<h2>Age</h2>
+<p>Choochie is for adults (18+) only. Don't use it if you're younger.</p>
+<p class="fine">Questions: message her creator on <a href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener">Patreon</a> or <a href="https://ko-fi.com/dahmeows" target="_blank" rel="noopener">Ko-fi</a>.</p>
+</div>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+</script>
+</body>
+</html>

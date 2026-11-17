@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your account · Choochie</title>
+<meta name="description" content="Your Choochie account: plan, energy, logins and chatting with her.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head" id="ac-head"><h1>Your account</h1><p class="sub skeleton">Loading…</p></section>
+<div id="ac-banner"></div>
+<div class="acct-grid" id="ac-main" hidden>
+  <div>
+    <div class="panel">
+      <div class="spread">
+        <div class="hello"><span class="avatar" id="ac-av">?</span><div><h2 id="ac-name" style="margin:0;color:var(--cream)"></h2><span class="pill hot" id="ac-plan"></span></div></div>
+        <a class="btn btn-ghost btn-sm" href="plans.html">Compare plans</a>
+      </div>
+      <div style="margin-top:20px">
+        <div class="spread"><strong>Energy today</strong><span class="muted" id="ac-elabel"></span></div>
+        <div class="meter"><i id="ac-meter" style="width:0"></i></div>
+        <p class="fine" id="ac-enote"></p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b id="ac-extra">0</b><span>Extra energy (never expires)</span></div>
+        <div class="stat"><b id="ac-pcs">0</b><span>PCs signed in</span></div>
+        <div class="stat"><b id="ac-votes">0</b><span>Roadmap votes / month</span></div>
+      </div>
+      <div class="row" style="margin-top:18px" id="ac-cta"></div>
+    </div>
+    <div class="panel">
+      <div class="chat-head"><img src="img/portrait-smirk.jpg" alt=""><div><h3 style="margin:0">Talk to her</h3><span class="fine">Uses your account's energy. Nothing is saved on her server.</span></div>
+        <label class="switch" id="ac-adult-wrap" hidden style="margin-left:auto"><input type="checkbox" id="ac-adult"> 18+</label></div>
+      <div class="chat">
+        <div class="chat-log" id="chat-log" aria-live="polite"></div>
+        <form class="chat-form" id="chat-form"><input type="text" id="chat-in" maxlength="600" placeholder="Say something to her…" autocomplete="off"><button class="btn btn-primary" type="submit">Send</button></form>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h3>Logins</h3>
+      <p class="fine">Any of these opens this same account. Add Patreon to get your plan.</p>
+      <div class="login-list" id="ac-logins"></div>
+    </div>
+    <div class="panel">
+      <h3>Get her on your PC</h3>
+      <p class="muted">Install the app, open her tray menu and pick <strong>Log in</strong> - or click "Log in" in her first-run setup. She shares this account's energy on every PC.</p>
+      <a class="btn btn-ghost btn-sm" href="downloads.html">Download</a>
+    </div>
+    <div class="panel">
+      <h3>Account</h3>
+      <div class="row">
+        <button class="btn btn-ghost btn-sm" id="ac-logout">Log out here</button>
+        <button class="btn btn-ghost btn-sm" id="ac-signout-pcs">Sign out all PCs</button>
+        <button class="btn btn-ghost btn-sm" id="ac-delete">Delete account</button>
+      </div>
+      <p class="fine">Deleting removes your logins, your extra energy and the link to your PCs. Your Patreon pledge is managed on Patreon.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=3"></script>
+<script>
+
+const frag = new URLSearchParams(location.hash.slice(1));
+if (frag.get("t")) { Auth.set(frag.get("t")); history.replaceState(null, "", location.pathname); }
+if (!Auth.signedIn) location.replace("login.html");
+let view = null, history_ = [];
+const fmt = n => Number(n).toLocaleString();
+function render(v) {
+  view = v; store.set("choochie.name", v.name || "You");
+  $("#ac-head").innerHTML = `<h1>Hi${v.name ? ", " + esc(v.name) : ""}~</h1><p class="sub">Account since ${fmtDate(v.since)}.</p>`;
+  $("#ac-main").hidden = false;
+  $("#ac-av").textContent = (v.name || "?")[0].toUpperCase(); $("#ac-name").textContent = v.name || "You";
+  const planName = v.tier > 0 ? v.tierName : "Free account";
+  $("#ac-plan").textContent = planName + (v.until ? " · renews " + fmtDate(v.until) : "");
+  const max = v.energy.max, left = v.energy.left;
+  $("#ac-elabel").textContent = max > 0 ? `${fmt(left)} / ${fmt(max)}` : "No daily refill";
+  $("#ac-meter").style.width = (max > 0 ? Math.round(left / max * 100) : (v.energy.extra > 0 ? 100 : 0)) + "%";
+  $("#ac-enote").textContent = max > 0 ? "Refills every day at midnight UTC. When it's gone she uses your extra energy." : "Free accounts run on the extra energy below. Join a plan for a daily refill.";
+  $("#ac-extra").textContent = fmt(v.energy.extra); $("#ac-pcs").textContent = v.devices; $("#ac-votes").textContent = (v.votes || [])[Math.min(v.tier, 3)] || 0;
+  $("#ac-cta").innerHTML = (v.tier < 3 ? `<a class="btn btn-primary btn-sm" href="${LINKS.patreon}" target="_blank" rel="noopener">${v.tier > 0 ? "Upgrade on Patreon" : "Join on Patreon"}</a>` : "")
+    + `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`;
+  $("#ac-adult-wrap").hidden = !v.features.includes("adult");
+  $("#ac-adult").checked = store.get("choochie.webAdult") === "1";
+  $("#ac-logins").innerHTML = ["patreon", "discord", "google"].map(p => {
+    const on = v.logins[p], avail = v.providers[p];
+    return `<div class="login-item"><span class="who">${ICONS[p]}${PROV_NAMES[p]}</span>${on
+      ? `<button class="btn btn-ghost btn-sm" data-unlink="${p}">Remove</button>`
+      : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
+}
+async function load() { try { render(await api("/pet/ai/v1/account")); } catch (e) { if (e.status === 401) location.replace("login.html"); else $("#ac-head .sub").textContent = e.message; } }
+const banner = (cls, html) => $("#ac-banner").innerHTML = `<div class="note ${cls}" style="margin-bottom:16px">${html}</div>`;
+if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
+else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with starter energy to get to know her.");
+load();
+
+document.addEventListener("click", async e => {
+  const l = e.target.closest("[data-link]"), u = e.target.closest("[data-unlink]");
+  try {
+    if (l) { const r = await api("/pet/ai/v1/account/link-start", { method: "POST", body: { p: l.dataset.link } }); location.href = r.url; }
+    if (u) { if (!confirm("Remove the " + PROV_NAMES[u.dataset.unlink] + " login from this account?")) return; render(await api("/pet/ai/v1/account/unlink", { method: "POST", body: { p: u.dataset.unlink } })); toast("Removed."); }
+  } catch (err) { toast(err.message === "last login" ? "That's your only login - add another one first." : err.message, true); }
+});
+$("#ac-logout").addEventListener("click", () => { Auth.clear(); location.href = "index.html"; });
+$("#ac-signout-pcs").addEventListener("click", async () => { if (!confirm("Sign out of Choochie on every PC?")) return; try { render(await api("/pet/ai/v1/account/signout-pcs", { method: "POST", body: {} })); toast("All PCs signed out."); } catch (err) { toast(err.message, true); } });
+$("#ac-delete").addEventListener("click", async () => {
+  if (prompt('This deletes your account and its extra energy. Type DELETE to confirm.') !== "DELETE") return;
+  try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "index.html"; } catch (err) { toast(err.message, true); }
+});
+$("#ac-adult").addEventListener("change", e => store.set("choochie.webAdult", e.target.checked ? "1" : null));
+
+// chat
+const log = $("#chat-log");
+function bubble(who, text, cls) { const d = document.createElement("div"); d.className = "msg " + who + (cls ? " " + cls : ""); d.textContent = text; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
+bubble("her", "oh. you found my website. cute~ what do you want?");
+$("#chat-form").addEventListener("submit", async e => {
+  e.preventDefault(); const inp = $("#chat-in"), text = inp.value.trim(); if (!text) return;
+  inp.value = ""; bubble("me", text); history_.push({ role: "user", content: text });
+  const t = bubble("her", "typing…", "typing");
+  try {
+    const r = await api("/pet/ai/v1/account/chat", { method: "POST", body: { messages: history_.slice(-16), adult: $("#ac-adult").checked } });
+    t.className = "msg her"; t.textContent = r.reply || "…"; history_.push({ role: "assistant", content: r.reply || "" });
+    if (view) { view.energy = r.energy; render(view); }
+  } catch (err) {
+    t.className = "msg her";
+    t.textContent = err.message === "energy" ? "I'm out of energy~ get me a refill and I'll keep talking." : err.message === "slow down" ? "slow DOWN. one at a time." : "ugh, my brain lagged. say that again?";
+    history_.pop();
+  }
+});
+
+</script>
+</body>
+</html>
