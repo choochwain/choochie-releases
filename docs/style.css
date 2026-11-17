@@ -450,10 +450,6 @@ footer{text-align:left}
 .chat-top .av.asleep::after{background:var(--faint)}
 .chat-top h1{font-size:19px;margin:0}
 .chat-top .status{color:var(--faint);font-size:13px;font-weight:700}
-.orbs{margin-left:auto;text-align:right;min-width:0}
-.orbs-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(255,92,138,.1);border:1px solid var(--stroke2);font-weight:900;color:var(--cream);font-size:14px;white-space:nowrap}
-.orbs-pill i{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,var(--rose) 35%,var(--red-dark) 100%);box-shadow:0 0 10px rgba(255,92,138,.8)}
-.orbs .fine{display:block;margin-top:3px;font-size:12px}
 .chat-tools{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:10px 4px 0;font-size:13px;color:var(--faint)}
 .log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:20px 4px;scroll-behavior:smooth;overscroll-behavior:contain}
 .m{display:flex;gap:10px;align-items:flex-end;max-width:86%;animation:pop .35s var(--ease)}
@@ -512,13 +508,12 @@ footer{text-align:left}
   .chat-top{padding:10px 12px;gap:10px;border-radius:18px}
   .chat-top .av img{width:40px;height:40px}
   .chat-top h1{font-size:17px}
-  .orbs .fine{display:none}
   .m{max-width:94%}
   .ibtn{width:40px;height:40px}
 }
 @media (prefers-reduced-motion:reduce){.m,.typing .b span,.ibtn.rec{animation:none!important}}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-/* buying Orbs (chat sheet + account page) */
+/* buying energy on Ko-fi (energy panel + account page) */
 .ob{display:flex;flex-direction:column;gap:12px;min-width:0}
 .ob-bal{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0;font-size:14px;color:var(--dim)}
 .ob-bal b{color:var(--cream);font-size:17px}
@@ -545,3 +540,82 @@ footer{text-align:left}
 .claim-as label{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--dim);cursor:pointer}
 .claim-as input{accent-color:var(--rose);margin-top:4px}
 .claim-as b{color:var(--text)}
+/* ===================================================== energy bar (every page, from site.js) + the buy / "out of energy" panel */
+.ebar{--ef1:#8e0a14;--ef2:#e0263a;--ef3:#ff5c8a;--eglow:rgba(255,92,138,.55);position:sticky;top:var(--navh,62px);z-index:19;display:block;width:100%;margin:0;padding:0;border:0;border-bottom:1px solid var(--stroke);background:rgba(15,10,13,.8);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);color:var(--text);font:inherit;text-align:left;cursor:pointer;text-decoration:none}
+.ebar-in{max-width:1180px;margin:0 auto;padding:5px 24px;display:flex;align-items:center;gap:10px;min-height:32px;font-size:13px;font-weight:800;line-height:1.2}
+.ebar:hover .ebar-plus{transform:scale(1.1) rotate(90deg)}
+.ebar:hover .ebar-track{background-color:rgba(255,255,255,.1)}
+.ebar:focus-visible{outline:2px solid var(--rose);outline-offset:-3px;border-radius:0}
+.ebar-bolt{flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,194,212,.3),rgba(224,38,58,.22));color:var(--ef3);box-shadow:0 0 12px var(--eglow)}
+.ebar-bolt svg{width:13px;height:13px}
+.ebar-name{flex:none;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+.ebar-track{position:relative;flex:1;min-width:40px;height:8px;border-radius:999px;background-color:rgba(255,255,255,.07);box-shadow:inset 0 1px 2px rgba(0,0,0,.55);overflow:hidden;transition:background-color .2s}
+.ebar-fill,.ebar-ghost{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit}
+.ebar-ghost{background:rgba(255,194,212,.34);transition:width 1.1s var(--ease) .4s}
+.ebar-fill{background:linear-gradient(90deg,var(--ef1),var(--ef2) 55%,var(--ef3));box-shadow:0 0 10px var(--eglow),0 0 2px var(--ef3);transition:width .75s var(--ease)}
+.ebar-fill::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);background-size:250% 100%;animation:eshine 3.4s linear infinite}
+@keyframes eshine{from{background-position:130% 0}to{background-position:-130% 0}}
+.ebar-num{flex:none;color:var(--cream);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ebar-num small{font-size:inherit;color:var(--dim);font-weight:700}
+.ebar.m-extra .ebar-num small{color:#ffd59a}
+.ebar-chip,.ebar-tag{flex:none;padding:1px 9px;border-radius:999px;font-size:11.5px;white-space:nowrap}
+.ebar-chip{background:rgba(255,190,110,.1);border:1px solid rgba(255,190,110,.35);color:#ffd59a}
+.ebar-tag{color:var(--dim);font-weight:700;padding:1px 0}
+.ebar-plus{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--rose));color:#fff;font-size:15px;line-height:1;font-weight:900;transition:transform .25s var(--ease)}
+.ebar.low .ebar-fill{animation:elow 1.6s ease-in-out infinite}
+@keyframes elow{50%{box-shadow:0 0 16px rgba(255,74,92,.95),0 0 2px #fff}}
+.ebar.low .ebar-num{color:var(--red-light)}
+.ebar.m-extra{--ef1:#a3521f;--ef2:#ee9a4a;--ef3:#ffd59a;--eglow:rgba(255,180,100,.5)}
+.ebar.m-extra .ebar-name{color:#ffd59a}
+.ebar.m-out .ebar-track{box-shadow:inset 0 0 0 1px rgba(255,74,92,.55)}
+.ebar.m-out .ebar-num{color:var(--red-light)}
+.ebar.m-out .ebar-tag{padding:1px 10px;background:var(--red);color:#fff;font-weight:800}
+.ebar.m-inf{--ef1:#e0263a;--ef2:#ff5c8a;--ef3:#ffd59a}
+.ebar.m-inf .ebar-num{font-size:18px;line-height:1}
+.ebar.loading .ebar-track{background-image:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.1),rgba(255,255,255,0));background-size:200% 100%;animation:eshine 1.6s linear infinite}
+.ebar.loading .ebar-num{color:var(--faint)}
+.ebar.guest .ebar-guest{flex:1;min-width:0;color:var(--rose-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ebar.guest .ebar-long{color:var(--dim);font-weight:700}
+.ebar-cta{flex:none;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,var(--red),var(--rose));color:#fff;font-size:12px;transition:filter .2s}
+.ebar.guest:hover .ebar-cta{filter:brightness(1.12)}
+/* compact: inside the chat page's top bar */
+.ebar-compact{position:static;width:auto;height:34px;flex:none;border:1px solid rgba(255,92,138,.22);border-radius:999px;background:rgba(30,18,24,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.ebar-compact:hover{background:rgba(60,26,38,.8);border-color:rgba(255,92,138,.45)}
+.ebar-compact .ebar-in{padding:0 5px 0 7px;min-height:32px;gap:7px}
+.ebar-compact .ebar-name,.ebar-compact .ebar-tag,.ebar-compact .ebar-long{display:none}
+.ebar-compact .ebar-track{flex:none;width:70px;height:6px}
+.ebar-compact .ebar-chip{padding:0 7px}
+.ebar-compact.m-out{border-color:var(--red-light);box-shadow:0 0 0 3px rgba(224,38,58,.22)}
+.ebar-compact.m-out .ebar-tag{display:inline}
+.ebar-compact.m-extra{border-color:rgba(255,190,110,.4)}
+.ebar-compact:focus-visible{outline:2px solid var(--rose);outline-offset:2px;border-radius:999px}
+.ebar-compact.guest .ebar-in{padding-left:8px}
+@media (max-width:860px){.ebar-name{display:none}}
+@media (max-width:520px){
+  .ebar-in{padding:5px 16px;gap:8px}
+  .ebar .ebar-x,.ebar.guest .ebar-long{display:none}
+  .ebar.m-extra .ebar-tag{display:none}
+  .ebar-compact .ebar-track{width:40px}
+  .ebar-compact .ebar-chip,.ebar-compact .ebar-plus,.ebar-compact .ebar-num small{display:none}
+  .ebar-compact .ebar-in{padding:0 10px 0 7px}
+  .ebar-compact.guest .ebar-guest{display:none}
+}
+@media (max-width:380px){.ebar-compact .ebar-track{display:none}}
+.emodal{position:fixed;inset:0;z-index:58;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,6,8,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);overflow-y:auto}
+.emodal-card{position:relative;width:min(460px,100%);min-width:0;max-height:calc(100dvh - 32px);overflow-y:auto;padding:18px 20px 20px;border-radius:24px;background:rgba(26,16,21,.98);border:1px solid var(--stroke2);box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 70px rgba(224,38,58,.12);animation:eup .26s var(--ease);outline:none}
+.emodal.is-out .emodal-card{border-color:rgba(255,74,92,.55);box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 80px rgba(224,38,58,.25)}
+@keyframes eup{from{transform:translateY(16px);opacity:.3}}
+.emodal-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.emodal-h h3{margin:0;font-size:21px;flex:1;min-width:0}
+.emodal-bolt{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--red-light),var(--red-dark));color:#fff;box-shadow:0 0 18px rgba(224,38,58,.5)}
+.emodal-bolt svg{width:18px;height:18px}
+.emodal-x{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+.emodal-x:hover{background:rgba(255,92,138,.14);border-color:var(--stroke2)}
+.emodal-lead{margin:0 0 14px;font-size:14px;color:var(--dim)}
+.emodal-lead:empty{display:none}
+.emodal-lead b{color:var(--rose-soft)}
+.emodal-plans{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--stroke);font-size:13.5px;color:var(--dim)}
+.emodal-plans a{font-weight:800}
+body.emodal-open{overflow:hidden}
+@media (max-width:520px){.emodal{align-items:flex-end;padding:0}.emodal-card{width:100%;border-radius:24px 24px 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));max-height:92dvh}}
+@media (prefers-reduced-motion:reduce){.ebar-fill,.ebar-ghost,.ebar-plus{transition:none}.ebar-fill::after,.ebar.low .ebar-fill,.ebar.loading .ebar-track,.emodal-card{animation:none}}

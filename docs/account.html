@@ -9,9 +9,9 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
-<body>
+<body data-energy="self">
 <header id="site-nav"></header>
 <main class="page">
 
@@ -55,29 +55,20 @@
       </div>
     </div>
     <div class="panel" id="energy" style="scroll-margin-top:84px" hidden>
-      <h3>Energy for the desktop app</h3>
+      <h3>Get more energy</h3>
       <p class="fine" id="ac-energy-lead" style="margin:0 0 14px"></p>
       <div id="ac-energy"></div>
     </div>
     <div class="panel">
-      <div class="chat-link-card"><img src="img/portrait-smirk.jpg" alt=""><div style="flex:1"><h3 style="margin:0">Talk to her in your browser</h3><p class="fine" style="margin:2px 0 0">Text, pictures, a webcam snapshot or your voice. Orbs power web chat; your desktop energy is separate.</p></div></div>
+      <div class="chat-link-card"><img src="img/portrait-smirk.jpg" alt=""><div style="flex:1"><h3 style="margin:0">Talk to her in your browser</h3><p class="fine" style="margin:2px 0 0">Text, pictures, a webcam snapshot or your voice. It uses the same energy as the desktop app.</p></div></div>
       <div class="row" style="margin-top:14px"><a class="btn btn-primary btn-sm" href="chat.html">Open the chat</a><label class="switch" id="ac-adult-wrap" hidden><input type="checkbox" id="ac-adult"> 18+ mode in web chat (text only)</label></div>
-    </div>
-    <div class="panel" id="orbs" style="scroll-margin-top:84px">
-      <h3>Orbs for web chat</h3>
-      <p class="fine" id="ac-orbs-lead" style="margin:0 0 14px"></p>
-      <div id="ac-orbs"></div>
     </div>
     <div class="panel" id="claim" style="scroll-margin-top:84px">
       <h3>Claim a tip</h3>
       <p class="fine" style="margin:0 0 12px">Tipped on Ko-fi but forgot to paste your code? Claim it here with the e-mail you used there. We never store your e-mail - it's only matched against the tip.</p>
       <form id="claim-form" novalidate>
         <label class="field"><span>The e-mail you used on Ko-fi</span><input type="email" id="claim-email" autocomplete="email" required maxlength="200" spellcheck="false"></label>
-        <fieldset class="claim-as">
-          <legend>Add it as</legend>
-          <label><input type="radio" name="claim-as" value="orbs" checked> <span><b>Orbs</b> (web chat)</span></label>
-          <label><input type="radio" name="claim-as" value="energy"> <span><b>Energy</b> (desktop app) - goes to the app on every PC signed in to this account</span></label>
-        </fieldset>
+        <p class="fine" style="margin:6px 0 0">It's added as extra energy for this account: the web chat and the app on every PC signed in to it.</p>
         <div class="row" style="margin-top:14px"><button type="submit" class="btn btn-primary btn-sm" id="claim-btn">Claim</button><span class="fine" id="claim-msg" role="status" style="margin:0"></span></div>
       </form>
     </div>
@@ -101,14 +92,14 @@
         <button class="btn btn-ghost btn-sm" id="ac-signout-pcs">Sign out all PCs</button>
         <button class="btn btn-ghost btn-sm" id="ac-delete">Delete account</button>
       </div>
-      <p class="fine">Deleting is immediate and removes your account, logins, energy, Orbs, linked PCs' perks and roadmap votes (<a href="privacy.html#delete">details</a>). Cancel a Patreon membership on Patreon, and revoke Choochie in your Discord, Patreon, X or Google settings if you like. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+      <p class="fine">Deleting is immediate and removes your account, logins, energy, linked PCs' perks and roadmap votes (<a href="privacy.html#delete">details</a>). Cancel a Patreon membership on Patreon, and revoke Choochie in your Discord, Patreon, X or Google settings if you like. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
     </div>
   </div>
 </div>
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=9"></script>
+<script src="site.js?v=10"></script>
 <script>
 
 const frag = new URLSearchParams(location.hash.slice(1));
@@ -141,44 +132,32 @@ function render(v) {
       : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
   if (v.leaderboard) renderLb(v.leaderboard);
   renderEnergy(v.energy);
-  renderOrbs(v.orbs);
+  Energy.set(v.energy, true);   // the bar at the top
 }
-// ---- app energy: bought on Ko-fi with the account's CH- code; lands in "extra" energy, shared by every PC on the account
+document.addEventListener("account", ev => { if (ev.detail) render(ev.detail); });   // "Refresh balance" in the energy panel
+// ---- energy: ONE balance for the web chat and the app, bought on Ko-fi with the account's CH- code (lands in "extra" energy)
 function renderEnergy(e) {
-  const ok = !!(e && (e.code || e.perDollar)); $("#energy").hidden = !ok; if (!ok) return;
-  $("#ac-energy-lead").innerHTML = "Energy runs her brain in the desktop app. It's separate from Orbs (web chat), and each has its own code: <b>CH-</b> for energy, <b>OR-</b> for Orbs - paste the right one.";
+  const ok = !!(e && (e.code || e.perDollar || e.unlimited)); $("#energy").hidden = !ok; if (!ok) return;
+  $("#ac-energy-lead").innerHTML = e.unlimited ? "" : "One energy for everything: the web chat on this site and the desktop app on every PC signed in to this account. Buy more on Ko-fi with your <b>CH-</b> code.";
   $("#ac-energy").innerHTML = energyBuyHTML(e, "#claim");
-}
-// ---- Orbs (web chat): separate from plans; daily free ones + bought on Ko-fi with the account's OR- code
-function renderOrbs(o) {
-  $("#orbs").hidden = !o; if (!o) return;
-  const free = o.max ? `Everyone gets ${fmt(o.max)} free a day` : "Everyone gets free ones every day";
-  $("#ac-orbs-lead").textContent = o.unlimited ? "Orbs power web chat." : `Orbs power web chat and are separate from plans and app energy. ${free}, refilled at midnight UTC, and you can buy more on Ko-fi with your OR- code (not the CH- energy code).`;
-  $("#ac-orbs").innerHTML = orbBuyHTML(o, "#claim");
 }
 // ---- claim a Ko-fi tip sent without a code, by the e-mail used there
 $("#claim-form").addEventListener("submit", async e => {
   e.preventDefault();
-  const email = $("#claim-email").value.trim(), as = (document.querySelector('input[name="claim-as"]:checked') || {}).value || "orbs", msg = $("#claim-msg"), btn = $("#claim-btn");
+  const email = $("#claim-email").value.trim(), msg = $("#claim-msg"), btn = $("#claim-btn");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = "Enter the e-mail address you used on Ko-fi."; $("#claim-email").focus(); return; }
   btn.disabled = true; msg.textContent = "Checking…";
   try {
-    const v = await api("/pet/ai/v1/account/claim", { method: "POST", body: { email, as } });
+    const v = await api("/pet/ai/v1/account/claim", { method: "POST", body: { email } });
     render(v); $("#claim-email").value = "";
     const c = v.claimed || {}, n = fmt(c.amount || 0);
-    msg.textContent = c.as === "energy" ? `Added ${n} energy to your app.` : `Added ${n} Orbs.`; toast(msg.textContent);
+    msg.textContent = `Added ${n} energy.`; toast(msg.textContent);
   } catch (err) {
     msg.textContent = err.status === 404 ? "Nothing found for that e-mail. Check the spelling, or wait a minute if you just tipped."
       : err.status === 400 ? "That doesn't look like an e-mail address."
       : err.status === 429 ? "Too many tries - wait an hour and try again."
       : err.message;
   } finally { btn.disabled = false; }
-});
-document.addEventListener("click", async e => {
-  const r = e.target.closest("[data-orb-refresh]"); if (!r) return;
-  r.disabled = true; r.textContent = "Refreshing…";
-  try { const v = await api("/pet/ai/v1/account"); render(v); toast("Balance updated."); const nr = $(`[data-orb-refresh][data-kind="${r.dataset.kind || "orbs"}"]`) || $("[data-orb-refresh]"); if (nr) nr.focus({ preventScroll: true }); }
-  catch (err) { r.disabled = false; r.textContent = "Refresh balance"; toast("Couldn't refresh - try again in a few seconds.", true); }
 });
 // ---- leaderboard (opt-in)
 let lbView = null, lbScrolled = false;
@@ -188,7 +167,7 @@ function renderLb(b) {
   const span = Math.max(1, b.nextLevelAt - b.levelAt), into = Math.max(0, b.points - b.levelAt);
   $("#lb-meter").style.width = Math.min(100, Math.round(into / span * 100)) + "%";
   $("#lb-plabel").textContent = `${fmt(b.points)} / ${fmt(b.nextLevelAt)} pts`;
-  $("#lb-note").textContent = `${fmt(Math.max(0, b.nextLevelAt - b.points))} points to level ${b.level + 1}${b.nextTitle ? " (" + b.nextTitle + ")" : ""}. 1 point per energy she uses, 1 per Orb, bonus for energy you buy.`;
+  $("#lb-note").textContent = `${fmt(Math.max(0, b.nextLevelAt - b.points))} points to level ${b.level + 1}${b.nextTitle ? " (" + b.nextTitle + ")" : ""}. 1 point per energy she uses (app or web chat), bonus for energy you buy.`;
   $("#lb-stats").hidden = !b.joined || b.excluded;
   $("#lb-rank").textContent = b.rank ? "#" + b.rank : "-"; $("#lb-mrank").textContent = b.monthRank ? "#" + b.monthRank : "-"; $("#lb-month").textContent = fmt(b.monthPoints);
   $("#lb-join").checked = !!b.joined;
@@ -221,7 +200,7 @@ document.addEventListener("click", async e => {
   } catch (err) { toast(err.message === "last login" ? "That's your only login - add another one first." : err.message, true); }
 });
 $("#ac-logout").addEventListener("click", () => { Auth.clear(); location.href = "index.html"; });
-$("#ac-admin").addEventListener("click", async () => { const code = prompt("Admin code (owner only):"); if (!code) return; try { render(await api("/pet/ai/v1/account/admin", { method: "POST", body: { code: code.trim() } })); toast("Admin unlocked on this account: unlimited Orbs."); } catch (err) { toast(err.message, true); } });
+$("#ac-admin").addEventListener("click", async () => { const code = prompt("Admin code (owner only):"); if (!code) return; try { render(await api("/pet/ai/v1/account/admin", { method: "POST", body: { code: code.trim() } })); toast("Admin unlocked on this account: unlimited energy in web chat."); } catch (err) { toast(err.message, true); } });
 $("#ac-signout-pcs").addEventListener("click", async () => { if (!confirm("Sign out of Choochie on every PC?")) return; try { render(await api("/pet/ai/v1/account/signout-pcs", { method: "POST", body: {} })); toast("All PCs signed out."); } catch (err) { toast(err.message, true); } });
 $("#ac-delete").addEventListener("click", async () => {
   if (prompt('This deletes your account and its extra energy. Type DELETE to confirm.') !== "DELETE") return;

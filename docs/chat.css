@@ -49,27 +49,6 @@ body.c3{margin:0;min-height:100vh;min-height:100dvh;overflow:hidden;background:#
 .c3-ib.rec{background:#e0263a;border-color:#ff4a5c;animation:c3pulse 1s ease-in-out infinite}
 @keyframes c3pulse{50%{box-shadow:0 0 0 7px rgba(224,38,58,.25)}}
 #b-mute .off{display:none}#b-mute[aria-pressed="true"] .on{display:none}#b-mute[aria-pressed="true"] .off{display:inline}#b-mute[aria-pressed="true"]{color:var(--faint,#968089)}
-.c3-orbs{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:rgba(30,18,24,.62);border:1px solid rgba(255,92,138,.22);font-size:13px;font-weight:700;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.c3-orbs i{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd0de,#ff5c8a 55%,#8e0a14)}
-.c3-orbs small{font-weight:400;color:var(--dim,#bba7b0);font-size:11.5px}
-button.c3-orbs{color:var(--text,#f7eef1);font-family:inherit;cursor:pointer;padding-right:5px;transition:background .2s,border-color .2s}
-button.c3-orbs:hover{background:rgba(60,26,38,.8);border-color:rgba(255,92,138,.45)}
-button.c3-orbs:focus-visible{outline:2px solid var(--rose,#ff5c8a);outline-offset:2px}
-.c3-orbs-b{color:var(--rose-soft,#ffc2d4);font-size:12px}
-.c3-orbs-plus{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#e0263a,#ff5c8a);color:#fff;font-size:16px;line-height:1;font-weight:900}
-.c3.out button.c3-orbs{border-color:#ff4a5c;box-shadow:0 0 0 3px rgba(224,38,58,.2)}
-/* buy-Orbs sheet */
-.c3-sheet{position:fixed;inset:0;z-index:56;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,6,8,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);overflow-y:auto}
-.c3-sheet[hidden]{display:none}
-.c3-sheet-card{width:min(440px,100%);min-width:0;max-height:calc(100dvh - 32px);overflow-y:auto;padding:16px 18px 18px;border-radius:24px;background:rgba(26,16,21,.97);border:1px solid rgba(255,92,138,.22);box-shadow:0 24px 70px rgba(0,0,0,.6);animation:c3up .22s ease-out;outline:none}
-@keyframes c3up{from{transform:translateY(14px)}}
-.c3-sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
-.c3-sheet-h h3{margin:0;font-size:20px}
-.ob-lead{margin:0 0 12px;font-size:14px;color:var(--dim,#bba7b0)}
-.ob-lead:empty{display:none}
-.ob-lead b{color:var(--rose-soft,#ffc2d4)}
-@media (max-width:520px){.c3-sheet{align-items:flex-end;padding:0}.c3-sheet-card{width:100%;border-radius:24px 24px 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));max-height:92dvh}}
-@media (prefers-reduced-motion:reduce){.c3-sheet-card{animation:none}}
 .c3-menu{position:absolute;right:16px;top:calc(100% - 2px);width:260px;padding:14px;border-radius:18px;background:rgba(26,16,21,.94);border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px;font-size:14px}
 .c3-menu[hidden]{display:none}
 .c3-menu a{color:var(--rose-soft,#ffc2d4)}
@@ -134,7 +113,6 @@ button.c3-orbs:focus-visible{outline:2px solid var(--rose,#ff5c8a);outline-offse
 }
 @media (min-width:1000px){#b-hist,#side-x{display:none}}
 @media (max-width:520px){
- .c3-orbs small{display:none}
  .c3-ib{width:38px;height:38px;border-radius:12px}
  .c3-caption p{font-size:15.5px}
  .c3-fine{font-size:10.5px}

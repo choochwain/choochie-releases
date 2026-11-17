@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <style>
 /* leaderboard page (kept here so the shared stylesheet stays untouched) */
 .lb-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--stroke)}
@@ -68,7 +68,7 @@
 <section class="page-head">
   <span class="kicker">Leaderboard</span>
   <h1>Her favorites</h1>
-  <p class="sub">The pets who spend the most time with her - energy in the app plus Orbs in web chat. Opt-in only: people show up with a nickname they picked, never their login name.</p>
+  <p class="sub">The pets who spend the most time with her - energy used in the app and in web chat. Opt-in only: people show up with a nickname they picked, never their login name.</p>
 </section>
 
 <div class="lb-bar">
@@ -91,7 +91,7 @@
 <section class="section">
   <div class="panel">
     <h3>How points work</h3>
-    <p class="muted">Every bit of <strong>energy</strong> she uses in the app (on any PC signed in to your account) is 1 point, every <strong>Orb</strong> you use in web chat is 1 point, and energy you <strong>buy</strong> adds a 0.25-point bonus per energy when it lands. Points count from when the leaderboard launched. "This month" resets on the 1st (UTC); your level is based on all-time points.</p>
+    <p class="muted">Every bit of <strong>energy</strong> she uses - in the app on any PC signed in to your account, or in web chat - is 1 point, and energy you <strong>buy</strong> adds a 0.25-point bonus per energy when it lands. Points count from when the leaderboard launched. "This month" resets on the 1st (UTC); your level is based on all-time points.</p>
     <p class="muted">Levels get harder as you go (level <em>n</em> needs 100 × <em>n</em><sup>1.6</sup> points). Your title:</p>
     <div class="titles" id="lb-titles"></div>
     <p class="fine" style="margin-top:12px">Admin and tester accounts aren't ranked. The board updates about once a minute. Joining shows your nickname, level, title and points publicly - nothing else. <a href="privacy.html">Privacy</a></p>
@@ -100,7 +100,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=9"></script>
+<script src="site.js?v=10"></script>
 <script>
 
 let period = "month", mine = null; const cache = {};

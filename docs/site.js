@@ -206,52 +206,174 @@ function providerMap(j) {
   return out;
 }
 
-// ---- buying Orbs (web chat) or app energy on Ko-fi: shared by the chat sheet and the account page.
-// o = the server's `orbs` object; e = the server's `energy` object ({left,max,extra,code,perDollar,buyUrl})
-const orbDaily = o => Math.max(0, Number(o.left || 0) - Number(o.bought || 0));
+// ---- energy: ONE currency for the desktop app and the web chat. e = the server's `energy` object
+// ({ left, max, extra, starter, code, perDollar, buyUrl, resetsAt, costs, unlimited }): left/max = today's daily energy, extra = bought/starter (never expires)
 const kofiUrl = o => /^https:\/\//.test(o.buyUrl || "") ? o.buyUrl : LINKS.kofi;
-// the rates + numbered "copy code, open Ko-fi, paste, wait" steps. k = { kind, unit, code, per, url, kofiWhat, arrive, fine }; bal = balance line HTML
-function kofiBuyHTML(k, bal) {
-  const n = v => Number(v || 0).toLocaleString();
-  const code = k.code ? `<span class="ob-chip"><code>${esc(k.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(k.code)}" aria-label="Copy your ${esc(k.unit)} code ${esc(k.code)}">Copy</button></span>` : ` <span class="ob-dim">(your code isn't ready yet - refresh in a minute)</span>`;
-  return `<div class="ob" data-kind="${k.kind}">
-    ${bal}
-    ${k.per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * k.per))} ${esc(k.unit)}</span></li>`).join("")}</ul>` : ""}
-    <ol class="ob-steps">
-      <li><span class="ob-n" aria-hidden="true">1</span><div><strong>Copy your code</strong>${code}</div></li>
-      <li><span class="ob-n" aria-hidden="true">2</span><div><strong>${k.kofiWhat}</strong> <span class="ob-dim">($5+ recommended)</span><a class="btn btn-primary btn-sm ob-kofi" href="${esc(k.url)}" target="_blank" rel="noopener">Open Ko-fi</a></div></li>
-      <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
-      <li><span class="ob-n" aria-hidden="true">4</span><div><strong>${k.arrive}</strong> <button type="button" class="linkish" data-orb-refresh data-kind="${k.kind}">Refresh balance</button></div></li>
-    </ol>
-    <p class="fine ob-fine">${k.fine}</p>
-  </div>`;
-}
-// claimHref: where "Forgot the code?" points (the account page's claim box)
-function orbBuyHTML(o, claimHref) {
-  if (!o) return "";
-  const n = v => Number(v || 0).toLocaleString(), bought = Number(o.bought || 0);
-  if (o.unlimited) return `<p class="ob-note">This account has unlimited Orbs, so there's nothing to buy.</p>`;
-  return kofiBuyHTML({ kind: "orbs", unit: "Orbs", code: o.code, per: Number(o.perDollar) || 0, url: kofiUrl(o),
-    kofiWhat: "Open Ko-fi and tip any amount", arrive: "Orbs show up within a minute or two",
-    fine: `Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim your tip with your e-mail</a>. Bought Orbs never expire and are used after your daily ones. Buying energy for the desktop app instead? That's a different code (CH-), on <a href="account.html#energy">your account page</a> or in the app.` },
-    `<p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}</p>`);
-}
-// app energy: e.left/e.max = today's daily energy, e.extra = bought/extra (never expires)
+const untilTxt = ts => { const ms = Number(ts || 0) - Date.now(); if (!(ms > 0)) return "soon"; const t = Math.ceil(ms / 60000), h = Math.floor(t / 60), m = t % 60; return "in " + (h ? h + " h " : "") + m + " min"; };
+// the rates + numbered "copy code, open Ko-fi, paste, wait" steps
 function energyBuyHTML(e, claimHref) {
   if (!e) return "";
-  const n = v => Number(v || 0).toLocaleString(), max = Number(e.max || 0);
-  return kofiBuyHTML({ kind: "energy", unit: "energy", code: e.code, per: Number(e.perDollar) || 0, url: kofiUrl(e),
-    kofiWhat: "Open Ko-fi and tip, or buy the Energy item", arrive: "Energy arrives within a minute or two in the app on every PC signed in to this account",
-    fine: `Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim it with your e-mail</a>. Bought energy never expires and is used after your daily energy. The app shows the same kind of code under right-click &gt; Buy energy.` },
-    `<p class="ob-bal"><span>${max > 0 ? `<b>${n(e.left)}</b> / ${n(max)} left today` : "No daily refill"}</span><span class="ob-bought">+${n(e.extra)} extra</span></p>`);
+  if (e.unlimited) return `<p class="ob-note">This account has unlimited energy, so there's nothing to buy.</p>`;
+  const n = v => Number(v || 0).toLocaleString(), max = Number(e.max || 0), per = Number(e.perDollar) || 0;
+  const code = e.code ? `<span class="ob-chip"><code>${esc(e.code)}</code><button type="button" class="btn btn-soft btn-sm" data-copy-code="${esc(e.code)}" aria-label="Copy your energy code ${esc(e.code)}">Copy</button></span>` : ` <span class="ob-dim">(your code isn't ready yet - refresh in a minute)</span>`;
+  return `<div class="ob">
+    <p class="ob-bal"><span>${max > 0 ? `<b>${n(e.left)}</b> / ${n(max)} left today` : "No daily refill"}</span>${Number(e.extra) > 0 ? `<span class="ob-bought">+${n(e.extra)} extra</span>` : ""}</p>
+    ${per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * per))} energy</span></li>`).join("")}</ul>` : ""}
+    <ol class="ob-steps">
+      <li><span class="ob-n" aria-hidden="true">1</span><div><strong>Copy your code</strong>${code}</div></li>
+      <li><span class="ob-n" aria-hidden="true">2</span><div><strong>Open Ko-fi and tip, or buy the Energy item</strong> <span class="ob-dim">($5+ recommended)</span><a class="btn btn-primary btn-sm ob-kofi" href="${esc(kofiUrl(e))}" target="_blank" rel="noopener">Open Ko-fi</a></div></li>
+      <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
+      <li><span class="ob-n" aria-hidden="true">4</span><div><strong>Energy arrives within a minute or two</strong> <button type="button" class="linkish" data-energy-refresh>Refresh balance</button></div></li>
+    </ol>
+    <p class="fine ob-fine">Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim with e-mail</a>. Bought energy never expires, is used after your daily energy, and works everywhere: this website's chat and the desktop app on every PC signed in to your account.</p>
+  </div>`;
 }
-document.addEventListener("click", async e => {
-  const b = e.target.closest("[data-orb-copy]"); if (!b) return;
-  const code = b.dataset.orbCopy; let ok = false;
-  try { await navigator.clipboard.writeText(code); ok = true; } catch (_) {
-    const t = document.createElement("textarea"); t.value = code; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0";
-    document.body.appendChild(t); t.select(); try { ok = document.execCommand("copy"); } catch (__) {} t.remove();
+
+// the energy bar at the top of every page (inside the chat page's top bar), and the buy / "out of energy" panel
+const Energy = (() => {
+  const KEY = "choochie.energy", FRESH = 15000, bolt = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.2 2 4.5 13.4h6.1L9.8 22l8.7-11.4h-6.1z"/></svg>';
+  let e = null, peak = 0, out = null, el = null, shown = { pct: -1, num: null }, modal = null, from = null, raf = 0;
+  const ss = { get() { try { return JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (_) { return null; } }, set(v) { try { v ? sessionStorage.setItem(KEY, JSON.stringify(v)) : sessionStorage.removeItem(KEY); } catch (_) {} } };
+  const n = v => Number(v || 0).toLocaleString();
+  const cheap = x => Math.max(1, Number(x && x.costs && x.costs.text) || 1);
+  const isOut = x => !!x && !x.unlimited && Number(x.left || 0) < cheap(x) && Number(x.extra || 0) < cheap(x);
+  // daily | extra (daily used up, living on bought/starter energy) | out | inf (admin)
+  const mode = x => x.unlimited ? "inf" : Number(x.max) > 0 && Number(x.left) >= cheap(x) ? "daily" : Number(x.extra) > 0 ? "extra" : "out";
+
+  function mount() {
+    const old = el, slot = old ? null : $("#ebar-slot"), nav = $("#site-nav");
+    if (!old && !slot && !nav) return;
+    const compact = old ? old.classList.contains("ebar-compact") : !!slot;
+    el = document.createElement(Auth.signedIn ? "button" : "a");
+    el.className = "ebar" + (compact ? " ebar-compact" : "");
+    if (old) old.replaceWith(el); else if (slot) slot.replaceWith(el); else { nav.after(el); stick(nav); }
+    if (!Auth.signedIn) {
+      el.href = "login.html"; el.classList.add("guest");
+      el.innerHTML = `<span class="ebar-in"><span class="ebar-bolt">${bolt}</span><span class="ebar-guest"><b>Sign in to get free energy</b><span class="ebar-long"> - one balance for the web chat and the desktop app</span></span><span class="ebar-cta">Sign in</span></span>`;
+      return;
+    }
+    el.type = "button"; el.setAttribute("aria-haspopup", "dialog");
+    el.innerHTML = `<span class="ebar-in"><span class="ebar-bolt">${bolt}</span><span class="ebar-name">Energy</span>
+      <span class="ebar-track"><i class="ebar-ghost"></i><i class="ebar-fill"></i></span>
+      <span class="ebar-num" aria-hidden="true">…</span><span class="ebar-chip" hidden></span><span class="ebar-tag" hidden></span><span class="ebar-plus" aria-hidden="true">+</span></span>`;
+    el.setAttribute("aria-label", "Energy - loading. Open to get more energy");
+    el.classList.add("loading");
+    el.addEventListener("click", () => open(isOut(e)));
   }
-  if (ok) { b.textContent = "Copied"; clearTimeout(b._h); b._h = setTimeout(() => b.textContent = "Copy", 2000); toast("Code copied - paste it into the Ko-fi message."); }
-  else toast("Couldn't copy - select the code and copy it by hand.", true);
+  // under the sticky header: it sticks right below it, whatever the header's height
+  function stick(nav) { const h = () => document.documentElement.style.setProperty("--navh", nav.offsetHeight + "px"); h(); addEventListener("resize", h); if (window.ResizeObserver) new ResizeObserver(h).observe(nav); }
+  function countTo(node, to, fmt) {
+    cancelAnimationFrame(raf);
+    const fromV = shown.num, t0 = performance.now();
+    if (calm || fromV == null || !isFinite(to) || fromV === to) { node.innerHTML = fmt(to); shown.num = to; return; }
+    const step = t => { const k = Math.min(1, (t - t0) / 650), v = Math.round(fromV + (to - fromV) * (1 - Math.pow(1 - k, 3))); node.innerHTML = fmt(v); if (k < 1) raf = requestAnimationFrame(step); else shown.num = to; };
+    raf = requestAnimationFrame(step);
+  }
+  function render() {
+    if (!el || !e || !Auth.signedIn) return;
+    const m = mode(e), left = Number(e.left || 0), max = Number(e.max || 0), extra = Number(e.extra || 0);
+    if (extra > peak) peak = extra;
+    const pct = m === "inf" ? 100 : m === "daily" ? Math.max(0, Math.min(100, left / max * 100)) : m === "extra" ? Math.max(4, Math.min(100, extra / Math.max(max, peak, 1) * 100)) : 0;
+    el.classList.remove("loading", "m-daily", "m-extra", "m-out", "m-inf", "low");
+    el.classList.add("m-" + m); if (m === "daily" && pct <= 20) el.classList.add("low");
+    const fill = $(".ebar-fill", el), ghost = $(".ebar-ghost", el), num = $(".ebar-num", el), chip = $(".ebar-chip", el), tag = $(".ebar-tag", el), name = $(".ebar-name", el);
+    // depletion: the fill drops first, a soft "ghost" follows; refills jump the ghost straight up
+    if (pct >= shown.pct) { ghost.style.transition = "none"; ghost.style.width = pct + "%"; void ghost.offsetWidth; ghost.style.transition = ""; }
+    else ghost.style.width = pct + "%";
+    fill.style.width = pct + "%"; shown.pct = pct;
+    name.textContent = m === "extra" ? "Extra energy" : "Energy";
+    if (m === "inf") { cancelAnimationFrame(raf); num.textContent = "∞"; shown.num = null; }
+    else if (m === "daily") countTo(num, left, v => `<b>${n(v)}</b><small> / ${n(max)}</small>`);
+    else countTo(num, m === "extra" ? extra : 0, v => `<b>${n(v)}</b>${m === "extra" ? "<small> extra</small>" : ""}`);
+    chip.hidden = !(m === "daily" && extra > 0); chip.innerHTML = "+" + n(extra) + ' <span class="ebar-x">extra</span>';
+    tag.hidden = !(m === "extra" || m === "out"); tag.textContent = m === "out" ? "Get more" : max > 0 ? "daily refills " + untilTxt(e.resetsAt) : "never expires";
+    el.setAttribute("aria-label", (m === "inf" ? "Energy: unlimited"
+      : m === "daily" ? `Energy: ${n(left)} of ${n(max)} left today${extra > 0 ? ", plus " + n(extra) + " extra" : ""}`
+      : m === "extra" ? `Daily energy used up. ${n(extra)} extra energy left`
+      : "Out of energy") + ". Open to get more energy");
+  }
+  // new numbers from the server (page load, every chat reply, a refresh). Opens "Out of energy" when the balance just ran out.
+  function set(x, quiet) {
+    if (!x || typeof x !== "object") return;
+    const wasOut = out; e = x; out = isOut(x);
+    ss.set({ at: Date.now(), e: x, peak: Math.max(peak, Number(x.extra || 0)) });
+    render();
+    if (modal && !modal.hidden) fillModal();
+    if (out && wasOut === false && !quiet) open(true);
+    document.dispatchEvent(new CustomEvent("energy", { detail: x }));
+  }
+  function ensureModal() {
+    if (modal) return modal;
+    modal = document.createElement("div"); modal.className = "emodal"; modal.hidden = true;
+    modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.setAttribute("aria-labelledby", "em-h");
+    modal.innerHTML = `<div class="emodal-card" tabindex="-1">
+      <div class="emodal-h"><span class="emodal-bolt" aria-hidden="true">${bolt}</span><h3 id="em-h">Get more energy</h3><button type="button" class="emodal-x" aria-label="Close">✕</button></div>
+      <p class="emodal-lead" id="em-lead"></p><div id="em-body"></div>
+      <p class="emodal-plans"><a href="plans.html">See plans</a> - a Patreon plan gives you more energy every day.</p></div>`;
+    document.body.appendChild(modal);
+    $(".emodal-x", modal).addEventListener("click", close);
+    modal.addEventListener("click", ev => { if (ev.target === modal) close(); });
+    modal.addEventListener("keydown", ev => {
+      if (ev.key === "Escape") { ev.stopPropagation(); close(); return; }
+      if (ev.key !== "Tab") return;   // keep keyboard focus inside the panel
+      const f = [...modal.querySelectorAll("a[href],button:not([disabled])")].filter(x => x.offsetParent !== null); if (!f.length) return;
+      const a = f[0], b = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); b.focus(); } else if (!ev.shiftKey && document.activeElement === b) { ev.preventDefault(); a.focus(); }
+    });
+    return modal;
+  }
+  let outMode = false;
+  function fillModal() {
+    const here = (location.pathname.split("/").pop() || "index.html") === "account.html";
+    $("#em-h", modal).textContent = outMode ? "Out of energy" : "Get more energy";
+    modal.classList.toggle("is-out", outMode);
+    if (!e) { $("#em-lead", modal).textContent = "Loading your energy…"; $("#em-body", modal).innerHTML = ""; return; }
+    const max = Number(e.max || 0);
+    $("#em-lead", modal).innerHTML = e.unlimited ? "" : outMode
+      ? `She needs energy to keep talking. ${max > 0 ? `Your daily energy refills <b>${esc(untilTxt(e.resetsAt))}</b> - or buy` : "Buy"} more to continue right now.`
+      : `One energy for everything: the web chat here and the desktop app use the same balance. Daily energy is used first, then your extra energy.${e.costs ? ` A message uses ${n(e.costs.text)}; her voice, photos and voice messages use a bit more.` : ""}`;
+    $("#em-body", modal).innerHTML = energyBuyHTML(e, here ? "#claim" : "account.html#claim");
+  }
+  function open(isOutNow) {
+    if (!Auth.signedIn) { location.href = "login.html"; return; }
+    ensureModal(); outMode = !!isOutNow; fillModal();
+    if (modal.hidden) from = document.activeElement;
+    modal.hidden = false; document.body.classList.add("emodal-open");
+    const f = $("[data-copy-code]", modal) || $(".emodal-x", modal); try { f.focus({ preventScroll: true }); } catch (_) {}
+    if (!e) refresh();
+  }
+  function close() { if (!modal || modal.hidden) return; modal.hidden = true; document.body.classList.remove("emodal-open"); if (from && from.focus) try { from.focus({ preventScroll: true }); } catch (_) {} from = null; }
+  // GET the account (also handed to the page via the "account" event)
+  async function refresh() {
+    if (!Auth.signedIn) return null;
+    try { const v = await api("/pet/ai/v1/account"); set(v.energy, true); document.dispatchEvent(new CustomEvent("account", { detail: v })); return v; }
+    catch (err) { if (err.status === 401) { ss.set(null); e = null; if (el) mount(); } throw err; }   // signed out elsewhere: the bar turns into the sign-in invite
+  }
+  function init() {
+    mount();
+    if (!Auth.signedIn) { ss.set(null); return; }
+    const c = ss.get();
+    if (c && c.e) { peak = Number(c.peak || 0); e = c.e; out = isOut(e); render(); }
+    // pages that load the account themselves (data-energy="self") hand it over with Energy.set
+    if (document.body.dataset.energy !== "self" && !(c && Date.now() - c.at < FRESH)) refresh().catch(() => {});
+  }
+  return { init, set, open, close, refresh, get: () => e, isOut };
+})();
+document.addEventListener("click", async ev => {
+  const b = ev.target.closest("[data-copy-code]");
+  if (b) {
+    const code = b.dataset.copyCode; let ok = false;
+    try { await navigator.clipboard.writeText(code); ok = true; } catch (_) {
+      const t = document.createElement("textarea"); t.value = code; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(t); t.select(); try { ok = document.execCommand("copy"); } catch (__) {} t.remove();
+    }
+    if (ok) { b.textContent = "Copied"; clearTimeout(b._h); b._h = setTimeout(() => b.textContent = "Copy", 2000); toast("Code copied - paste it into the Ko-fi message."); }
+    else toast("Couldn't copy - select the code and copy it by hand.", true);
+    return;
+  }
+  const r = ev.target.closest("[data-energy-refresh]"); if (!r || !Auth.signedIn) return;
+  r.disabled = true; r.textContent = "Refreshing…";
+  try { await Energy.refresh(); toast("Balance updated."); const nr = $("[data-energy-refresh]"); if (nr) nr.focus({ preventScroll: true }); }
+  catch (err) { r.disabled = false; r.textContent = "Refresh balance"; toast("Couldn't refresh - try again in a few seconds.", true); }
 });
+Energy.init();
