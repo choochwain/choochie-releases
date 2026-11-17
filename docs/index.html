@@ -16,6 +16,45 @@
 <link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=5">
 <script>document.documentElement.classList.add("js")</script>
+<style>
+/* home: compact leaderboard (same look as leaderboard.html, kept here so the shared stylesheet stays untouched) */
+.hlb{max-width:860px;margin:0 auto}
+.hlb .podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:14px;align-items:end;margin-bottom:12px}
+.hlb .pod{position:relative;text-align:center;padding:22px 14px 18px;border-radius:24px;background:var(--surface);border:1px solid var(--stroke);min-width:0}
+.hlb .pod.r1{padding-top:30px;background:radial-gradient(320px 160px at 50% 0%,rgba(224,38,58,.28),transparent 75%),var(--surface);border-color:rgba(224,38,58,.5);box-shadow:0 24px 60px rgba(224,38,58,.18)}
+.hlb .pod.r2{background:radial-gradient(260px 130px at 50% 0%,rgba(255,194,212,.12),transparent 75%),var(--surface)}
+.hlb .pod.r3{background:radial-gradient(260px 130px at 50% 0%,rgba(255,92,138,.1),transparent 75%),var(--surface)}
+.hlb .medal{width:48px;height:48px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;font:900 20px var(--display);color:#fff;background:linear-gradient(135deg,var(--red-light),var(--red-dark));box-shadow:0 10px 28px rgba(224,38,58,.4)}
+.hlb .pod.r1 .medal{width:58px;height:58px;font-size:24px}
+.hlb .pod.r2 .medal{background:linear-gradient(135deg,#ffe3ec,#b88d9a);color:var(--ink)}
+.hlb .pod.r3 .medal{background:linear-gradient(135deg,#ff9aa5,#7a2a35)}
+.hlb .crown{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:24px;filter:drop-shadow(0 4px 10px rgba(224,38,58,.5))}
+.hlb .nick{display:block;font-weight:900;font-size:17px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hlb .pts{display:block;font:900 22px var(--display);color:var(--rose);margin-top:6px}
+.hlb .pts small{font-size:12px;color:var(--faint);font-weight:700}
+.hlb .pill{margin-top:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hlb .pod.ghost{opacity:.45}
+.hlb-list{display:grid;gap:8px}
+.hlb-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 16px;background:var(--surface);border:1px solid var(--stroke);border-radius:16px}
+.hlb-rank{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--ink2);color:var(--rose);font-weight:900}
+.hlb-row b{display:block;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hlb-row span.t{color:var(--faint);font-size:13px}
+.hlb-row .p{font:900 17px var(--display);color:var(--cream);white-space:nowrap}
+.hlb-empty{text-align:center;padding:30px 20px;border-radius:24px;background:radial-gradient(420px 180px at 50% 0%,rgba(224,38,58,.18),transparent 75%),var(--surface);border:1px solid var(--stroke)}
+.hlb-empty h3{margin:0 0 6px}
+.hlb-empty p{margin:0 0 16px;color:var(--dim)}
+.hlb-foot{text-align:center;margin-top:18px}
+@media (max-width:640px){
+  .hlb .podium{grid-template-columns:1fr;gap:10px}
+  .hlb .pod.r1{order:-1}
+  .hlb .pod{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;padding:12px 14px}
+  .hlb .pod.r1{padding-top:12px}
+  .hlb .pod .medal,.hlb .pod.r1 .medal{width:40px;height:40px;font-size:17px;margin:0}
+  .hlb .crown{top:-12px;left:26px;font-size:18px}
+  .hlb .pts{margin:0;font-size:18px;text-align:right}
+  .hlb-row{gap:10px;padding:10px 12px}
+}
+</style>
 </head>
 <body>
 <a class="skip" href="#top">Skip to content</a>
@@ -69,7 +108,7 @@
   </div>
 
   <div class="feature-row">
-    <div class="feature-media tall reveal"><img src="img/shot-idle.jpg" alt="Choochie standing on the desktop with a speech bubble" loading="lazy" width="680" height="970"></div>
+    <div class="feature-media tall reveal"><img src="img/shot-walk.jpg" alt="Choochie in her red bunny outfit, standing on the desktop" loading="lazy" width="760" height="800"></div>
     <div class="feature-text reveal" style="--d:.1s">
       <span class="kicker">Lives on your desktop</span>
       <h3>She walks on your windows</h3>
@@ -79,7 +118,7 @@
   </div>
 
   <div class="feature-row flip">
-    <div class="feature-media tall reveal"><img src="img/shot-held.jpg" alt="Choochie dangling from the cursor, protesting" loading="lazy" width="680" height="970"></div>
+    <div class="feature-media tall reveal"><img src="img/shot-talk.jpg" alt="Choochie in a streetwear outfit with a speech bubble: Hi~ Did you bring me anything? No? Hmm." loading="lazy" width="760" height="800"></div>
     <div class="feature-text reveal" style="--d:.1s">
       <span class="kicker">A real AI brain</span>
       <h3>She talks back - out loud</h3>
@@ -89,7 +128,7 @@
   </div>
 
   <div class="feature-row">
-    <div class="feature-media wide reveal"><img src="img/shot-wardrobe.jpg" alt="The wardrobe screen with outfit list and a live 3D view of Choochie" loading="lazy" width="960" height="650"></div>
+    <div class="feature-media wide reveal"><img src="img/shot-wardrobe2.jpg" alt="The wardrobe: outfit tabs, outfit cards with rarities and a live 3D view of Choochie" loading="lazy" width="960" height="650"></div>
     <div class="feature-text reveal" style="--d:.1s">
       <span class="kicker">Wardrobe &amp; games</span>
       <h3>Dress her up. Earn the good stuff.</h3>
@@ -126,6 +165,16 @@
   </div>
 </section>
 
+<section id="top-pets" hidden>
+  <div class="section-head reveal">
+    <span class="kicker">Leaderboard</span>
+    <h2>Her favorites this month</h2>
+    <p class="sub">The pets who spend the most time with her. Opt-in, nickname only.</p>
+  </div>
+  <div class="hlb" id="hlb" aria-live="polite"></div>
+  <p class="hlb-foot"><a class="btn btn-ghost" href="leaderboard.html">See full leaderboard</a></p>
+</section>
+
 <section id="how">
   <div class="section-head reveal">
     <span class="kicker">How it works</span>
@@ -145,7 +194,7 @@
     <p class="sub">Every plan talks to the same brain - supporting adds energy and features, never a different personality.</p>
   </div>
   <div class="tiers">
-    <a class="tier reveal" href="login.html"><div class="tier-img"><img src="img/portrait-smirk.jpg" alt="" loading="lazy" style="object-position:center 38%;filter:saturate(.8) brightness(.8)"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 to start + 50 / day</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
+    <a class="tier reveal" href="login.html"><div class="tier-img"><img src="img/tier-free.jpg" alt="" loading="lazy" style="object-position:center 42%"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 to start + 50 / day</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
     <a class="tier reveal" style="--d:.06s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-pet.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Pet</h3><div class="price">$9.99<small> / mo</small></div><p class="energy">250 energy every day</p><ul><li>Her 18+ side (opt-in, text only)</li><li>Send her pictures</li><li>3 roadmap votes a month</li></ul></div></a>
     <a class="tier featured reveal" style="--d:.12s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><span class="tag">Most popular</span><div class="tier-img"><img src="img/tier-devoted.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Devoted</h3><div class="price">$19.99<small> / mo</small></div><p class="energy">500 energy every day</p><ul><li>She texts you first on Discord</li><li>Looks at your screen or webcam when you ask</li><li>Watch &amp; play together</li></ul></div></a>
     <a class="tier reveal" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited* everyday use</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
@@ -195,6 +244,25 @@
 <footer id="site-foot"></footer>
 
 <script src="site.js?v=6"></script>
+<script>
+// home: top 5 of this month; the section stays hidden if her server doesn't answer
+(async function topPets() {
+  const box = document.getElementById("hlb"), wrap = document.getElementById("top-pets");
+  if (!box || !wrap) return;
+  let d; try { d = await api("/pet/ai/v1/leaderboard?period=month"); } catch (e) { return; }
+  const en = (d && Array.isArray(d.entries) ? d.entries : []).slice(0, 5), n = x => Number(x || 0).toLocaleString();
+  const pod = (e, r) => !e ? `<div class="pod r${r} ghost"><div class="medal">${r}</div><span class="nick">Open spot</span><span class="fine">could be you~</span></div>`
+    : `<div class="pod r${r}">${r === 1 ? '<span class="crown" aria-hidden="true">👑</span>' : ""}<div class="medal">${esc(e.rank || r)}</div>
+      <div style="min-width:0"><span class="nick" title="${esc(e.nickname)}">${esc(e.nickname)}</span><span class="pill hot">Lv ${esc(e.level)} · ${esc(e.title)}</span></div>
+      <span class="pts">${n(e.points)} <small>pts</small></span></div>`;
+  const join = Auth.signedIn ? "account.html#leaderboard" : "login.html";
+  box.innerHTML = en.length === 0
+    ? `<div class="hlb-empty"><h3>Be the first on the board~</h3><p>Nobody's claimed her attention yet this month. Join with any nickname.</p><a class="btn btn-primary" href="${join}">Join the leaderboard</a></div>`
+    : `<div class="podium">${pod(en[1], 2) + pod(en[0], 1) + pod(en[2], 3)}</div>
+       <div class="hlb-list">${en.slice(3).map((e, i) => `<div class="hlb-row"><span class="hlb-rank">${esc(e.rank || i + 4)}</span><div style="min-width:0"><b title="${esc(e.nickname)}">${esc(e.nickname)}</b><span class="t">Lv ${esc(e.level)} · ${esc(e.title)}</span></div><span class="p">${n(e.points)}</span></div>`).join("")}</div>`;
+  wrap.hidden = false;
+})();
+</script>
 <script src="script.js?v=4"></script>
 </body>
 </html>
