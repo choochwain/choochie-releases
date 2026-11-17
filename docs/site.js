@@ -5,7 +5,7 @@ const LINKS = {
   patreon: "https://www.patreon.com/ChooChwain",
   kofi: "https://ko-fi.com/dahmeows",
   beacons: "https://beacons.ai/choochwain",
-  discord: "",          // your Discord invite, e.g. "https://discord.gg/xxxxxxx" (empty = hidden)
+  discord: "https://discord.gg/Ndu38dVCma",          // your Discord invite, e.g. "https://discord.gg/xxxxxxx" (empty = hidden)
 };
 
 const $ = (s, el = document) => el.querySelector(s);
