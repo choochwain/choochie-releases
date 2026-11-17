@@ -41,7 +41,7 @@ async function api(path, opts = {}) {
 // ---- header + footer
 const NAV = [
   ["index.html#features", "Features"], ["chat.html", "Talk to her"], ["plans.html", "Plans"],
-  ["downloads.html", "Download"], ["updates.html", "Updates"], ["roadmap.html", "Roadmap"],
+  ["downloads.html", "Download"], ["updates.html", "Updates"], ["roadmap.html", "Roadmap"], ["leaderboard.html", "Leaderboard"],
   ["privacy.html", "Privacy"], ["terms.html", "Terms"],
 ];
 // Discord: the invite when set, otherwise her link page (which lists it)

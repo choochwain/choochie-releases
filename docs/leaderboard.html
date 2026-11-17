@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leaderboard · Choochie</title>
+<meta name="description" content="Choochie's opt-in leaderboard: her most devoted pets this month and of all time.">
+<meta name="theme-color" content="#120c0f">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
+<link rel="stylesheet" href="style.css?v=4">
+<style>
+/* leaderboard page (kept here so the shared stylesheet stays untouched) */
+.lb-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--stroke)}
+.lb-tabs button{border:0;background:none;color:var(--dim);font:800 14px var(--body);padding:8px 18px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+.lb-tabs button[aria-selected="true"]{background:linear-gradient(135deg,var(--red-light),var(--red-dark));color:#fff;box-shadow:0 6px 18px rgba(224,38,58,.35)}
+.lb-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:6px 0 22px}
+.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:14px;align-items:end;margin-bottom:18px}
+.pod{position:relative;text-align:center;padding:26px 16px 20px;border-radius:24px;background:var(--surface);border:1px solid var(--stroke);min-width:0}
+.pod.r1{padding-top:34px;background:radial-gradient(320px 160px at 50% 0%,rgba(224,38,58,.28),transparent 75%),var(--surface);border-color:rgba(224,38,58,.5);box-shadow:0 24px 60px rgba(224,38,58,.18)}
+.pod.r2{background:radial-gradient(260px 130px at 50% 0%,rgba(255,194,212,.12),transparent 75%),var(--surface)}
+.pod.r3{background:radial-gradient(260px 130px at 50% 0%,rgba(255,92,138,.1),transparent 75%),var(--surface)}
+.medal{width:54px;height:54px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;font:900 22px var(--display);color:#fff;background:linear-gradient(135deg,var(--red-light),var(--red-dark));box-shadow:0 10px 28px rgba(224,38,58,.4)}
+.pod.r1 .medal{width:66px;height:66px;font-size:26px}
+.pod.r2 .medal{background:linear-gradient(135deg,#ffe3ec,#b88d9a);color:var(--ink)}
+.pod.r3 .medal{background:linear-gradient(135deg,#ff9aa5,#7a2a35)}
+.crown{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:26px;filter:drop-shadow(0 4px 10px rgba(224,38,58,.5))}
+.pod .nick{display:block;font-weight:900;font-size:18px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .pts{display:block;font:900 26px var(--display);color:var(--rose);margin-top:6px;letter-spacing:-.01em}
+.pod .pts small{font-size:13px;color:var(--faint);font-weight:700}
+.pod .pill{margin-top:6px}
+.pod.ghost{opacity:.45}
+.lb-list{display:grid;gap:8px}
+.lb-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:12px 16px;background:var(--surface);border:1px solid var(--stroke);border-radius:16px}
+.lb-row.me,.pod.me{border-color:var(--rose);box-shadow:0 0 0 1px var(--rose)}
+.lb-rank{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--ink2);color:var(--rose);font-weight:900}
+.lb-who{min-width:0}
+.lb-who b{display:block;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-who span{color:var(--faint);font-size:13px}
+.lb-lvl{font-weight:800;color:var(--dim);font-size:14px;white-space:nowrap}
+.lb-pts{font:900 18px var(--display);color:var(--cream);text-align:right;min-width:70px;white-space:nowrap}
+.lb-me{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:18px 0}
+.lb-me img{width:56px;height:56px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--red-dark),0 0 30px rgba(224,38,58,.35);flex:none}
+.lb-me .txt{flex:1;min-width:200px}
+.lb-me h3{margin:0}
+.titles{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.titles .pill b{color:var(--cream)}
+@media (max-width:640px){
+  .podium{grid-template-columns:1fr;gap:10px}
+  .pod.r1{order:-1}
+  .pod{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;padding:14px 16px}
+  .pod.r1{padding-top:14px}
+  .pod .medal,.pod.r1 .medal{width:44px;height:44px;font-size:18px;margin:0}
+  .pod .crown{top:-12px;left:28px;font-size:20px}
+  .pod .pts{margin:0;font-size:20px;text-align:right}
+  .pod .pill{margin-top:2px}
+  .lb-row{grid-template-columns:36px minmax(0,1fr) auto;gap:10px;padding:10px 12px}
+  .lb-rank{width:32px;height:32px}
+  .lb-lvl{display:none}
+}
+</style>
+</head>
+<body>
+<header id="site-nav"></header>
+<main class="page">
+
+<section class="page-head">
+  <span class="kicker">Leaderboard</span>
+  <h1>Her favorites</h1>
+  <p class="sub">The pets who spend the most time with her - energy in the app plus Orbs in web chat. Opt-in only: people show up with a nickname they picked, never their login name.</p>
+</section>
+
+<div class="lb-bar">
+  <div class="lb-tabs" role="tablist" aria-label="Period">
+    <button role="tab" data-p="month" aria-selected="true">This month</button>
+    <button role="tab" data-p="all" aria-selected="false">All time</button>
+  </div>
+  <span class="fine" id="lb-count"></span>
+</div>
+
+<div class="podium" id="lb-podium" aria-live="polite"><div class="pod ghost"><span class="skeleton">Loading…</span></div></div>
+<div class="lb-list" id="lb-list"></div>
+
+<div class="panel lb-me" id="lb-me">
+  <img src="img/portrait-smirk.jpg" alt="">
+  <div class="txt"><h3 id="lb-me-h">Want to be on here?</h3><p class="muted" id="lb-me-p" style="margin:2px 0 0">Log in, then join from your account page. Pick any nickname - you can leave any time.</p></div>
+  <a class="btn btn-primary" id="lb-me-btn" href="login.html">Log in to join</a>
+</div>
+
+<section class="section">
+  <div class="panel">
+    <h3>How points work</h3>
+    <p class="muted">Every bit of <strong>energy</strong> she uses in the app (on any PC signed in to your account) is 1 point, every <strong>Orb</strong> you use in web chat is 1 point, and energy you <strong>buy</strong> adds a 0.25-point bonus per energy when it lands. Points count from when the leaderboard launched. "This month" resets on the 1st (UTC); your level is based on all-time points.</p>
+    <p class="muted">Levels get harder as you go (level <em>n</em> needs 100 × <em>n</em><sup>1.6</sup> points). Your title:</p>
+    <div class="titles" id="lb-titles"></div>
+    <p class="fine" style="margin-top:12px">Admin and tester accounts aren't ranked. The board updates about once a minute. Joining shows your nickname, level, title and points publicly - nothing else. <a href="privacy.html">Privacy</a></p>
+  </div>
+</section>
+
+</main>
+<footer id="site-foot"></footer>
+<script src="site.js?v=5"></script>
+<script>
+
+let period = "month", mine = null; const cache = {};
+const fmtN = n => Number(n || 0).toLocaleString();
+const DEFAULT_TITLES = [[0, "Stranger"], [1, "Noticed"], [3, "Admirer"], [5, "Pet"], [8, "Good Pet"], [12, "Devotee"], [16, "Clingy"], [20, "Obsessed"], [25, "Simp Supreme"], [32, "Her Favorite"], [40, "Collared"], [50, "Hers Forever"]];
+function titles(list) { $("#lb-titles").innerHTML = list.map(([l, t]) => `<span class="pill">Lv ${l}+ <b>${esc(t)}</b></span>`).join(""); }
+titles(DEFAULT_TITLES);
+const isMe = e => mine && mine.joined && mine.nickname && e.nickname === mine.nickname;
+function pod(e, r) {
+  if (!e) return `<div class="pod r${r} ghost"><div class="medal">${r}</div><span class="nick">Open spot</span><span class="fine">could be you~</span></div>`;
+  return `<div class="pod r${r}${isMe(e) ? " me" : ""}">${r === 1 ? '<span class="crown" aria-hidden="true">👑</span>' : ""}<div class="medal">${e.rank}</div>
+    <div style="min-width:0"><span class="nick" title="${esc(e.nickname)}">${esc(e.nickname)}</span><span class="pill hot">Lv ${e.level} · ${esc(e.title)}</span></div>
+    <span class="pts">${fmtN(e.points)} <small>pts</small></span></div>`;
+}
+function draw(d) {
+  const en = d.entries || [];
+  $("#lb-count").textContent = d.participants ? `${fmtN(d.participants)} on the board` : "";
+  $("#lb-podium").innerHTML = pod(en[1], 2) + pod(en[0], 1) + pod(en[2], 3);
+  $("#lb-list").innerHTML = en.length === 0
+    ? `<p class="empty">No one's on the board yet. Be her first favorite~</p>`
+    : en.slice(3).map(e => `<div class="lb-row${isMe(e) ? " me" : ""}"><span class="lb-rank">${e.rank}</span>
+      <div class="lb-who"><b title="${esc(e.nickname)}">${esc(e.nickname)}${isMe(e) ? ' <span class="pill">you</span>' : ""}</b><span>${esc(e.title)}</span></div>
+      <span class="lb-lvl">Lv ${e.level}</span><span class="lb-pts">${fmtN(e.points)}</span></div>`).join("");
+  if (d.levels && Array.isArray(d.levels.titles)) titles(d.levels.titles.map(x => [x.level, x.title]));
+}
+async function load(p) {
+  period = p;
+  document.querySelectorAll(".lb-tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.p === p));
+  if (cache[p]) { draw(cache[p]); return; }
+  try { const d = await api("/pet/ai/v1/leaderboard?period=" + p); cache[p] = d; if (period === p) draw(d); }
+  catch (e) { $("#lb-podium").innerHTML = `<div class="pod ghost" style="grid-column:1/-1"><span class="fine">${esc(e.message)}</span></div>`; $("#lb-list").innerHTML = ""; }
+}
+document.querySelectorAll(".lb-tabs button").forEach(b => b.addEventListener("click", () => load(b.dataset.p)));
+
+async function me() {
+  if (!Auth.signedIn) return;
+  try {
+    mine = await api("/pet/ai/v1/account/leaderboard");
+    const btn = $("#lb-me-btn"); btn.href = "account.html#leaderboard";
+    if (mine.excluded) { $("#lb-me-h").textContent = `You're Lv ${mine.level} · ${mine.title}`; $("#lb-me-p").textContent = "Admin and tester accounts stay off the public board."; btn.textContent = "Your account"; }
+    else if (mine.joined) { $("#lb-me-h").textContent = `${mine.nickname} · Lv ${mine.level} ${mine.title}`; $("#lb-me-p").textContent = (mine.rank ? `#${mine.rank} all time` : "Not ranked yet") + (mine.monthRank ? ` · #${mine.monthRank} this month` : "") + ` · ${fmtN(mine.points)} points.`; btn.textContent = "Manage"; btn.className = "btn btn-ghost"; }
+    else { $("#lb-me-h").textContent = `You're Lv ${mine.level} · ${mine.title} (private)`; $("#lb-me-p").textContent = "Your points are counting quietly. Join to show up here with a nickname."; btn.textContent = "Join the leaderboard"; }
+    if (cache[period]) draw(cache[period]);
+  } catch (e) {}
+}
+load("month"); me();
+
+</script>
+</body>
+</html>
