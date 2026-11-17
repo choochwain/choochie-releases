@@ -206,26 +206,44 @@ function providerMap(j) {
   return out;
 }
 
-// ---- buying Orbs (web chat): shared by the chat sheet and the account page. o = the server's `orbs` object
+// ---- buying Orbs (web chat) or app energy on Ko-fi: shared by the chat sheet and the account page.
+// o = the server's `orbs` object; e = the server's `energy` object ({left,max,extra,code,perDollar,buyUrl})
 const orbDaily = o => Math.max(0, Number(o.left || 0) - Number(o.bought || 0));
+const kofiUrl = o => /^https:\/\//.test(o.buyUrl || "") ? o.buyUrl : LINKS.kofi;
+// the rates + numbered "copy code, open Ko-fi, paste, wait" steps. k = { kind, unit, code, per, url, kofiWhat, arrive, fine }; bal = balance line HTML
+function kofiBuyHTML(k, bal) {
+  const n = v => Number(v || 0).toLocaleString();
+  const code = k.code ? `<span class="ob-chip"><code>${esc(k.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(k.code)}" aria-label="Copy your ${esc(k.unit)} code ${esc(k.code)}">Copy</button></span>` : ` <span class="ob-dim">(your code isn't ready yet - refresh in a minute)</span>`;
+  return `<div class="ob" data-kind="${k.kind}">
+    ${bal}
+    ${k.per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * k.per))} ${esc(k.unit)}</span></li>`).join("")}</ul>` : ""}
+    <ol class="ob-steps">
+      <li><span class="ob-n" aria-hidden="true">1</span><div><strong>Copy your code</strong>${code}</div></li>
+      <li><span class="ob-n" aria-hidden="true">2</span><div><strong>${k.kofiWhat}</strong> <span class="ob-dim">($5+ recommended)</span><a class="btn btn-primary btn-sm ob-kofi" href="${esc(k.url)}" target="_blank" rel="noopener">Open Ko-fi</a></div></li>
+      <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
+      <li><span class="ob-n" aria-hidden="true">4</span><div><strong>${k.arrive}</strong> <button type="button" class="linkish" data-orb-refresh data-kind="${k.kind}">Refresh balance</button></div></li>
+    </ol>
+    <p class="fine ob-fine">${k.fine}</p>
+  </div>`;
+}
 // claimHref: where "Forgot the code?" points (the account page's claim box)
 function orbBuyHTML(o, claimHref) {
   if (!o) return "";
   const n = v => Number(v || 0).toLocaleString(), bought = Number(o.bought || 0);
   if (o.unlimited) return `<p class="ob-note">This account has unlimited Orbs, so there's nothing to buy.</p>`;
-  const per = Number(o.perDollar) || 0, url = /^https:\/\//.test(o.buyUrl || "") ? o.buyUrl : LINKS.kofi;
-  const code = o.code ? `<span class="ob-chip"><code>${esc(o.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(o.code)}" aria-label="Copy your Orbs code ${esc(o.code)}">Copy</button></span>` : "";
-  return `<div class="ob">
-    <p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}</p>
-    ${per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * per))} Orbs</span></li>`).join("")}</ul>` : ""}
-    <ol class="ob-steps">
-      <li><span class="ob-n" aria-hidden="true">1</span><div><strong>Copy your code</strong>${code}</div></li>
-      <li><span class="ob-n" aria-hidden="true">2</span><div><strong>Open Ko-fi and tip any amount</strong> <span class="ob-dim">($5+ recommended)</span><a class="btn btn-primary btn-sm ob-kofi" href="${esc(url)}" target="_blank" rel="noopener">Open Ko-fi</a></div></li>
-      <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
-      <li><span class="ob-n" aria-hidden="true">4</span><div><strong>Orbs show up within a minute or two</strong> <button type="button" class="linkish" data-orb-refresh>Refresh balance</button></div></li>
-    </ol>
-    <p class="fine ob-fine">Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim your tip with your e-mail</a>. Bought Orbs never expire and are used after your daily ones. Buying energy for the desktop app instead? Use the CH- code shown inside the app.</p>
-  </div>`;
+  return kofiBuyHTML({ kind: "orbs", unit: "Orbs", code: o.code, per: Number(o.perDollar) || 0, url: kofiUrl(o),
+    kofiWhat: "Open Ko-fi and tip any amount", arrive: "Orbs show up within a minute or two",
+    fine: `Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim your tip with your e-mail</a>. Bought Orbs never expire and are used after your daily ones. Buying energy for the desktop app instead? That's a different code (CH-), on <a href="account.html#energy">your account page</a> or in the app.` },
+    `<p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}</p>`);
+}
+// app energy: e.left/e.max = today's daily energy, e.extra = bought/extra (never expires)
+function energyBuyHTML(e, claimHref) {
+  if (!e) return "";
+  const n = v => Number(v || 0).toLocaleString(), max = Number(e.max || 0);
+  return kofiBuyHTML({ kind: "energy", unit: "energy", code: e.code, per: Number(e.perDollar) || 0, url: kofiUrl(e),
+    kofiWhat: "Open Ko-fi and tip, or buy the Energy item", arrive: "Energy arrives within a minute or two in the app on every PC signed in to this account",
+    fine: `Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim it with your e-mail</a>. Bought energy never expires and is used after your daily energy. The app shows the same kind of code under right-click &gt; Buy energy.` },
+    `<p class="ob-bal"><span>${max > 0 ? `<b>${n(e.left)}</b> / ${n(max)} left today` : "No daily refill"}</span><span class="ob-bought">+${n(e.extra)} extra</span></p>`);
 }
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-orb-copy]"); if (!b) return;

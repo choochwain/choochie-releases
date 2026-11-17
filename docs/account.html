@@ -54,6 +54,11 @@
         <p class="fine">Off by default. If you join, only your nickname, level, title and points are public - never your login name. Leave any time; your points keep counting privately.</p>
       </div>
     </div>
+    <div class="panel" id="energy" style="scroll-margin-top:84px" hidden>
+      <h3>Energy for the desktop app</h3>
+      <p class="fine" id="ac-energy-lead" style="margin:0 0 14px"></p>
+      <div id="ac-energy"></div>
+    </div>
     <div class="panel">
       <div class="chat-link-card"><img src="img/portrait-smirk.jpg" alt=""><div style="flex:1"><h3 style="margin:0">Talk to her in your browser</h3><p class="fine" style="margin:2px 0 0">Text, pictures, a webcam snapshot or your voice. Orbs power web chat; your desktop energy is separate.</p></div></div>
       <div class="row" style="margin-top:14px"><a class="btn btn-primary btn-sm" href="chat.html">Open the chat</a><label class="switch" id="ac-adult-wrap" hidden><input type="checkbox" id="ac-adult"> 18+ mode in web chat (text only)</label></div>
@@ -103,7 +108,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=8"></script>
+<script src="site.js?v=9"></script>
 <script>
 
 const frag = new URLSearchParams(location.hash.slice(1));
@@ -125,7 +130,7 @@ function render(v) {
   $("#ac-enote").textContent = max > 0 ? "Refills every day at midnight UTC. When it's gone she uses your extra energy." : "Free accounts run on the extra energy below. Join a plan for a daily refill.";
   $("#ac-extra").textContent = fmt(v.energy.extra); $("#ac-pcs").textContent = v.devices; $("#ac-votes").textContent = (v.votes || [])[Math.min(v.tier, 3)] || 0;
   $("#ac-cta").innerHTML = (v.tier < 3 ? `<a class="btn btn-primary btn-sm" href="${LINKS.patreon}" target="_blank" rel="noopener">${v.tier > 0 ? "Upgrade on Patreon" : "Join on Patreon"}</a>` : "")
-    + `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`;
+    + (v.energy.code ? `<a class="btn btn-ghost btn-sm" href="#energy">Buy extra energy</a>` : `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`);
   $("#ac-adult-wrap").hidden = !v.features.includes("adult");
   $("#ac-adult").checked = store.get("choochie.webAdult") === "1";
   const avail_ = providerMap({ providers: v.providers || {} });
@@ -135,13 +140,20 @@ function render(v) {
       ? `<button class="btn btn-ghost btn-sm" data-unlink="${p}">Remove</button>`
       : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
   if (v.leaderboard) renderLb(v.leaderboard);
+  renderEnergy(v.energy);
   renderOrbs(v.orbs);
+}
+// ---- app energy: bought on Ko-fi with the account's CH- code; lands in "extra" energy, shared by every PC on the account
+function renderEnergy(e) {
+  const ok = !!(e && (e.code || e.perDollar)); $("#energy").hidden = !ok; if (!ok) return;
+  $("#ac-energy-lead").innerHTML = "Energy runs her brain in the desktop app. It's separate from Orbs (web chat), and each has its own code: <b>CH-</b> for energy, <b>OR-</b> for Orbs - paste the right one.";
+  $("#ac-energy").innerHTML = energyBuyHTML(e, "#claim");
 }
 // ---- Orbs (web chat): separate from plans; daily free ones + bought on Ko-fi with the account's OR- code
 function renderOrbs(o) {
   $("#orbs").hidden = !o; if (!o) return;
   const free = o.max ? `Everyone gets ${fmt(o.max)} free a day` : "Everyone gets free ones every day";
-  $("#ac-orbs-lead").textContent = o.unlimited ? "Orbs power web chat." : `Orbs power web chat and are separate from plans. ${free}, refilled at midnight UTC, and you can buy more on Ko-fi.`;
+  $("#ac-orbs-lead").textContent = o.unlimited ? "Orbs power web chat." : `Orbs power web chat and are separate from plans and app energy. ${free}, refilled at midnight UTC, and you can buy more on Ko-fi with your OR- code (not the CH- energy code).`;
   $("#ac-orbs").innerHTML = orbBuyHTML(o, "#claim");
 }
 // ---- claim a Ko-fi tip sent without a code, by the e-mail used there
@@ -165,7 +177,7 @@ $("#claim-form").addEventListener("submit", async e => {
 document.addEventListener("click", async e => {
   const r = e.target.closest("[data-orb-refresh]"); if (!r) return;
   r.disabled = true; r.textContent = "Refreshing…";
-  try { const v = await api("/pet/ai/v1/account"); render(v); toast("Balance updated."); const nr = $("[data-orb-refresh]"); if (nr) nr.focus({ preventScroll: true }); }
+  try { const v = await api("/pet/ai/v1/account"); render(v); toast("Balance updated."); const nr = $(`[data-orb-refresh][data-kind="${r.dataset.kind || "orbs"}"]`) || $("[data-orb-refresh]"); if (nr) nr.focus({ preventScroll: true }); }
   catch (err) { r.disabled = false; r.textContent = "Refresh balance"; toast("Couldn't refresh - try again in a few seconds.", true); }
 });
 // ---- leaderboard (opt-in)
