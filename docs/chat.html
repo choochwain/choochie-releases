@@ -4,46 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Talk to Choochie</title>
-<meta name="description" content="Chat with Choochie in your browser: type, send a picture, take a webcam snapshot or hold to talk. Uses Orbs, separate from your desktop energy.">
-<meta name="theme-color" content="#0f0a0d">
+<meta name="description" content="Talk to Choochie in your browser: she stands in her room, answers out loud and reacts to you. Type, send a picture, take a webcam snapshot or hold to talk. Uses Orbs, separate from your desktop energy.">
+<meta name="theme-color" content="#140a0e">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="model/choochie.glb?v=1" as="fetch" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="chat.css?v=1">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
-<body>
-<header id="site-nav"></header>
+<body class="c3">
+<div class="c3-room" aria-hidden="true"><i class="lamp"></i><i class="win"></i><i class="bed"></i><i class="plant"></i><i class="lights"></i><i class="floor"></i></div>
+<canvas class="c3-stage" id="stage" aria-label="Choochie, standing in her room" role="img"></canvas>
+<div class="c3-load" id="load" aria-live="polite"><div class="ring"><span id="load-n">0%</span></div><p>she's getting ready…</p></div>
 
-<main class="chat-page" id="chat-page">
-  <div class="chat-top">
-    <div class="av asleep" id="av"><img src="img/portrait-smirk.jpg" alt="Choochie" width="48" height="48"></div>
-    <div style="min-width:0"><h1>Choochie</h1><div class="status" id="status">checking if she's awake…</div></div>
-    <div class="orbs" id="orbs" hidden>
-      <span class="orbs-pill" title="Orbs power web chat; your desktop energy is separate."><i aria-hidden="true"></i><span id="orbs-n">–</span> Orbs</span>
-      <span class="fine" id="orbs-reset"></span>
-    </div>
+<header class="c3-top">
+  <a class="c3-brand" href="index.html" aria-label="Choochie home"><img src="img/favicon.png" alt="" width="30" height="30"><span><b>Choochie</b><em id="status">checking if she's awake…</em></span></a>
+  <div class="c3-actions">
+    <span class="c3-orbs" id="orbs" hidden title="Orbs power web chat; your desktop energy is separate."><i aria-hidden="true"></i><span id="orbs-n">–</span><small id="orbs-reset"></small></span>
+    <button type="button" class="c3-ib" id="b-mute" aria-pressed="false" aria-label="Mute her voice" title="Mute her voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="off" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg></button>
+    <button type="button" class="c3-ib" id="b-hist" aria-expanded="false" aria-controls="side" aria-label="Show the conversation" title="Conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+    <button type="button" class="c3-ib" id="b-menu" aria-expanded="false" aria-controls="menu" aria-label="Chat settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></button>
   </div>
-
-  <div class="log" id="log" aria-live="polite" aria-label="Conversation"></div>
-
-  <form class="composer" id="composer" hidden>
-    <div class="attach" id="attach" hidden><img id="attach-img" alt="Picture to send"><span class="fine" style="flex:1">This picture goes with your next message.</span><button type="button" class="x" id="attach-x">Remove</button></div>
-    <div class="comp-row">
-      <button type="button" class="ibtn" id="b-file" title="Send a picture" aria-label="Send a picture"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15l-5-5L5 21M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg></button>
-      <button type="button" class="ibtn" id="b-cam" title="Webcam snapshot" aria-label="Take a webcam snapshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
-      <input type="file" id="file" accept="image/*" hidden>
-      <textarea id="text" rows="1" maxlength="800" placeholder="Say something to her…" aria-label="Message"></textarea>
-      <button type="button" class="ibtn" id="b-mic" title="Hold to talk" aria-label="Hold to talk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
-      <button type="submit" class="ibtn send" id="b-send" title="Send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
-    </div>
-    <div class="rec-hint" id="hint"></div>
-  </form>
-  <div class="chat-tools" id="tools" hidden>
-    <label class="switch"><input type="checkbox" id="voice"> Speak her replies</label>
+  <div class="c3-menu" id="menu" hidden>
     <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode (text only)</label>
-    <span>Orbs power web chat; your desktop energy is separate. <button type="button" class="linkish" id="clear" style="font-size:13px">Clear chat</button></span>
+    <button type="button" class="linkish" id="clear">Clear chat</button>
+    <a href="account.html">Your account &amp; Orbs</a>
+    <a href="downloads.html">Get her on your desktop</a>
+    <p class="fine">Orbs power web chat; your desktop energy is separate.</p>
   </div>
-  <p class="fine" style="margin:8px 4px 0;font-size:12px;text-align:center;color:var(--faint)">You're talking to an AI character, not a person - her replies can be wrong or inappropriate. Choochie isn't a substitute for professional help; if you're in crisis, contact your local emergency services. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</header>
+
+<main id="chat-page" class="c3-main">
+  <aside class="c3-side" id="side" aria-label="Conversation">
+    <div class="c3-side-h"><strong>Conversation</strong><button type="button" class="c3-ib sm" id="side-x" aria-label="Close the conversation">✕</button></div>
+    <div class="c3-log" id="log" aria-live="polite"></div>
+  </aside>
+
+  <section class="c3-caption" id="caption" aria-live="polite"><span class="who">Choochie</span><p id="caption-t"></p></section>
+
+  <div class="c3-bottom">
+    <form class="c3-comp" id="composer" hidden>
+      <div class="c3-attach" id="attach" hidden><img id="attach-img" alt="Picture to send"><span>This picture goes with your next message.</span><button type="button" class="linkish" id="attach-x">Remove</button></div>
+      <div class="c3-row">
+        <button type="button" class="c3-ib" id="b-file" title="Send a picture" aria-label="Send a picture"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15l-5-5L5 21M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg></button>
+        <button type="button" class="c3-ib" id="b-cam" title="Webcam snapshot" aria-label="Take a webcam snapshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
+        <input type="file" id="file" accept="image/*" hidden>
+        <textarea id="text" rows="1" maxlength="800" placeholder="Talk to her…" aria-label="Message"></textarea>
+        <button type="button" class="c3-ib" id="b-mic" title="Hold to talk" aria-label="Hold to talk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
+        <button type="submit" class="c3-ib send" id="b-send" title="Send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
+      </div>
+      <div class="c3-hint" id="hint"></div>
+    </form>
+    <div class="c3-signin" id="signin" hidden>
+      <p>Sign in to talk to her. A free account is enough.</p>
+      <a class="btn btn-primary btn-sm" href="login.html?next=chat">Sign in</a>
+    </div>
+    <p class="c3-fine">AI character, not a person - replies can be wrong. Not a substitute for professional help; in a crisis, contact local emergency services. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+  </div>
 </main>
 
 <div class="cam" id="cam" hidden role="dialog" aria-modal="true" aria-labelledby="cam-h">
@@ -62,6 +81,7 @@
 </div>
 
 <script src="site.js?v=6"></script>
-<script src="chat.js?v=5"></script>
+<script type="module" src="js/stage.js?v=1"></script>
+<script src="chat.js?v=6"></script>
 </body>
 </html>
