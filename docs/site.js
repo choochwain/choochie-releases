@@ -40,11 +40,15 @@ async function api(path, opts = {}) {
 
 // ---- header + footer
 const NAV = [
-  ["index.html", "Home"], ["index.html#features", "Features"], ["plans.html", "Plans"],
+  ["index.html#features", "Features"], ["chat.html", "Talk to her"], ["plans.html", "Plans"],
   ["downloads.html", "Download"], ["updates.html", "Updates"], ["roadmap.html", "Roadmap"],
+  ["privacy.html", "Privacy"], ["terms.html", "Terms"],
 ];
+// Discord: the invite when set, otherwise her link page (which lists it)
+const discordHref = () => LINKS.discord || LINKS.beacons;
 function renderChrome() {
   const here = location.pathname.split("/").pop() || "index.html";
+  document.documentElement.classList.add("js");
   const nav = $("#site-nav");
   if (nav) {
     nav.className = "nav";
@@ -52,7 +56,7 @@ function renderChrome() {
     nav.innerHTML = `
       <a class="brand" href="index.html"><img src="img/favicon.png" alt="" width="28" height="28"><span>Choochie</span></a>
       <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
-      <nav>${NAV.map(([h, t]) => `<a href="${h}"${h === here ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
+      <nav aria-label="Main">${NAV.map(([h, t]) => `<a href="${h}"${h === here ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
         ${Auth.signedIn
           ? `<a class="nav-account" href="account.html"${here === "account.html" ? ' aria-current="page"' : ""}><span class="avatar">${esc((name || "?")[0].toUpperCase())}</span>${esc(name || "Account")}</a>`
           : `<a class="btn btn-primary btn-sm" href="login.html">Log in</a>`}
@@ -63,16 +67,35 @@ function renderChrome() {
   const foot = $("#site-foot");
   if (foot) foot.innerHTML = `
     <div class="foot-cols">
-      <div><strong>Choochie</strong><p class="fine">A bratty 3D desktop pet with a real AI brain. Windows 10 / 11. 18+ only.</p></div>
-      <div><strong>App</strong><a href="downloads.html">Download</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a><a href="plans.html">Plans</a></div>
-      <div><strong>Her</strong><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a>${LINKS.discord ? `<a href="${LINKS.discord}" target="_blank" rel="noopener">Discord</a>` : ""}</div>
-      <div><strong>Legal</strong><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
-    </div>`;
+      <div class="foot-brand"><strong>Choochie</strong><p class="fine">An AI-powered 3D desktop companion for Windows 10 / 11: a bratty anime cat-girl who lives on your screen, talks, listens and remembers you. 18+ only.</p>
+        <p class="fine">Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+      <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
+      <div><strong>Community</strong><a href="${discordHref()}" target="_blank" rel="noopener">Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
+      <div><strong>Legal</strong><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="privacy.html#delete">Delete your data</a><a href="privacy.html#contact">Contact</a></div>
+    </div>
+    <div class="foot-note"><span>© ${new Date().getFullYear()} Choochie. Fictional character; replies are AI-generated.</span><span>Not affiliated with Discord, Patreon, X or Google.</span></div>`;
+}
+
+// ---- scroll reveal + hero parallax (skipped when the visitor prefers less motion)
+const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function motion() {
+  const els = document.querySelectorAll(".reveal");
+  if (calm || !("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px", threshold: .08 });
+  els.forEach(e => io.observe(e));
+  const fig = $(".hero-figure");
+  if (fig && matchMedia("(pointer:fine)").matches) {
+    let raf = 0;
+    addEventListener("pointermove", e => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0;
+      fig.style.setProperty("--px", ((e.clientX / innerWidth - .5) * 18).toFixed(1) + "px");
+      fig.style.setProperty("--py", ((e.clientY / innerHeight - .5) * 14 + Math.min(scrollY, 600) * .06).toFixed(1) + "px"); }); }, { passive: true });
+  }
 }
 
 // ---- 18+ gate, remembered per browser
 function gate() {
   if (store.get("choochie18") === "1") return;
+  if (/(privacy|terms)\.html$/.test(location.pathname)) return;   // legal pages stay readable for everyone
   const g = document.createElement("div");
   g.className = "gate";
   g.innerHTML = `<div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gate-h">
@@ -156,11 +179,21 @@ function toast(msg, bad) {
   t.textContent = msg; t.className = "toast show" + (bad ? " bad" : ""); clearTimeout(t._h); t._h = setTimeout(() => t.className = "toast", 3600);
 }
 
-renderChrome(); gate();
+renderChrome(); gate(); document.readyState === "loading" ? addEventListener("DOMContentLoaded", motion) : motion();
 // provider icons (also used by login + account pages)
 const ICONS = {
   patreon: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="14.5" cy="9.5" r="6.5" fill="currentColor"/><rect x="2.5" y="3" width="4" height="18" rx="1" fill="currentColor"/></svg>',
   discord: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A17 17 0 0 0 15.4 4l-.5 1.1a15.6 15.6 0 0 0-5.8 0L8.6 4a17 17 0 0 0-4.2 1.3C1.7 9.3 1 13.2 1.3 17a17.2 17.2 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.3 12.3 0 0 0 11.4 0l.4.3-1.7.8 1.1 1.8a17.1 17.1 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7zM8.5 14.7c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1zm7 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>',
   google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
 };
-const PROV_NAMES = { patreon: "Patreon", discord: "Discord", google: "Google" };
+ICONS.x = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L2.9 2h6.4l4.4 5.9L18.9 2zm-1.1 18.1h1.7L8.3 3.8H6.5l11.3 16.3z"/></svg>';
+const PROV_NAMES = { patreon: "Patreon", discord: "Discord", x: "X", google: "Google" };
+const PROV_ORDER = ["discord", "patreon", "x", "google"];
+// /pet/ai/auth/providers may answer {providers:{discord:true,...}} or {providers:[{id:"discord",...}|"discord"]}: normalise to {id:true}
+function providerMap(j) {
+  const p = j && j.providers, out = {};
+  if (Array.isArray(p)) p.forEach(x => { const id = typeof x === "string" ? x : x && (x.id || x.p || x.name); if (id && !(x && x.enabled === false)) out[String(id).toLowerCase()] = true; });
+  else if (p && typeof p === "object") Object.keys(p).forEach(k => { if (p[k]) out[k.toLowerCase()] = true; });
+  if (out.twitter) out.x = true;
+  return out;
+}

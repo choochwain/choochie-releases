@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Your account · Choochie</title>
-<meta name="description" content="Your Choochie account: plan, energy, logins and chatting with her.">
+<meta name="description" content="Your Choochie account: plan, energy, logins and a link to chat with her.">
 <meta name="theme-color" content="#120c0f">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header id="site-nav"></header>
@@ -38,12 +38,8 @@
       <div class="row" style="margin-top:18px" id="ac-cta"></div>
     </div>
     <div class="panel">
-      <div class="chat-head"><img src="img/portrait-smirk.jpg" alt=""><div><h3 style="margin:0">Talk to her</h3><span class="fine">Uses your account's energy. Nothing is saved on her server.</span></div>
-        <label class="switch" id="ac-adult-wrap" hidden style="margin-left:auto"><input type="checkbox" id="ac-adult"> 18+</label></div>
-      <div class="chat">
-        <div class="chat-log" id="chat-log" aria-live="polite"></div>
-        <form class="chat-form" id="chat-form"><input type="text" id="chat-in" maxlength="600" placeholder="Say something to her…" autocomplete="off"><button class="btn btn-primary" type="submit">Send</button></form>
-      </div>
+      <div class="chat-link-card"><img src="img/portrait-smirk.jpg" alt=""><div style="flex:1"><h3 style="margin:0">Talk to her in your browser</h3><p class="fine" style="margin:2px 0 0">Text, pictures, a webcam snapshot or your voice. Orbs power web chat; your desktop energy is separate.</p></div></div>
+      <div class="row" style="margin-top:14px"><a class="btn btn-primary btn-sm" href="chat.html">Open the chat</a><label class="switch" id="ac-adult-wrap" hidden><input type="checkbox" id="ac-adult"> 18+ mode in web chat (text only)</label></div>
     </div>
   </div>
   <div>
@@ -71,13 +67,14 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=3"></script>
+<script src="site.js?v=4"></script>
 <script>
 
 const frag = new URLSearchParams(location.hash.slice(1));
 if (frag.get("t")) { Auth.set(frag.get("t")); history.replaceState(null, "", location.pathname); }
 if (!Auth.signedIn) location.replace("login.html");
-let view = null, history_ = [];
+else if (frag.get("t") && !frag.get("app")) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") location.replace("chat.html"); }
+let view = null;
 const fmt = n => Number(n).toLocaleString();
 function render(v) {
   view = v; store.set("choochie.name", v.name || "You");
@@ -95,8 +92,9 @@ function render(v) {
     + `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`;
   $("#ac-adult-wrap").hidden = !v.features.includes("adult");
   $("#ac-adult").checked = store.get("choochie.webAdult") === "1";
-  $("#ac-logins").innerHTML = ["patreon", "discord", "google"].map(p => {
-    const on = v.logins[p], avail = v.providers[p];
+  const avail_ = providerMap({ providers: v.providers || {} });
+  $("#ac-logins").innerHTML = PROV_ORDER.filter(p => p !== "google" || avail_.google || (v.logins || {}).google).map(p => {
+    const on = (v.logins || {})[p], avail = avail_[p];
     return `<div class="login-item"><span class="who">${ICONS[p]}${PROV_NAMES[p]}</span>${on
       ? `<button class="btn btn-ghost btn-sm" data-unlink="${p}">Remove</button>`
       : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
@@ -121,25 +119,6 @@ $("#ac-delete").addEventListener("click", async () => {
   try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "index.html"; } catch (err) { toast(err.message, true); }
 });
 $("#ac-adult").addEventListener("change", e => store.set("choochie.webAdult", e.target.checked ? "1" : null));
-
-// chat
-const log = $("#chat-log");
-function bubble(who, text, cls) { const d = document.createElement("div"); d.className = "msg " + who + (cls ? " " + cls : ""); d.textContent = text; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
-bubble("her", "oh. you found my website. cute~ what do you want?");
-$("#chat-form").addEventListener("submit", async e => {
-  e.preventDefault(); const inp = $("#chat-in"), text = inp.value.trim(); if (!text) return;
-  inp.value = ""; bubble("me", text); history_.push({ role: "user", content: text });
-  const t = bubble("her", "typing…", "typing");
-  try {
-    const r = await api("/pet/ai/v1/account/chat", { method: "POST", body: { messages: history_.slice(-16), adult: $("#ac-adult").checked } });
-    t.className = "msg her"; t.textContent = r.reply || "…"; history_.push({ role: "assistant", content: r.reply || "" });
-    if (view) { view.energy = r.energy; render(view); }
-  } catch (err) {
-    t.className = "msg her";
-    t.textContent = err.message === "energy" ? "I'm out of energy~ get me a refill and I'll keep talking." : err.message === "slow down" ? "slow DOWN. one at a time." : "ugh, my brain lagged. say that again?";
-    history_.pop();
-  }
-});
 
 </script>
 </body>

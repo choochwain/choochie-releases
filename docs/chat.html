@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Talk to Choochie</title>
+<meta name="description" content="Chat with Choochie in your browser: type, send a picture, take a webcam snapshot or hold to talk. Uses Orbs, separate from your desktop energy.">
+<meta name="theme-color" content="#0f0a0d">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+<header id="site-nav"></header>
+
+<div class="chat-page" id="chat-page">
+  <div class="chat-top">
+    <div class="av asleep" id="av"><img src="img/portrait-smirk.jpg" alt="Choochie" width="48" height="48"></div>
+    <div style="min-width:0"><h1>Choochie</h1><div class="status" id="status">checking if she's awake…</div></div>
+    <div class="orbs" id="orbs" hidden>
+      <span class="orbs-pill" title="Orbs power web chat; your desktop energy is separate."><i aria-hidden="true"></i><span id="orbs-n">–</span> Orbs</span>
+      <span class="fine" id="orbs-reset"></span>
+    </div>
+  </div>
+
+  <div class="log" id="log" aria-live="polite" aria-label="Conversation"></div>
+
+  <form class="composer" id="composer" hidden>
+    <div class="attach" id="attach" hidden><img id="attach-img" alt="Picture to send"><span class="fine" style="flex:1">This picture goes with your next message.</span><button type="button" class="x" id="attach-x">Remove</button></div>
+    <div class="comp-row">
+      <button type="button" class="ibtn" id="b-file" title="Send a picture" aria-label="Send a picture"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15l-5-5L5 21M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg></button>
+      <button type="button" class="ibtn" id="b-cam" title="Webcam snapshot" aria-label="Take a webcam snapshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
+      <input type="file" id="file" accept="image/*" hidden>
+      <textarea id="text" rows="1" maxlength="800" placeholder="Say something to her…" aria-label="Message"></textarea>
+      <button type="button" class="ibtn" id="b-mic" title="Hold to talk" aria-label="Hold to talk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
+      <button type="submit" class="ibtn send" id="b-send" title="Send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
+    </div>
+    <div class="rec-hint" id="hint"></div>
+  </form>
+  <div class="chat-tools" id="tools" hidden>
+    <label class="switch"><input type="checkbox" id="voice"> Speak her replies</label>
+    <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode (text only)</label>
+    <span>Orbs power web chat; your desktop energy is separate. <button type="button" class="linkish" id="clear" style="font-size:13px">Clear chat</button></span>
+  </div>
+</div>
+
+<div class="cam" id="cam" hidden role="dialog" aria-modal="true" aria-labelledby="cam-h">
+  <div class="cam-card">
+    <h3 id="cam-h" style="margin:0 0 10px">Webcam snapshot</h3>
+    <video id="cam-v" playsinline muted></video>
+    <img id="cam-shot" alt="Your snapshot" hidden>
+    <p class="fine" id="cam-note">Your camera turns off as soon as you take the photo. Nothing is sent until you press send.</p>
+    <div class="row">
+      <button class="btn btn-primary btn-sm" id="cam-snap" type="button">Take photo</button>
+      <button class="btn btn-primary btn-sm" id="cam-use" type="button" hidden>Use this photo</button>
+      <button class="btn btn-ghost btn-sm" id="cam-retake" type="button" hidden>Retake</button>
+      <button class="btn btn-ghost btn-sm" id="cam-cancel" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="site.js?v=4"></script>
+<script src="chat.js?v=4"></script>
+</body>
+</html>

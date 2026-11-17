@@ -3,170 +3,199 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Choochie - your bratty desktop pet</title>
-<meta name="description" content="Choochie is a 3D desktop pet with a real AI brain. She lives on your screen, sits on your windows, talks, listens, remembers you - and misbehaves only if you let her. Windows 10/11, 18+.">
-<meta property="og:title" content="Choochie - your bratty desktop pet">
-<meta property="og:description" content="A 3D desktop pet with a real AI brain. Windows 10/11. 18+.">
-<meta property="og:image" content="img/hero-fangs.jpg">
-<meta name="theme-color" content="#120c0f">
+<title>Choochie - an AI desktop companion for Windows</title>
+<meta name="description" content="Choochie is an AI-powered 3D desktop companion for Windows 10/11: a bratty anime cat-girl who walks on your windows, talks with her own AI voice, listens through your mic and remembers you. Free to try. 18+.">
+<meta property="og:title" content="Choochie - an AI desktop companion for Windows">
+<meta property="og:description" content="A bratty 3D cat-girl who lives on your desktop, talks with her own AI voice and remembers you. Windows 10/11. 18+.">
+<meta property="og:image" content="https://choochwain.github.io/choochie-releases/img/hero-fangs.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f0a0d">
+<link rel="canonical" href="https://choochwain.github.io/choochie-releases/">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-
+<a class="skip" href="#top">Skip to content</a>
 <header id="site-nav"></header>
 
 <main id="top">
 
 <section class="hero">
-  <div class="swirl swirl-a" aria-hidden="true"></div>
-  <div class="swirl swirl-b" aria-hidden="true"></div>
-  <div class="sparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="hero-text">
-    <div class="eyebrow"><span class="badge">18+</span><span>Windows 10 / 11</span><span class="dot">·</span><span>free to try</span></div>
-    <h1>Choochie</h1>
-    <p class="tag">A bratty 3D desktop pet with a <em>real</em> AI brain.</p>
-    <p class="lede">She lives on your screen, sits on your windows, talks back, listens, remembers you, and gets up to things - but only the things you've said yes to.</p>
+    <span class="eyebrow"><span class="badge">18+</span> AI desktop companion · Windows 10 / 11</span>
+    <h1>Your desktop has a <span class="grad">new owner.</span></h1>
+    <p class="lede"><strong>Choochie</strong> is a bratty 3D anime cat-girl who lives on your Windows desktop: she walks on your windows, talks with her own AI voice, listens when you speak and remembers you.</p>
     <div class="cta">
-      <a class="btn btn-primary btn-big" href="downloads.html" id="hero-dl">Download for Windows</a>
-      <a class="btn btn-ghost btn-big" href="#features">See what she does</a>
+      <a class="btn btn-primary btn-big" href="downloads.html" id="hero-dl"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3zm0 13 7.4 1v-7H3zm8.3 1.1L21 21v-8.5h-9.7zm0-15.2v7.1H21V3z"/></svg>Download for Windows</a>
+      <a class="btn btn-ghost btn-big" href="chat.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>Talk to her in your browser</a>
     </div>
-    <p class="fine" id="hero-version">Latest version loading…</p>
+    <div class="hero-meta"><span id="hero-version">Free to try</span><span>No card needed</span><span>Every prank is opt-in</span></div>
   </div>
-  <div class="hero-art">
-    <div class="ring" aria-hidden="true"></div>
-    <img src="img/hero-fangs.jpg" alt="Choochie grinning with her fangs out" width="1000" height="1000">
+  <div class="hero-art" aria-hidden="false">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="hero-figure">
+      <div class="float"><img src="img/hero-fangs.jpg" alt="Choochie, an anime cat-girl with red eyes and little fangs, grinning" width="1000" height="1000" fetchpriority="high"></div>
+    </div>
+    <div class="bubble-hero" aria-hidden="true">oh, you're finally here. i wasn't waiting. …i was totally waiting.</div>
+    <div class="chip chip-a" aria-hidden="true"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></i>Hears you</div>
+    <div class="chip chip-b" aria-hidden="true"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.4-9.3-9A5.4 5.4 0 0 1 12 5.4 5.4 5.4 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg></i>Remembers you</div>
+    <div class="chip chip-c" aria-hidden="true"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 4h18v16H3zM3 9h18M12 9v11"/></svg></i>Sits on your windows</div>
   </div>
 </section>
 
-<div class="chain" aria-hidden="true"></div>
-
-<section class="trailer" id="trailer">
-  <div class="trailer-card">
-    <img src="img/shot-held.jpg" alt="Choochie dangling from the cursor, protesting" loading="lazy">
-    <div class="trailer-over">
-      <span class="play">▶</span>
-      <strong>Trailer coming soon</strong>
-      <span>Until then: grab her by a foot and see what happens.</span>
+<section class="about" aria-labelledby="about-h">
+  <div class="about-card reveal">
+    <div>
+      <span class="kicker" id="about-h">What is Choochie?</span>
+      <p><strong>Choochie is a Windows app</strong> that puts an animated 3D character on a transparent layer over your desktop. She chats with you through an AI model, speaks with a generated voice, can hear you through your microphone when you allow it, and keeps a memory of you on your own PC. A free account gives her a brain; Patreon plans add more daily energy and extra features. You can also <a href="chat.html">chat with her right here in your browser</a>.</p>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>Windows 10 / 11</b><span>64-bit, no admin needed</span></div>
+      <div class="fact"><b>Free to try</b><span>Plans from $9.99 / mo</span></div>
+      <div class="fact"><b>Opt-in only</b><span>Mic, webcam, pranks, 18+</span></div>
+      <div class="fact"><b>Text-only AI</b><span>She never generates images</span></div>
     </div>
   </div>
 </section>
 
-<section class="features" id="features">
-  <h2>What she does</h2>
-  <p class="sub">Everything below is in the app today. Anything that touches your desktop is off by default and asks first.</p>
+<section id="features">
+  <div class="section-head reveal">
+    <span class="kicker">Features</span>
+    <h2>A companion with a mind of her own</h2>
+    <p class="sub">Everything below is in the app today. Anything that touches your desktop is off by default and asks first.</p>
+  </div>
+
+  <div class="feature-row">
+    <div class="feature-media tall reveal"><img src="img/shot-idle.jpg" alt="Choochie standing on the desktop with a speech bubble" loading="lazy" width="680" height="970"></div>
+    <div class="feature-text reveal" style="--d:.1s">
+      <span class="kicker">Lives on your desktop</span>
+      <h3>She walks on your windows</h3>
+      <p>A full 3D character on a click-through overlay. She wanders across all your monitors, climbs onto window edges and sits there, naps when you're away and complains when you drag her around.</p>
+      <ul class="ticks"><li>Grab her by a hand or a foot, dangle and throw her</li><li>Works across multiple monitors</li><li>Invisible to screen capture if you want</li></ul>
+    </div>
+  </div>
+
+  <div class="feature-row flip">
+    <div class="feature-media tall reveal"><img src="img/shot-held.jpg" alt="Choochie dangling from the cursor, protesting" loading="lazy" width="680" height="970"></div>
+    <div class="feature-text reveal" style="--d:.1s">
+      <span class="kicker">A real AI brain</span>
+      <h3>She talks back - out loud</h3>
+      <p>Open conversation, not canned lines. She answers in her own emotional AI voice, hears you through your mic (only the sentence you say is sent), keeps a long-term memory of you and writes a diary in the evenings.</p>
+      <ul class="ticks"><li>Voice or text - your choice</li><li>Her mood changes how she treats you</li><li>Memory lives on your PC, not our server</li></ul>
+    </div>
+  </div>
+
+  <div class="feature-row">
+    <div class="feature-media wide reveal"><img src="img/shot-wardrobe.jpg" alt="The wardrobe screen with outfit list and a live 3D view of Choochie" loading="lazy" width="960" height="650"></div>
+    <div class="feature-text reveal" style="--d:.1s">
+      <span class="kicker">Wardrobe &amp; games</span>
+      <h3>Dress her up. Earn the good stuff.</h3>
+      <p>Dozens of outfits and accessories with colour variants in a live 3D fitting room. Spin the gacha wheel, finish the little tasks she gives you, and unlock the outfits she's keeping from you.</p>
+      <ul class="ticks"><li>Outfits, accessories and colours</li><li>Gacha wheel and daily tasks</li><li>Keys unlock locked looks and tricks</li></ul>
+    </div>
+  </div>
 
   <div class="grid">
-    <article class="card">
-      <h3>Lives on your desktop</h3>
-      <p>A full 3D character on a transparent, click-through overlay. She walks across all your monitors, climbs onto window edges and sits there, naps when you're away, and gets back up when you knock her down.</p>
-    </article>
-    <article class="card">
-      <h3>Grab, dangle, throw</h3>
-      <p>Pick her up by a hand or a foot. She swings, kicks, protests, and holds a grudge for a few seconds if you drop her from too high.</p>
-    </article>
-    <article class="card">
-      <h3>A real brain</h3>
-      <p>Open conversation, not canned replies. She keeps long-term memory of you, writes a diary in the evenings, plans her own moves, and her mood actually changes how she treats you.</p>
-    </article>
-    <article class="card">
-      <h3>Talks and listens</h3>
-      <p>She speaks in her own emotional voice and hears you through your mic - only the sentence you say is sent, never silence. Type to her if you'd rather.</p>
-    </article>
-    <article class="card">
-      <h3>Wardrobe</h3>
-      <p>Dozens of outfits and accessories with colour variants, in a live 3D fitting room. Finish her tasks to unlock the ones she's keeping from you.</p>
-    </article>
-    <article class="card">
-      <h3>Her tasks</h3>
-      <p>She hands you little jobs - keep her company, feed her, do as you're told - and pays out in keys that open locked outfits and tricks.</p>
-    </article>
-    <article class="card spicy">
-      <h3>Desktop games <span class="badge">opt-in</span></h3>
-      <p>Mouse leash, cursor fling, minimizing your apps when she's ignored, swapping your wallpaper, and her "virus" tricks - glitches, a fake terminal, her own little OS taking over for a moment. Each one is a separate switch with its own consent prompt.</p>
-    </article>
-    <article class="card">
-      <h3>Discord</h3>
-      <p>Link your account and she can DM you while she's running, and text you first when you've been gone a while.</p>
-    </article>
-    <article class="card">
-      <h3>Always escapable</h3>
-      <p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>, <kbd>Esc</kbd> or typing <em>safeword</em> stops everything instantly. Nothing gets closed, deleted or touched on disk. Auto-updates keep her current.</p>
-    </article>
-  </div>
-
-  <div class="shots">
-    <figure><img src="img/shot-idle.jpg" alt="Choochie standing on the desktop with her speech bubble" loading="lazy"><figcaption>Her everyday look, with a bubble you can turn off.</figcaption></figure>
-    <figure><img src="img/shot-wardrobe.jpg" alt="The wardrobe screen with a live 3D view" loading="lazy"><figcaption>The wardrobe: spin her, zoom in, pick colours.</figcaption></figure>
-    <figure><img src="img/shot-bunny.jpg" alt="Choochie in the bunny suit outfit" loading="lazy"><figcaption>One of the outfits she'll make you earn.</figcaption></figure>
+    <article class="card reveal"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg></div><h3>Gacha wheel</h3><p>Spin for outfits, accessories and the occasional insult.</p></article>
+    <article class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 4h6M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1zM16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 13l2 2 4-4"/></svg></div><h3>Her tasks</h3><p>Keep her company, feed her, do as you're told - and get paid in keys.</p></article>
+    <article class="card spicy reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 3l2 3h4l2-3M5 9a7 7 0 0 1 14 0v6l-2 2-2-2-2 2-2-2-2 2-2-2-2 2zM9 11h.01M15 11h.01"/></svg></div><h3>"Virus" pranks <span class="badge">opt-in</span></h3><p>Fake glitches and a fake terminal - drawn on her own overlay only. Each one is a separate switch with its own consent prompt.</p></article>
+    <article class="card reveal"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v10H3V6a1 1 0 0 1 1-1zM1 19h22M8 9l2 2-2 2M12 13h4"/></svg></div><h3>ChoochieOS</h3><p>Her own little pretend operating system that "takes over" for a moment. It's all a show - nothing on your PC changes.</p></article>
+    <article class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 7l-7 5 7 5zM3 5h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></div><h3>Stream mode</h3><p>Bring her on stream with OBS: a capture-friendly view and a non-explicit mode.</p></article>
+    <article class="card reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9zM9 9l6 6M15 9l-6 6"/></svg></div><h3>Always escapable</h3><p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>, <kbd>Esc</kbd> or typing <em>safeword</em> stops everything instantly.</p></article>
   </div>
 </section>
 
-<div class="chain" aria-hidden="true"></div>
-
-<section class="download" id="download">
-  <div class="dl-box">
-    <h2>Download</h2>
-    <p class="sub">Windows 10 / 11, 64-bit. Installs per user, no admin needed, uninstalls like any app.</p>
-    <a class="btn btn-primary btn-big" id="dl-btn" href="https://github.com/choochwain/choochie-releases/releases/latest">Download Choochie</a>
-    <p class="fine"><a href="downloads.html">Install guide, early access and requirements</a></p>
-    <p class="fine" id="dl-meta">Looking up the latest release…</p>
-    <details class="smart">
-      <summary>Windows says "protected your PC"?</summary>
-      <p>The installer isn't code-signed yet, so SmartScreen shows a warning the first time. Click <strong>More info</strong>, then <strong>Run anyway</strong>. The file is exactly what's on the <a href="https://github.com/choochwain/choochie-releases/releases">releases page</a>.</p>
-    </details>
+<section id="web-chat">
+  <div class="chat-promo reveal">
+    <div>
+      <span class="kicker">New · web chat</span>
+      <h2>Talk to her in your browser</h2>
+      <p class="sub">No install needed. Sign in, then type, send a picture, take a webcam snapshot or hold to talk - and let her answer out loud if you want.</p>
+      <div class="cta"><a class="btn btn-primary" href="chat.html">Open the chat</a><a class="btn btn-ghost" href="login.html">Sign in</a></div>
+      <p class="fine">Orbs power web chat; your desktop energy is separate.</p>
+    </div>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-head"><img src="img/portrait-smirk.jpg" alt=""><div><b>Choochie</b><small>online · judging you</small></div></div>
+      <div class="mb her">took you long enough. what do you want~?</div>
+      <div class="mb me">just wanted to say hi</div>
+      <div class="mb her">"just hi"? wow. so romantic. …okay fine, hi. stay a while.</div>
+    </div>
   </div>
 </section>
 
-<section class="support" id="plans">
-  <h2>Plans</h2>
-  <p class="sub">The pet is free. A free account gives her a brain. Supporting gives her more energy every day and unlocks her other sides - never a different brain.</p>
-  <div id="plans-box" style="margin-top:26px"><p class="skeleton">Loading…</p></div>
-  <div class="support-links">
-    <a class="btn btn-ghost" href="https://ko-fi.com/dahmeows" target="_blank" rel="noopener">Send her a treat (Ko-fi)</a>
-    <a class="btn btn-ghost" href="https://beacons.ai/choochwain" target="_blank" rel="noopener">All her links</a>
+<section id="how">
+  <div class="section-head reveal">
+    <span class="kicker">How it works</span>
+    <h2>Three steps to a clingy cat-girl</h2>
+  </div>
+  <div class="steps3">
+    <div class="step reveal"><h3>Download &amp; install</h3><p>Grab the Windows installer. It installs per user, needs no admin rights and uninstalls like any app.</p></div>
+    <div class="step reveal" style="--d:.08s"><h3>Sign in, free</h3><p>Log in with Discord, Patreon, X or Google so she can keep your energy and perks. No card, no password to remember.</p></div>
+    <div class="step reveal" style="--d:.16s"><h3>Say hi</h3><p>Type or talk to her. Turn on only the extras you want - mic, webcam, pranks, 18+ - each asks first.</p></div>
   </div>
 </section>
 
-<section class="section" id="next">
-  <div class="two">
-    <div class="panel"><h3>What's new</h3><div id="latest-note" class="muted">Loading the latest update…</div><a class="btn btn-ghost btn-sm" href="updates.html" style="margin-top:12px">All updates</a></div>
-    <div class="panel"><h3>You decide what's next</h3><p class="muted">Vote on upcoming features and suggest your own. Every account gets votes each month - supporters get more.</p><a class="btn btn-ghost btn-sm" href="roadmap.html" style="margin-top:12px">Open the roadmap</a></div>
+<section id="plans">
+  <div class="section-head reveal">
+    <span class="kicker">Plans</span>
+    <h2>Free to start. Spoil her if you like.</h2>
+    <p class="sub">Every plan talks to the same brain - supporting adds energy and features, never a different personality.</p>
+  </div>
+  <div class="tiers">
+    <a class="tier reveal" href="login.html"><div class="tier-img"><img src="img/portrait-smirk.jpg" alt="" loading="lazy" style="object-position:center 38%;filter:saturate(.8) brightness(.8)"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 starter energy</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
+    <a class="tier reveal" style="--d:.06s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-pet.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Pet</h3><div class="price">$9.99<small> / mo</small></div><p class="energy">250 energy every day</p><ul><li>Her 18+ side (opt-in, text only)</li><li>Send her pictures</li><li>3 roadmap votes a month</li></ul></div></a>
+    <a class="tier featured reveal" style="--d:.12s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><span class="tag">Most popular</span><div class="tier-img"><img src="img/tier-devoted.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Devoted</h3><div class="price">$19.99<small> / mo</small></div><p class="energy">500 energy every day</p><ul><li>She texts you first on Discord</li><li>Looks at your screen or webcam when you ask</li><li>Watch &amp; play together</li></ul></div></a>
+    <a class="tier reveal" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited energy*</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
+  </div>
+  <p class="fine" style="text-align:center;margin-top:18px">* A generous daily fair-use limit. Plans are billed by Patreon. <a href="plans.html">Compare every feature</a></p>
+</section>
+
+<section id="safety">
+  <div class="section-head reveal">
+    <span class="kicker">Privacy &amp; safety</span>
+    <h2>She's a brat, not a bad actor</h2>
+  </div>
+  <div class="trust">
+    <div class="card reveal"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>Your PC stays yours</h3><p>She never deletes, moves or reads your files and never logs your keyboard. Every desktop trick is off until you switch it on, and reversible from her menu.</p></div>
+    <div class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h4"/></svg></div><h3>Little data, kept short</h3><p>Her memory of you lives on your PC. Chats are sent to the AI provider to be answered and are not stored on her server. <a href="privacy.html">Privacy Policy</a></p></div>
+    <div class="card reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4.9 4.9l14.2 14.2"/></svg></div><h3>Clear content rules</h3><p>Adults only, 18+ mode is opt-in and text only. No sexual content involving minors, no intimate imagery of real people. <a href="terms.html">Terms of Service</a></p></div>
+  </div>
+  <div class="signin-note reveal"><span class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H2v3h3v3h3v-3h3.1A4 4 0 0 1 15 7zM16 11h.01"/></svg></span><p style="margin:0"><b>About sign-in:</b> Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+</section>
+
+<section id="faq">
+  <div class="section-head reveal"><span class="kicker">FAQ</span><h2>Before you let her in</h2></div>
+  <div class="faq reveal">
+    <details open><summary>What exactly is Choochie?</summary><p>A desktop companion app for Windows 10 and 11. An animated 3D anime character lives on a transparent overlay above your desktop and chats with you using an AI model (text) and a generated voice. She's fictional, and her replies are AI-generated.</p></details>
+    <details><summary>Is it safe to run?</summary><p>Yes. She's a normal Windows app drawing on her own transparent overlay. She never deletes, moves or reads your files and never records your keyboard. Her "virus" and ChoochieOS pranks are visual effects on her overlay only, and every desktop trick is off until you turn it on and confirm.</p></details>
+    <details><summary>What does she have access to?</summary><p>Only what you allow: your mic (only while you speak), a screenshot of the window you ask her to look at, your webcam when you press "Let her see me". Window positions are used so she knows where to sit.</p></details>
+    <details><summary>Why do I sign in, and what does it share?</summary><p>Sign-in (Discord, Patreon, X, Google) is only used to identify your account and sync energy/perks; it is never used to generate images. We keep the provider's user id and a display name - <a href="privacy.html#signin">details in the Privacy Policy</a>.</p></details>
+    <details><summary>Does she make pictures?</summary><p>No. Choochie writes text and speaks; she does not generate or edit images. Pictures you choose to send her are only looked at to answer you and are not stored on her server.</p></details>
+    <details><summary>What is energy? And Orbs?</summary><p>Everything she thinks, says and sees in the app costs a little energy; plans refill it every day. Orbs power web chat on this site; your desktop energy is separate.</p></details>
+    <details><summary>Who can use it?</summary><p>Adults only (18+). The 18+ mode is a separate opt-in for supporters and stays text-only.</p></details>
+    <details><summary>How do I make her stop, or remove her?</summary><p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> or <kbd>Esc</kbd> undoes any takeover, and typing <em>safeword</em> drops the act. Uninstall in Settings &gt; Apps like any app; her memory of you is in <code>%APPDATA%\ClinglyPet</code>. Delete your account any time from your <a href="account.html">account page</a>.</p></details>
   </div>
 </section>
 
-<div class="chain" aria-hidden="true"></div>
-
-<section class="discord" id="discord">
-  <img class="portrait" src="img/portrait-smirk.jpg" alt="Choochie smirking" loading="lazy">
-  <div>
-    <h2>Discord</h2>
-    <p class="sub">Bug reports, outfit votes, and the place she occasionally shows up herself.</p>
-    <a class="btn btn-primary" id="discord-btn" href="#" target="_blank" rel="noopener">Join the server</a>
-    <p class="fine" id="discord-note"></p>
+<section>
+  <div class="final reveal">
+    <img src="img/portrait-smirk.jpg" alt="Choochie smirking" loading="lazy" width="110" height="110">
+    <h2>Go on. Let her in.</h2>
+    <p class="sub" style="margin:0 auto">She's free to try, and she's been waiting. (She'll deny it.)</p>
+    <div class="cta"><a class="btn btn-primary btn-big" href="downloads.html" id="dl-btn">Download for Windows</a><a class="btn btn-ghost btn-big" href="chat.html">Talk to her in your browser</a></div>
+    <p class="fine" id="dl-meta"></p>
   </div>
-</section>
-
-<section class="faq" id="faq">
-  <h2>Questions</h2>
-  <details open><summary>Is this safe to run?</summary><p>Yes. She's a normal Windows app that draws on a transparent overlay. She never deletes, moves or reads your files, never records your keyboard, and every desktop trick (freezing the cursor, minimizing apps, wallpaper, her "virus") is off until you switch it on and confirm. Everything she changes is reversible from her menu.</p></details>
-  <details><summary>What does she have access to?</summary><p>Only what you allow: your mic (only while you speak), a screenshot of the window you ask her to look at, your webcam when you press "Let her see me". Window titles are used to know where to sit. AI chat goes to her server and then to the AI provider; audio is never stored.</p></details>
-  <details><summary>How do I make her stop?</summary><p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> frees your mouse and undoes any takeover. <kbd>Esc</kbd> works too, and typing or saying <em>safeword</em> drops the act completely. Right Ctrl stops her mid-sentence. Her tray icon has everything else.</p></details>
-  <details><summary>What is energy?</summary><p>Everything she thinks, says and sees costs a little energy. A free account starts with 500; plans refill every day. When she's out, she still walks around, reacts and uses her built-in lines - she just can't hold a conversation.</p></details>
-  <details><summary>Do I need an account?</summary><p>Not to have her on your desktop. To talk with her AI brain, log in once (free) with Patreon, Discord or Google - that's what keeps her server affordable and stops abuse. <a href="privacy.html">What each login stores</a>.</p></details>
-  <details><summary>Does she work offline?</summary><p>The pet herself does. Chat, her voice and watching your screen need her server.</p></details>
-  <details><summary>How do I uninstall?</summary><p>Settings &gt; Apps &gt; Choochie &gt; Uninstall, like any app. Her memory of you lives in <code>%APPDATA%\ClinglyPet</code> if you want to wipe that too.</p></details>
-  <details><summary>Can I stream with her?</summary><p>Yes. She can be made invisible to screen capture (Settings &gt; General) and has a non-explicit mode. She's PG-13 in Discord servers no matter what.</p></details>
 </section>
 
 </main>
 
 <footer id="site-foot"></footer>
 
-<script src="site.js?v=3"></script>
-<script src="script.js?v=3"></script>
+<script src="site.js?v=4"></script>
+<script src="script.js?v=4"></script>
 </body>
 </html>
