@@ -50,6 +50,13 @@ function renderChrome() {
   const here = location.pathname.split("/").pop() || "index.html";
   document.documentElement.classList.add("js");
   const nav = $("#site-nav");
+  // keyboard users: a "skip to content" link ahead of the header (index.html has its own)
+  const main = $("main");
+  if (nav && main && !$(".skip")) {
+    if (!main.id) main.id = "content";
+    const s = document.createElement("a"); s.className = "skip"; s.href = "#" + main.id; s.textContent = "Skip to content";
+    nav.before(s);
+  }
   if (nav) {
     nav.className = "nav";
     const name = store.get("choochie.name");
@@ -104,6 +111,7 @@ function gate() {
       <div class="gate-btns"><button class="btn btn-primary" id="gate-yes">I'm 18 or older</button><a class="btn btn-ghost" href="https://www.google.com">Take me away</a></div></div>`;
   document.body.appendChild(g); document.body.classList.add("locked");
   $("#gate-yes", g).addEventListener("click", () => { store.set("choochie18", "1"); g.remove(); document.body.classList.remove("locked"); });
+  try { $("#gate-yes", g).focus({ preventScroll: true }); } catch (e) {}   // keyboard focus starts inside the dialog
 }
 
 // ---- plans (one source for the home page, plans page and account page)

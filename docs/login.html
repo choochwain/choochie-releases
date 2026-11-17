@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header id="site-nav"></header>
@@ -31,7 +31,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=5"></script>
+<script src="site.js?v=6"></script>
 <script>
 (async () => {
   const q = new URLSearchParams(location.search), dev = q.get("dev") || "";
@@ -44,7 +44,7 @@
     a.href = API + "/pet/ai/auth/start?p=" + encodeURIComponent(p) + "&return=" + encodeURIComponent(back) + (okDev ? "&dev=" + encodeURIComponent(dev) : ""); };
   box.querySelectorAll(".prov").forEach(wire);
   // the server always lands on account.html; remember to hop on to the chat afterwards
-  box.addEventListener("click", () => { try { next === "chat.html" ? sessionStorage.setItem("choochie.next", "chat") : sessionStorage.removeItem("choochie.next"); } catch (e) {} });
+  box.addEventListener("click", e => { if (e.target.closest('[aria-disabled="true"]')) { e.preventDefault(); return; } try { next === "chat.html" ? sessionStorage.setItem("choochie.next", "chat") : sessionStorage.removeItem("choochie.next"); } catch (e) {} });
   if (okDev) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, and the app on this PC signs in by itself. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>, plus a little every day."; }
   // already signed in on this browser + coming from the app: connect this PC in one click
   if (okDev && Auth.signedIn) {
@@ -66,7 +66,7 @@
   const on = providerMap(j);
   if (j.starter != null && $("#lg-starter")) $("#lg-starter").textContent = j.starter;
   if (on.google && !box.querySelector('[data-p="google"]')) { const a = document.createElement("a"); a.className = "prov google"; a.dataset.p = "google"; box.appendChild(a); wire(a); }
-  box.querySelectorAll(".prov").forEach(a => { if (!on[a.dataset.p] && a.dataset.p === "x") { a.hidden = true; return; } if (!on[a.dataset.p]) { a.setAttribute("aria-disabled", "true"); a.title = "Not available yet"; a.lastChild.textContent += " (coming soon)"; } });
+  box.querySelectorAll(".prov").forEach(a => { if (!on[a.dataset.p] && a.dataset.p === "x") { a.hidden = true; return; } if (!on[a.dataset.p]) { a.setAttribute("aria-disabled", "true"); a.tabIndex = -1; a.title = "Not available yet"; a.lastChild.textContent += " (coming soon)"; } });
 })();
 </script>
 </body>

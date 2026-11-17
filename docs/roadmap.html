@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header id="site-nav"></header>
@@ -36,14 +36,14 @@
 <section class="section" id="rm-done-wrap" hidden><h2>Done</h2><div class="rm-list" id="rm-done"></div></section>
 <section class="section" id="rm-admin" hidden>
   <div class="panel"><h3>Admin</h3>
-    <div class="row"><input type="text" id="ad-code" placeholder="Admin code" style="max-width:240px"><button class="btn btn-ghost btn-sm" id="ad-save">Use code</button></div>
-    <form id="ad-form" style="margin-top:12px"><label class="field"><span>Add official item</span><input type="text" id="ad-title" maxlength="90" placeholder="Title"></label><textarea id="ad-brief" maxlength="600" placeholder="Brief"></textarea><button class="btn btn-primary btn-sm" style="margin-top:8px">Add</button></form>
+    <div class="row"><input type="text" id="ad-code" placeholder="Admin code" aria-label="Admin code" style="max-width:240px"><button class="btn btn-ghost btn-sm" id="ad-save">Use code</button></div>
+    <form id="ad-form" style="margin-top:12px"><label class="field"><span>Add official item</span><input type="text" id="ad-title" maxlength="90" placeholder="Title"></label><textarea id="ad-brief" maxlength="600" placeholder="Brief" aria-label="Official item brief"></textarea><button class="btn btn-primary btn-sm" style="margin-top:8px">Add</button></form>
   </div>
 </section>
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=5"></script>
+<script src="site.js?v=6"></script>
 <script>
 
 let data = null; const admin = new URLSearchParams(location.search).has("admin");
