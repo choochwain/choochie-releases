@@ -50,7 +50,7 @@
       </div>
       <div id="lb-form-wrap">
         <label class="field"><span>Public nickname</span><input type="text" id="lb-nick" maxlength="20" autocomplete="off" spellcheck="false" placeholder="2-20 letters, numbers, spaces, _ - ."></label>
-        <div class="row"><label class="switch"><input type="checkbox" id="lb-join"> Show me on the public leaderboard</label><button class="btn btn-ghost btn-sm" id="lb-save" hidden>Save nickname</button></div>
+        <div class="row"><label class="switch"><input type="checkbox" id="lb-join"> Show me on the public leaderboard</label><button class="btn btn-ghost btn-sm" id="lb-save">Save nickname</button></div>
         <p class="fine">Off by default. If you join, only your nickname, level, title and points are public - never your login name. Leave any time; your points keep counting privately.</p>
       </div>
     </div>
@@ -181,7 +181,6 @@ function renderLb(b) {
   $("#lb-rank").textContent = b.rank ? "#" + b.rank : "-"; $("#lb-mrank").textContent = b.monthRank ? "#" + b.monthRank : "-"; $("#lb-month").textContent = fmt(b.monthPoints);
   $("#lb-join").checked = !!b.joined;
   if (document.activeElement !== $("#lb-nick")) $("#lb-nick").value = b.nickname || b.suggestedNickname || "";
-  $("#lb-save").hidden = !b.joined;
   if (b.excluded) $("#lb-note").textContent += " Admin and tester accounts stay off the public board.";
   if (!lbScrolled && location.hash === "#leaderboard") { lbScrolled = true; requestAnimationFrame(() => $("#leaderboard").scrollIntoView()); }
 }
@@ -194,8 +193,8 @@ $("#lb-join").addEventListener("change", e => {
   if (e.target.checked) lbPost({ join: true, nickname: nick }, "You're on the leaderboard~");
   else lbPost({ join: false }, "You left the leaderboard. Your points keep counting privately.");
 });
-$("#lb-save").addEventListener("click", () => lbPost({ nickname: $("#lb-nick").value.trim() }, "Nickname saved."));
-$("#lb-nick").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); if (lbView && lbView.joined) $("#lb-save").click(); } });
+$("#lb-save").addEventListener("click", () => lbPost({ nickname: $("#lb-nick").value.trim() }, lbView && lbView.joined ? "Nickname saved." : "Nickname saved. Switch on \"Show me\" to appear on the board."));
+$("#lb-nick").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("#lb-save").click(); } });
 async function load() { try { render(await api("/pet/ai/v1/account")); } catch (e) { if (e.status === 401) location.replace("login.html"); else $("#ac-head .sub").textContent = e.message; } }
 const banner = (cls, html) => $("#ac-banner").innerHTML = `<div class="note ${cls}" style="margin-bottom:16px">${html}</div>`;
 if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
