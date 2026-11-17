@@ -20,10 +20,13 @@ body.c3{margin:0;min-height:100vh;min-height:100dvh;overflow:hidden;background:#
 .c3-stage{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .c3.flat .c3-stage{display:none}
 .c3-load{position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);text-align:center;color:var(--dim,#bba7b0);pointer-events:none;transition:opacity .5s}
-.c3-load p{margin:12px 0 0;font-size:14px}
-.c3-load .ring{width:64px;height:64px;margin:auto;border-radius:50%;border:3px solid rgba(255,92,138,.18);border-top-color:var(--rose,#ff5c8a);display:grid;place-items:center;animation:c3spin 1.1s linear infinite}
-.c3-load .ring span{animation:c3spin 1.1s linear infinite reverse;font-size:12px;color:var(--rose-soft,#ffc2d4)}
-@keyframes c3spin{to{transform:rotate(360deg)}}
+.c3-load{width:min(300px,calc(100vw - 64px))}
+.c3-load p{margin:0 0 10px;font-size:14px;display:flex;justify-content:space-between;gap:12px}
+.c3-load p b{font-weight:800;color:var(--rose-soft,#ffc2d4);font-variant-numeric:tabular-nums}
+.c3-load .bar{position:relative;height:6px;border-radius:99px;background:rgba(255,92,138,.14);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.c3-load .bar i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);border-radius:inherit;background:linear-gradient(90deg,var(--red,#e0263a),var(--rose,#ff5c8a) 70%,#ffc2d4);transition:transform .25s ease-out}
+.c3-load .bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:translateX(-100%);animation:c3sheen 1.4s ease-in-out infinite}
+@keyframes c3sheen{to{transform:translateX(100%)}}
 .c3-load.done{opacity:0}
 /* top bar */
 .c3-top{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));background:linear-gradient(180deg,rgba(15,8,11,.72),rgba(15,8,11,0))}
@@ -78,10 +81,10 @@ button.c3-orbs:focus-visible{outline:2px solid var(--rose,#ff5c8a);outline-offse
 .c3-side{position:absolute;right:16px;top:72px;bottom:calc(var(--bh,140px) + 12px);width:min(360px,calc(100vw - 32px));display:flex;flex-direction:column;border-radius:22px;background:rgba(20,11,15,.55);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
 .c3-side-h{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 6px 16px;font-size:14px;color:var(--dim,#bba7b0)}
 .c3-log{flex:1;overflow-y:auto;padding:6px 12px 14px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain;scrollbar-width:thin}
-.c3-log .m{display:flex;gap:8px;align-items:flex-end;max-width:100%}
-.c3-log .m .b{padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.4;max-width:86%;overflow-wrap:anywhere;white-space:pre-wrap}
+.c3-log .m{display:flex;flex-direction:row;gap:8px;align-items:flex-end;max-width:100%;width:100%;align-self:stretch;flex:none}
+.c3-log .m .b{flex:0 1 auto;min-width:0;width:auto;max-width:86%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.4;white-space:pre-wrap;word-break:normal;overflow-wrap:break-word}
 .c3-log .m.her .b{background:rgba(255,255,255,.07);border-bottom-left-radius:5px}
-.c3-log .m.me{justify-content:flex-end}
+.c3-log .m.me{justify-content:flex-end;flex-direction:row}
 .c3-log .m.me .b{background:linear-gradient(135deg,rgba(224,38,58,.85),rgba(255,92,138,.8));border-bottom-right-radius:5px}
 .c3-log .m.sys{justify-content:center}
 .c3-log .m.sys .b{background:none;color:var(--dim,#bba7b0);font-size:13px;text-align:center;max-width:100%}
@@ -101,6 +104,10 @@ button.c3-orbs:focus-visible{outline:2px solid var(--rose,#ff5c8a);outline-offse
 .c3-caption p .w{opacity:.12;transition:opacity .25s}
 .c3-caption p .w.in{opacity:1}
 .c3-caption.think p::after{content:"…";animation:c3dot 1s infinite}
+.c3-hear{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:5px 11px 5px 9px;border-radius:99px;border:1px solid rgba(255,92,138,.3);background:rgba(255,92,138,.1);color:var(--rose-soft,#ffc2d4);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;animation:c3pulse 2.2s ease-in-out infinite}
+.c3-hear[hidden]{display:none}
+.c3-hear svg{width:15px;height:15px}
+@keyframes c3pulse{50%{box-shadow:0 0 0 5px rgba(255,92,138,.08)}}
 /* bottom bar */
 .c3-bottom{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(720px,100vw);padding:0 16px max(10px,env(safe-area-inset-bottom))}
 .c3-comp{padding:8px;border-radius:24px;background:rgba(24,14,19,.78);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 40px rgba(0,0,0,.4)}
@@ -136,4 +143,4 @@ button.c3-orbs:focus-visible{outline:2px solid var(--rose,#ff5c8a);outline-offse
 /* no WebGL: the classic chat, centred */
 .c3.flat .c3-side{position:absolute;left:50%;right:auto;top:72px;bottom:calc(var(--bh,140px) + 12px);width:min(720px,calc(100vw - 32px));transform:translateX(-50%);opacity:1;pointer-events:auto;height:auto;background:rgba(20,11,15,.6)}
 .c3.flat .c3-caption,.c3.flat #b-hist,.c3.flat #side-x,.c3.flat .c3-load{display:none}
-@media (prefers-reduced-motion:reduce){.c3-room .lights{animation:none}.c3-caption,.c3-side,.c3-load{transition:none}.c3-load .ring,.c3-load .ring span{animation-duration:3s}}
+@media (prefers-reduced-motion:reduce){.c3-room .lights{animation:none}.c3-caption,.c3-side,.c3-load,.c3-load .bar i{transition:none}.c3-load .bar::after,.c3-hear{animation:none}}
