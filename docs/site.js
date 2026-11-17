@@ -208,19 +208,23 @@ function providerMap(j) {
 
 // ---- buying Orbs (web chat): shared by the chat sheet and the account page. o = the server's `orbs` object
 const orbDaily = o => Math.max(0, Number(o.left || 0) - Number(o.bought || 0));
-function orbBuyHTML(o) {
+// claimHref: where "Forgot the code?" points (the account page's claim box)
+function orbBuyHTML(o, claimHref) {
   if (!o) return "";
   const n = v => Number(v || 0).toLocaleString(), bought = Number(o.bought || 0);
   if (o.unlimited) return `<p class="ob-note">This account has unlimited Orbs, so there's nothing to buy.</p>`;
   const per = Number(o.perDollar) || 0, url = /^https:\/\//.test(o.buyUrl || "") ? o.buyUrl : LINKS.kofi;
+  const code = o.code ? `<span class="ob-chip"><code>${esc(o.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(o.code)}" aria-label="Copy your Orbs code ${esc(o.code)}">Copy</button></span>` : "";
   return `<div class="ob">
-    <p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}
-      <button type="button" class="linkish" data-orb-refresh>Refresh balance</button></p>
+    <p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}</p>
     ${per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * per))} Orbs</span></li>`).join("")}</ul>` : ""}
-    ${o.code ? `<div class="ob-code"><span>Your Orbs code</span><div class="ob-code-row"><code>${esc(o.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(o.code)}">Copy</button></div></div>` : ""}
-    <ol class="ob-steps"><li>Copy your code.</li><li>Tip any amount on Ko-fi.</li><li>Paste the code into the Ko-fi message.</li></ol>
-    <a class="btn btn-primary btn-block" href="${esc(url)}" target="_blank" rel="noopener">Open Ko-fi</a>
-    <p class="fine ob-fine">Bought Orbs never expire and are used after your daily ones. They arrive within a minute or two - then refresh the balance.</p>
+    <ol class="ob-steps">
+      <li><span class="ob-n" aria-hidden="true">1</span><div><strong>Copy your code</strong>${code}</div></li>
+      <li><span class="ob-n" aria-hidden="true">2</span><div><strong>Open Ko-fi and tip any amount</strong> <span class="ob-dim">($5+ recommended)</span><a class="btn btn-primary btn-sm ob-kofi" href="${esc(url)}" target="_blank" rel="noopener">Open Ko-fi</a></div></li>
+      <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
+      <li><span class="ob-n" aria-hidden="true">4</span><div><strong>Orbs show up within a minute or two</strong> <button type="button" class="linkish" data-orb-refresh>Refresh balance</button></div></li>
+    </ol>
+    <p class="fine ob-fine">Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim your tip with your e-mail</a>. Bought Orbs never expire and are used after your daily ones. Buying energy for the desktop app instead? Use the CH- code shown inside the app.</p>
   </div>`;
 }
 document.addEventListener("click", async e => {

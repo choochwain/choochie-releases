@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <header id="site-nav"></header>
@@ -63,6 +63,19 @@
       <p class="fine" id="ac-orbs-lead" style="margin:0 0 14px"></p>
       <div id="ac-orbs"></div>
     </div>
+    <div class="panel" id="claim" style="scroll-margin-top:84px">
+      <h3>Claim a tip</h3>
+      <p class="fine" style="margin:0 0 12px">Tipped on Ko-fi but forgot to paste your code? Claim it here with the e-mail you used there. We never store your e-mail - it's only matched against the tip.</p>
+      <form id="claim-form" novalidate>
+        <label class="field"><span>The e-mail you used on Ko-fi</span><input type="email" id="claim-email" autocomplete="email" required maxlength="200" spellcheck="false"></label>
+        <fieldset class="claim-as">
+          <legend>Add it as</legend>
+          <label><input type="radio" name="claim-as" value="orbs" checked> <span><b>Orbs</b> (web chat)</span></label>
+          <label><input type="radio" name="claim-as" value="energy"> <span><b>Energy</b> (desktop app) - goes to the app on every PC signed in to this account</span></label>
+        </fieldset>
+        <div class="row" style="margin-top:14px"><button type="submit" class="btn btn-primary btn-sm" id="claim-btn">Claim</button><span class="fine" id="claim-msg" role="status" style="margin:0"></span></div>
+      </form>
+    </div>
   </div>
   <div>
     <div class="panel">
@@ -90,7 +103,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=7"></script>
+<script src="site.js?v=8"></script>
 <script>
 
 const frag = new URLSearchParams(location.hash.slice(1));
@@ -129,8 +142,26 @@ function renderOrbs(o) {
   $("#orbs").hidden = !o; if (!o) return;
   const free = o.max ? `Everyone gets ${fmt(o.max)} free a day` : "Everyone gets free ones every day";
   $("#ac-orbs-lead").textContent = o.unlimited ? "Orbs power web chat." : `Orbs power web chat and are separate from plans. ${free}, refilled at midnight UTC, and you can buy more on Ko-fi.`;
-  $("#ac-orbs").innerHTML = orbBuyHTML(o);
+  $("#ac-orbs").innerHTML = orbBuyHTML(o, "#claim");
 }
+// ---- claim a Ko-fi tip sent without a code, by the e-mail used there
+$("#claim-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("#claim-email").value.trim(), as = (document.querySelector('input[name="claim-as"]:checked') || {}).value || "orbs", msg = $("#claim-msg"), btn = $("#claim-btn");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = "Enter the e-mail address you used on Ko-fi."; $("#claim-email").focus(); return; }
+  btn.disabled = true; msg.textContent = "Checking…";
+  try {
+    const v = await api("/pet/ai/v1/account/claim", { method: "POST", body: { email, as } });
+    render(v); $("#claim-email").value = "";
+    const c = v.claimed || {}, n = fmt(c.amount || 0);
+    msg.textContent = c.as === "energy" ? `Added ${n} energy to your app.` : `Added ${n} Orbs.`; toast(msg.textContent);
+  } catch (err) {
+    msg.textContent = err.status === 404 ? "Nothing found for that e-mail. Check the spelling, or wait a minute if you just tipped."
+      : err.status === 400 ? "That doesn't look like an e-mail address."
+      : err.status === 429 ? "Too many tries - wait an hour and try again."
+      : err.message;
+  } finally { btn.disabled = false; }
+});
 document.addEventListener("click", async e => {
   const r = e.target.closest("[data-orb-refresh]"); if (!r) return;
   r.disabled = true; r.textContent = "Refreshing…";
