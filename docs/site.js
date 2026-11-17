@@ -205,3 +205,31 @@ function providerMap(j) {
   if (out.twitter) out.x = true;
   return out;
 }
+
+// ---- buying Orbs (web chat): shared by the chat sheet and the account page. o = the server's `orbs` object
+const orbDaily = o => Math.max(0, Number(o.left || 0) - Number(o.bought || 0));
+function orbBuyHTML(o) {
+  if (!o) return "";
+  const n = v => Number(v || 0).toLocaleString(), bought = Number(o.bought || 0);
+  if (o.unlimited) return `<p class="ob-note">This account has unlimited Orbs, so there's nothing to buy.</p>`;
+  const per = Number(o.perDollar) || 0, url = /^https:\/\//.test(o.buyUrl || "") ? o.buyUrl : LINKS.kofi;
+  return `<div class="ob">
+    <p class="ob-bal"><span><b>${n(orbDaily(o))}</b>${o.max ? " / " + n(o.max) : ""} daily left</span>${bought > 0 ? `<span class="ob-bought">+${n(bought)} bought</span>` : ""}
+      <button type="button" class="linkish" data-orb-refresh>Refresh balance</button></p>
+    ${per ? `<ul class="ob-rates" aria-label="What a tip gets you">${[1, 5, 10].map(d => `<li><b>$${d}</b><span>${n(Math.floor(d * per))} Orbs</span></li>`).join("")}</ul>` : ""}
+    ${o.code ? `<div class="ob-code"><span>Your Orbs code</span><div class="ob-code-row"><code>${esc(o.code)}</code><button type="button" class="btn btn-soft btn-sm" data-orb-copy="${esc(o.code)}">Copy</button></div></div>` : ""}
+    <ol class="ob-steps"><li>Copy your code.</li><li>Tip any amount on Ko-fi.</li><li>Paste the code into the Ko-fi message.</li></ol>
+    <a class="btn btn-primary btn-block" href="${esc(url)}" target="_blank" rel="noopener">Open Ko-fi</a>
+    <p class="fine ob-fine">Bought Orbs never expire and are used after your daily ones. They arrive within a minute or two - then refresh the balance.</p>
+  </div>`;
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-orb-copy]"); if (!b) return;
+  const code = b.dataset.orbCopy; let ok = false;
+  try { await navigator.clipboard.writeText(code); ok = true; } catch (_) {
+    const t = document.createElement("textarea"); t.value = code; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(t); t.select(); try { ok = document.execCommand("copy"); } catch (__) {} t.remove();
+  }
+  if (ok) { b.textContent = "Copied"; clearTimeout(b._h); b._h = setTimeout(() => b.textContent = "Copy", 2000); toast("Code copied - paste it into the Ko-fi message."); }
+  else toast("Couldn't copy - select the code and copy it by hand.", true);
+});

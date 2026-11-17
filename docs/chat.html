@@ -10,8 +10,8 @@
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="model/choochie.glb?v=1" as="fetch" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=5">
-<link rel="stylesheet" href="chat.css?v=1">
+<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="chat.css?v=2">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body class="c3">
@@ -22,7 +22,7 @@
 <header class="c3-top">
   <a class="c3-brand" href="index.html" aria-label="Choochie home"><img src="img/favicon.png" alt="" width="30" height="30"><span><b>Choochie</b><em id="status">checking if she's awake…</em></span></a>
   <div class="c3-actions">
-    <span class="c3-orbs" id="orbs" hidden title="Orbs power web chat; your desktop energy is separate."><i aria-hidden="true"></i><span id="orbs-n">–</span><small id="orbs-reset"></small></span>
+    <button type="button" class="c3-orbs" id="orbs" hidden aria-haspopup="dialog" aria-controls="ob-sheet" title="Orbs power web chat - click to get more"><i aria-hidden="true"></i><span class="sr">Orbs:</span><span id="orbs-n">–</span><span class="c3-orbs-b" id="orbs-b" hidden></span><small id="orbs-reset"></small><b class="c3-orbs-plus" aria-hidden="true">+</b><span class="sr">Get more Orbs</span></button>
     <button type="button" class="c3-ib" id="b-mute" aria-pressed="false" aria-label="Mute her voice" title="Mute her voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="off" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg></button>
     <button type="button" class="c3-ib" id="b-hist" aria-expanded="false" aria-controls="side" aria-label="Show the conversation" title="Conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
     <button type="button" class="c3-ib" id="b-menu" aria-expanded="false" aria-controls="menu" aria-label="Chat settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></button>
@@ -30,9 +30,10 @@
   <div class="c3-menu" id="menu" hidden>
     <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode (text only)</label>
     <button type="button" class="linkish" id="clear">Clear chat</button>
-    <a href="account.html">Your account &amp; Orbs</a>
+    <button type="button" class="linkish" data-orb-open>Get more Orbs</button>
+    <a href="account.html#orbs">Your account &amp; Orbs</a>
     <a href="downloads.html">Get her on your desktop</a>
-    <p class="fine">Orbs power web chat; your desktop energy is separate.</p>
+    <p class="fine">Orbs power web chat and are separate from plans and your desktop energy: everyone gets 20 free a day, and you can buy more on Ko-fi.</p>
   </div>
 </header>
 
@@ -80,8 +81,16 @@
   </div>
 </div>
 
-<script src="site.js?v=6"></script>
+<div class="c3-sheet" id="ob-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="ob-h">
+  <div class="c3-sheet-card" tabindex="-1">
+    <div class="c3-sheet-h"><h3 id="ob-h">Get more Orbs</h3><button type="button" class="c3-ib sm" id="ob-x" aria-label="Close">✕</button></div>
+    <p class="ob-lead" id="ob-lead"></p>
+    <div id="ob-body"></div>
+  </div>
+</div>
+
+<script src="site.js?v=7"></script>
 <script type="module" src="js/stage.js?v=1"></script>
-<script src="chat.js?v=6"></script>
+<script src="chat.js?v=7"></script>
 </body>
 </html>

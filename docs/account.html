@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header id="site-nav"></header>
@@ -58,6 +58,11 @@
       <div class="chat-link-card"><img src="img/portrait-smirk.jpg" alt=""><div style="flex:1"><h3 style="margin:0">Talk to her in your browser</h3><p class="fine" style="margin:2px 0 0">Text, pictures, a webcam snapshot or your voice. Orbs power web chat; your desktop energy is separate.</p></div></div>
       <div class="row" style="margin-top:14px"><a class="btn btn-primary btn-sm" href="chat.html">Open the chat</a><label class="switch" id="ac-adult-wrap" hidden><input type="checkbox" id="ac-adult"> 18+ mode in web chat (text only)</label></div>
     </div>
+    <div class="panel" id="orbs" style="scroll-margin-top:84px">
+      <h3>Orbs for web chat</h3>
+      <p class="fine" id="ac-orbs-lead" style="margin:0 0 14px"></p>
+      <div id="ac-orbs"></div>
+    </div>
   </div>
   <div>
     <div class="panel">
@@ -85,7 +90,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=6"></script>
+<script src="site.js?v=7"></script>
 <script>
 
 const frag = new URLSearchParams(location.hash.slice(1));
@@ -117,7 +122,21 @@ function render(v) {
       ? `<button class="btn btn-ghost btn-sm" data-unlink="${p}">Remove</button>`
       : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
   if (v.leaderboard) renderLb(v.leaderboard);
+  renderOrbs(v.orbs);
 }
+// ---- Orbs (web chat): separate from plans; daily free ones + bought on Ko-fi with the account's OR- code
+function renderOrbs(o) {
+  $("#orbs").hidden = !o; if (!o) return;
+  const free = o.max ? `Everyone gets ${fmt(o.max)} free a day` : "Everyone gets free ones every day";
+  $("#ac-orbs-lead").textContent = o.unlimited ? "Orbs power web chat." : `Orbs power web chat and are separate from plans. ${free}, refilled at midnight UTC, and you can buy more on Ko-fi.`;
+  $("#ac-orbs").innerHTML = orbBuyHTML(o);
+}
+document.addEventListener("click", async e => {
+  const r = e.target.closest("[data-orb-refresh]"); if (!r) return;
+  r.disabled = true; r.textContent = "Refreshing…";
+  try { const v = await api("/pet/ai/v1/account"); render(v); toast("Balance updated."); const nr = $("[data-orb-refresh]"); if (nr) nr.focus({ preventScroll: true }); }
+  catch (err) { r.disabled = false; r.textContent = "Refresh balance"; toast("Couldn't refresh - try again in a few seconds.", true); }
+});
 // ---- leaderboard (opt-in)
 let lbView = null, lbScrolled = false;
 function renderLb(b) {
