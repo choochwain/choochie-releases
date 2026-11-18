@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Talk to Choochie</title>
-<meta name="description" content="Talk to Choochie in your browser: she stands in her room, answers out loud and reacts to you. Type, send a picture, take a webcam snapshot, hold to talk or start a video call. Uses the same energy as the desktop app.">
+<meta name="description" content="Talk to Choochie in your browser: she stands in her room, answers out loud and reacts to you. Type, send a picture, take a webcam snapshot, send a voice message or start a video call. Uses the same energy as the desktop app.">
 <meta name="theme-color" content="#140a0e">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="model/choochie.glb?v=3" as="fetch" crossorigin>
+<link rel="preload" href="model/choochie.glb?v=4" as="fetch" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=9">
-<link rel="stylesheet" href="chat.css?v=5">
+<link rel="stylesheet" href="chat.css?v=6">
+<link rel="stylesheet" href="play.css?v=1">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 <body class="c3" data-energy="self">
@@ -28,8 +29,9 @@
     <button type="button" class="c3-ib" id="b-menu" aria-expanded="false" aria-controls="menu" aria-label="Chat settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></button>
   </div>
   <div class="c3-menu" id="menu" hidden>
-    <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode (text only)</label>
+    <label class="switch" id="adult-wrap" hidden><input type="checkbox" id="adult"> 18+ mode</label>
     <button type="button" class="linkish" id="clear">Clear chat</button>
+    <button type="button" class="linkish" id="forget">Forget me (clear her memory of you)</button>
     <button type="button" class="linkish" data-energy-open>Get more energy</button>
     <a href="account.html#energy">Your account &amp; energy</a>
     <a href="downloads.html">Get her on your desktop</a>
@@ -64,7 +66,7 @@
         <button type="button" class="c3-ib vc" id="b-call" aria-pressed="false" title="Video call: she watches your webcam live" aria-label="Start a video call"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 7l-7 5 7 5zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/></svg><span>Call</span></button>
         <input type="file" id="file" accept="image/*" hidden>
         <textarea id="text" rows="1" maxlength="800" placeholder="Talk to her…" aria-label="Message"></textarea>
-        <button type="button" class="c3-ib" id="b-mic" title="Hold to talk" aria-label="Hold to talk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
+        <button type="button" class="c3-ib" id="b-mic" title="Record a voice message" aria-label="Record a voice message" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
         <button type="submit" class="c3-ib send" id="b-send" title="Send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
       </div>
       <div class="c3-hint" id="hint"></div>
@@ -92,26 +94,10 @@
   </div>
 </div>
 
-<div class="cam" id="callok" hidden role="dialog" aria-modal="true" aria-labelledby="callok-h">
-  <div class="cam-card callok">
-    <h3 id="callok-h" style="margin:0 0 6px">Video call with Choochie</h3>
-    <p class="fine" style="margin:0 0 10px">She watches your webcam live, reacts to what she sees and talks with you.</p>
-    <ul>
-      <li><b>Your camera is only on during the call.</b> She looks at a small, low-res snapshot now and then, and every time you talk.</li>
-      <li><b>Nothing is stored.</b> Each snapshot and voice clip is used for one reply and then dropped. Only her chat lines stay, in this tab.</li>
-      <li><b>End it any time</b> with End call. Leaving or hiding the page ends it too, and your camera and mic switch off.</li>
-      <li id="callok-cost">Each look uses a little energy.</li>
-    </ul>
-    <label class="switch" id="callok-microw"><input type="checkbox" id="callok-mic" checked> Hands-free talking: your mic listens during the call (you can mute it)</label>
-    <div class="row">
-      <button class="btn btn-primary btn-sm" id="callok-go" type="button">Start video call</button>
-      <button class="btn btn-ghost btn-sm" id="callok-x" type="button">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <script src="site.js?v=11"></script>
-<script type="module" src="js/stage.js?v=3"></script>
-<script src="chat.js?v=11"></script>
+<script type="module" src="js/stage.js?v=4"></script>
+<script src="chat.js?v=12"></script>
+<script src="play.js?v=1" defer></script>
 </body>
 </html>
