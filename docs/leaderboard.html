@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 <style>
 /* leaderboard page (kept here so the shared stylesheet stays untouched) */
 .lb-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--stroke)}
@@ -100,7 +100,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=10"></script>
+<script src="site.js?v=11"></script>
 <script>
 
 let period = "month", mine = null; const cache = {};
@@ -111,8 +111,8 @@ titles(DEFAULT_TITLES);
 const isMe = e => mine && mine.joined && mine.nickname && e.nickname === mine.nickname;
 function pod(e, r) {
   if (!e) return `<div class="pod r${r} ghost"><div class="medal">${r}</div><span class="nick">Open spot</span><span class="fine">could be you~</span></div>`;
-  return `<div class="pod r${r}${isMe(e) ? " me" : ""}">${r === 1 ? '<span class="crown" aria-hidden="true">👑</span>' : ""}<div class="medal">${e.rank}</div>
-    <div style="min-width:0"><span class="nick" title="${esc(e.nickname)}">${esc(e.nickname)}</span><span class="pill hot">Lv ${e.level} · ${esc(e.title)}</span></div>
+  return `<div class="pod r${r}${isMe(e) ? " me" : ""}">${r === 1 ? '<span class="crown" aria-hidden="true">👑</span>' : ""}<div class="medal">${esc(e.rank)}</div>
+    <div style="min-width:0"><span class="nick" title="${esc(e.nickname)}">${esc(e.nickname)}</span><span class="pill hot">Lv ${esc(e.level)} · ${esc(e.title)}</span></div>
     <span class="pts">${fmtN(e.points)} <small>pts</small></span></div>`;
 }
 function draw(d) {
@@ -121,16 +121,20 @@ function draw(d) {
   $("#lb-podium").innerHTML = pod(en[1], 2) + pod(en[0], 1) + pod(en[2], 3);
   $("#lb-list").innerHTML = en.length === 0
     ? `<p class="empty">No one's on the board yet. Be her first favorite~</p>`
-    : en.slice(3).map(e => `<div class="lb-row${isMe(e) ? " me" : ""}"><span class="lb-rank">${e.rank}</span>
+    : en.slice(3).map(e => `<div class="lb-row${isMe(e) ? " me" : ""}"><span class="lb-rank">${esc(e.rank)}</span>
       <div class="lb-who"><b title="${esc(e.nickname)}">${esc(e.nickname)}${isMe(e) ? ' <span class="pill">you</span>' : ""}</b><span>${esc(e.title)}</span></div>
-      <span class="lb-lvl">Lv ${e.level}</span><span class="lb-pts">${fmtN(e.points)}</span></div>`).join("");
+      <span class="lb-lvl">Lv ${esc(e.level)}</span><span class="lb-pts">${fmtN(e.points)}</span></div>`).join("");
   if (d.levels && Array.isArray(d.levels.titles)) titles(d.levels.titles.map(x => [x.level, x.title]));
 }
 async function load(p) {
   period = p;
   document.querySelectorAll(".lb-tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.p === p));
   if (cache[p]) { draw(cache[p]); return; }
-  try { const d = await api("/pet/ai/v1/leaderboard?period=" + p); cache[p] = d; if (period === p) draw(d); }
+  try {
+    let d = await pub("/pet/ai/v1/leaderboard?period=" + p);
+    if (d && d.warming) { if (period === p) draw(d); await new Promise(z => setTimeout(z, 5000)); d = await pub("/pet/ai/v1/leaderboard?period=" + p); }   // her server just woke up
+    if (!(d && d.warming)) cache[p] = d; if (period === p) draw(d);
+  }
   catch (e) { $("#lb-podium").innerHTML = `<div class="pod ghost" style="grid-column:1/-1"><span class="fine">${esc(e.message)}</span></div>`; $("#lb-list").innerHTML = ""; }
 }
 document.querySelectorAll(".lb-tabs button").forEach(b => b.addEventListener("click", () => load(b.dataset.p)));

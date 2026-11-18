@@ -14,7 +14,8 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="home.css?v=1">
 <script>document.documentElement.classList.add("js")</script>
 <style>
 /* home: compact leaderboard (same look as leaderboard.html, kept here so the shared stylesheet stays untouched) */
@@ -70,8 +71,10 @@
     <div class="cta">
       <a class="btn btn-primary btn-big" href="downloads.html" id="hero-dl"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3zm0 13 7.4 1v-7H3zm8.3 1.1L21 21v-8.5h-9.7zm0-15.2v7.1H21V3z"/></svg>Download for Windows</a>
       <a class="btn btn-ghost btn-big" href="chat.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>Talk to her in your browser</a>
+      <a class="btn btn-discord btn-big" href="https://beacons.ai/choochwain" data-discord target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A17 17 0 0 0 15.4 4l-.5 1.1a15.6 15.6 0 0 0-5.8 0L8.6 4a17 17 0 0 0-4.2 1.3C1.7 9.3 1 13.2 1.3 17a17.2 17.2 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.3 12.3 0 0 0 11.4 0l.4.3-1.7.8 1.1 1.8a17.1 17.1 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7zM8.5 14.7c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1zm7 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>Join the Discord</a>
     </div>
-    <div class="hero-meta"><span id="hero-version">Free to try</span><span>No card needed</span><span>Every prank is opt-in</span></div>
+    <p class="members" id="members" hidden><span class="live" aria-hidden="true"></span><b id="members-n">0</b>&nbsp;<span id="members-l">members</span> already let her in</p>
+    <div class="hero-meta"><span id="hero-version">Free to try</span><span>No card needed</span><span>Every tease is opt-in</span></div>
   </div>
   <div class="hero-art" aria-hidden="false">
     <div class="glow" aria-hidden="true"></div>
@@ -85,6 +88,11 @@
   </div>
 </section>
 
+<div class="marquee" aria-hidden="true"><div class="marquee-track">
+  <span>Walks on your windows</span><span>Her own AI voice</span><span>Hears you through your mic</span><span>Remembers you</span><span>Writes a diary</span><span>Outfits &amp; gacha wheel</span><span>"Virus" takeovers (opt-in)</span><span>ChoochieOS</span><span>Stream mode</span><span>Web chat &amp; video call</span><span>Discord DMs</span><span>Always escapable</span>
+  <span>Walks on your windows</span><span>Her own AI voice</span><span>Hears you through your mic</span><span>Remembers you</span><span>Writes a diary</span><span>Outfits &amp; gacha wheel</span><span>"Virus" takeovers (opt-in)</span><span>ChoochieOS</span><span>Stream mode</span><span>Web chat &amp; video call</span><span>Discord DMs</span><span>Always escapable</span>
+</div></div>
+
 <section class="about" aria-labelledby="about-h">
   <div class="about-card reveal">
     <div>
@@ -94,7 +102,7 @@
     <div class="facts">
       <div class="fact"><b>Windows 10 / 11</b><span>64-bit, no admin needed</span></div>
       <div class="fact"><b>Free to try</b><span>Plans from $9.99 / mo</span></div>
-      <div class="fact"><b>Opt-in only</b><span>Mic, webcam, pranks, 18+</span></div>
+      <div class="fact"><b>Opt-in only</b><span>Mic, webcam, takeovers, 18+</span></div>
       <div class="fact"><b>Text-only AI</b><span>She never generates images</span></div>
     </div>
   </div>
@@ -140,7 +148,7 @@
   <div class="grid">
     <article class="card reveal"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg></div><h3>Gacha wheel</h3><p>Spin for outfits, accessories and the occasional insult.</p></article>
     <article class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 4h6M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1zM16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 13l2 2 4-4"/></svg></div><h3>Her tasks</h3><p>Keep her company, feed her, do as you're told - and get paid in keys.</p></article>
-    <article class="card spicy reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 3l2 3h4l2-3M5 9a7 7 0 0 1 14 0v6l-2 2-2-2-2 2-2-2-2 2-2-2-2 2zM9 11h.01M15 11h.01"/></svg></div><h3>"Virus" pranks <span class="badge">opt-in</span></h3><p>Fake glitches and a fake terminal - drawn on her own overlay only. Each one is a separate switch with its own consent prompt.</p></article>
+    <article class="card spicy reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 3l2 3h4l2-3M5 9a7 7 0 0 1 14 0v6l-2 2-2-2-2 2-2-2-2 2-2-2-2 2zM9 11h.01M15 11h.01"/></svg></div><h3>"Virus" takeovers <span class="badge">opt-in</span></h3><p>Fake glitches and a fake terminal - drawn on her own overlay only. Each one is a separate switch with its own consent prompt.</p></article>
     <article class="card reveal"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v10H3V6a1 1 0 0 1 1-1zM1 19h22M8 9l2 2-2 2M12 13h4"/></svg></div><h3>ChoochieOS</h3><p>Her own little pretend operating system that "takes over" for a moment. It's all a show - nothing on your PC changes.</p></article>
     <article class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 7l-7 5 7 5zM3 5h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg></div><h3>Stream mode</h3><p>Bring her on stream with OBS: a capture-friendly view and a non-explicit mode.</p></article>
     <article class="card reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9zM9 9l6 6M15 9l-6 6"/></svg></div><h3>Always escapable</h3><p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>, <kbd>Esc</kbd> or typing <em>safeword</em> stops everything instantly.</p></article>
@@ -175,6 +183,18 @@
   <p class="hlb-foot"><a class="btn btn-ghost" href="leaderboard.html">See full leaderboard</a></p>
 </section>
 
+<section id="community" aria-labelledby="dc-h">
+  <div class="discord-banner reveal">
+    <div class="dc-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A17 17 0 0 0 15.4 4l-.5 1.1a15.6 15.6 0 0 0-5.8 0L8.6 4a17 17 0 0 0-4.2 1.3C1.7 9.3 1 13.2 1.3 17a17.2 17.2 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.3 12.3 0 0 0 11.4 0l.4.3-1.7.8 1.1 1.8a17.1 17.1 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7zM8.5 14.7c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1zm7 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg></div>
+    <div class="dc-text">
+      <span class="kicker">Community</span>
+      <h2 id="dc-h">Come hang out in her Discord</h2>
+      <p class="sub">Updates first, sneak peeks, outfit ideas, roadmap talk and help when something's off. She's in there too.</p>
+    </div>
+    <a class="btn btn-discord btn-big" href="https://beacons.ai/choochwain" data-discord target="_blank" rel="noopener">Join the Discord</a>
+  </div>
+</section>
+
 <section id="how">
   <div class="section-head reveal">
     <span class="kicker">How it works</span>
@@ -183,7 +203,7 @@
   <div class="steps3">
     <div class="step reveal"><h3>Download &amp; install</h3><p>Grab the Windows installer. It installs per user, needs no admin rights and uninstalls like any app.</p></div>
     <div class="step reveal" style="--d:.08s"><h3>Sign in, free</h3><p>Log in with Discord, Patreon or X (or Google, if offered) so she can keep your energy and perks. No card, no password to remember.</p></div>
-    <div class="step reveal" style="--d:.16s"><h3>Say hi</h3><p>Type or talk to her. Turn on only the extras you want - mic, webcam, pranks, 18+ - each asks first.</p></div>
+    <div class="step reveal" style="--d:.16s"><h3>Say hi</h3><p>Type or talk to her. Turn on only the extras you want - mic, webcam, her "virus" takeovers, 18+ - each asks first.</p></div>
   </div>
 </section>
 
@@ -194,10 +214,10 @@
     <p class="sub">Every plan talks to the same brain - supporting adds energy and features, never a different personality.</p>
   </div>
   <div class="tiers">
-    <a class="tier reveal" href="login.html"><div class="tier-img"><img src="img/tier-free.jpg" alt="" loading="lazy" style="object-position:center 42%"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 to start + 50 / day</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
-    <a class="tier reveal" style="--d:.06s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-pet.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Pet</h3><div class="price">$9.99<small> / mo</small></div><p class="energy">250 energy every day</p><ul><li>Her 18+ side (opt-in, text only)</li><li>Send her pictures</li><li>3 roadmap votes a month</li></ul></div></a>
+    <a class="tier reveal zoom" href="login.html"><div class="tier-img"><img src="img/tier-free.jpg" alt="" loading="lazy" style="object-position:center 42%"></div><div class="tier-body"><h3>Free</h3><div class="price">$0</div><p class="energy">500 to start + 50 / day</p><ul><li>She lives on your desktop</li><li>AI chat and her voice</li><li>Memory and her diary</li></ul></div></a>
+    <a class="tier reveal zoom" style="--d:.06s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-pet.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Pet</h3><div class="price">$9.99<small> / mo</small></div><p class="energy">250 energy every day</p><ul><li>Her 18+ side (opt-in, text only)</li><li>Send her pictures</li><li>3 roadmap votes a month</li></ul></div></a>
     <a class="tier featured reveal" style="--d:.12s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><span class="tag">Most popular</span><div class="tier-img"><img src="img/tier-devoted.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Devoted</h3><div class="price">$19.99<small> / mo</small></div><p class="energy">500 energy every day</p><ul><li>She texts you first on Discord</li><li>Looks at your screen or webcam when you ask</li><li>Watch &amp; play together</li></ul></div></a>
-    <a class="tier reveal" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited* everyday use</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
+    <a class="tier reveal zoom" style="--d:.18s" href="https://www.patreon.com/ChooChwain" target="_blank" rel="noopener"><div class="tier-img"><img src="img/tier-obsessed.jpg" alt="" loading="lazy"></div><div class="tier-body"><h3>Obsessed</h3><div class="price">$39.99<small> / mo</small></div><p class="energy">Unlimited* everyday use</p><ul><li>She hangs out in your Discord server</li><li>Streaming tools</li><li>Early-access builds</li></ul></div></a>
   </div>
   <p class="fine" style="text-align:center;margin-top:18px">* Generous daily fair-use limit to prevent abuse. Subscriptions renew monthly through Patreon until you cancel there. <a href="plans.html">Compare every feature</a></p>
 </section>
@@ -212,16 +232,16 @@
     <div class="card reveal" style="--d:.06s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h4"/></svg></div><h3>Little data, kept short</h3><p>Her memory of you lives on your PC. Chats are sent to the AI provider to be answered and are not stored on her server. <a href="privacy.html">Privacy Policy</a></p></div>
     <div class="card reveal" style="--d:.12s"><div class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4.9 4.9l14.2 14.2"/></svg></div><h3>Clear content rules</h3><p>Adults only, 18+ mode is opt-in and text only. No sexual content involving minors, no intimate imagery of real people. <a href="terms.html">Terms of Service</a></p></div>
   </div>
-  <div class="signin-note reveal"><span class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H2v3h3v3h3v-3h3.1A4 4 0 0 1 15 7zM16 11h.01"/></svg></span><p style="margin:0"><b>About sign-in:</b> Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+  <div class="signin-note reveal"><span class="ico"  aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H2v3h3v3h3v-3h3.1A4 4 0 0 1 15 7zM16 11h.01"/></svg></span><p style="margin:0"><b>About sign-in:</b> Signing in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync your energy and perks.</p></div>
 </section>
 
 <section id="faq">
   <div class="section-head reveal"><span class="kicker">FAQ</span><h2>Before you let her in</h2></div>
   <div class="faq reveal">
     <details open><summary>What exactly is Choochie?</summary><p>A desktop companion app for Windows 10 and 11. An animated 3D anime character lives on a transparent overlay above your desktop and chats with you using an AI model (text) and a generated voice. You're talking to an AI character, not a person - her replies can be wrong or inappropriate.</p></details>
-    <details><summary>Is it safe to run?</summary><p>Yes. She's a normal Windows app drawing on her own transparent overlay. She never deletes, moves or reads your files and never records your keyboard. Her "virus" and ChoochieOS pranks are visual effects on her overlay only, and every desktop trick is off until you turn it on and confirm.</p></details>
+    <details><summary>Is it safe to run?</summary><p>Yes. She's a normal Windows app drawing on her own transparent overlay. She never deletes, moves or reads your files and never records your keyboard. Her "virus" and ChoochieOS takeovers are visual effects on her overlay only, and every desktop trick is off until you turn it on and confirm.</p></details>
     <details><summary>What does she have access to?</summary><p>Only what you allow: your mic (only while you speak), a screenshot of the window you ask her to look at, your webcam when you press "Let her see me". Window positions are used so she knows where to sit. Optional "notice what I'm doing" features read the active window's title and app name on your PC; only the type of app is sent to the AI, never titles or content.</p></details>
-    <details><summary>Why do I sign in, and what does it share?</summary><p>Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images. We keep the provider's user id and a display name - <a href="privacy.html#signin">details in the Privacy Policy</a>.</p></details>
+    <details><summary>Why do I sign in, and what does it share?</summary><p>Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync your energy and perks. We keep the provider's user id and a display name - <a href="privacy.html#signin">details in the Privacy Policy</a>.</p></details>
     <details><summary>Does she make pictures?</summary><p>No. Choochie writes text and speaks; she does not generate or edit images. Pictures you choose to send her are only looked at to answer you and are not stored on her server.</p></details>
     <details><summary>What is energy?</summary><p>Everything she thinks, says and sees costs a little energy - in the app and in the web chat on this site, from one shared balance. Your account gets energy every day and plans give you more. You can also buy extra energy on Ko-fi; bought energy never expires and works in both.</p></details>
     <details><summary>Who can use it?</summary><p>Adults only (18+). The 18+ mode is a separate opt-in and stays text-only. In the web chat it's open to every signed-in account; in the app it comes with a supporter plan.</p></details>
@@ -230,7 +250,7 @@
 </section>
 
 <section>
-  <div class="final reveal">
+  <div class="final reveal zoom">
     <img src="img/portrait-cta.jpg" alt="Choochie grinning, finger at her fang" loading="lazy" width="110" height="110">
     <h2>Go on. Let her in.</h2>
     <p class="sub" style="margin:0 auto">She's free to try, and she's been waiting. (She'll deny it.)</p>
@@ -243,13 +263,14 @@
 
 <footer id="site-foot"></footer>
 
-<script src="site.js?v=10"></script>
+<script src="site.js?v=11"></script>
 <script>
 // home: top 5 of this month; the section stays hidden if her server doesn't answer
 (async function topPets() {
   const box = document.getElementById("hlb"), wrap = document.getElementById("top-pets");
   if (!box || !wrap) return;
-  let d; try { d = await api("/pet/ai/v1/leaderboard?period=month"); } catch (e) { return; }
+  let d; try { d = await pub("/pet/ai/v1/leaderboard?period=month"); if (d && d.warming) { await new Promise(z => setTimeout(z, 5000)); d = await pub("/pet/ai/v1/leaderboard?period=month"); } } catch (e) { return; }
+  if (!d || d.warming) return;
   const en = (d && Array.isArray(d.entries) ? d.entries : []).slice(0, 5), n = x => Number(x || 0).toLocaleString();
   const pod = (e, r) => !e ? `<div class="pod r${r} ghost"><div class="medal">${r}</div><span class="nick">Open spot</span><span class="fine">could be you~</span></div>`
     : `<div class="pod r${r}">${r === 1 ? '<span class="crown" aria-hidden="true">👑</span>' : ""}<div class="medal">${esc(e.rank || r)}</div>
@@ -263,6 +284,6 @@
   wrap.hidden = false;
 })();
 </script>
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>

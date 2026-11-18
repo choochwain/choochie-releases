@@ -619,3 +619,9 @@ footer{text-align:left}
 body.emodal-open{overflow:hidden}
 @media (max-width:520px){.emodal{align-items:flex-end;padding:0}.emodal-card{width:100%;border-radius:24px 24px 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));max-height:92dvh}}
 @media (prefers-reduced-motion:reduce){.ebar-fill,.ebar-ghost,.ebar-plus{transition:none}.ebar-fill::after,.ebar.low .ebar-fill,.ebar.loading .ebar-track,.emodal-card{animation:none}}
+
+/* nav: the Discord invite (its link comes from DISCORD_INVITE in site.js) */
+.nav nav a.nav-discord{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;color:var(--rose-soft);background:rgba(255,92,138,.08);border:1px solid var(--stroke2)}
+.nav nav a.nav-discord:hover{color:#fff;border-color:var(--rose);background:rgba(255,92,138,.16)}
+.nav-discord svg{width:16px;height:16px;flex:none}
+@media (max-width:860px){.nav nav a.nav-discord{justify-content:flex-start;padding:10px 12px;margin:4px 0}}

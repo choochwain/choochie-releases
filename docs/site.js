@@ -1,11 +1,14 @@
 // Shared bits for every page: header, footer, 18+ gate, sign-in state, server calls, plans table.
 const API = "https://stream-alerts-bot.onrender.com";
+// The public Discord invite - the ONLY place it lives. The owner is moving to a new server soon:
+// paste the new invite here and every Discord button and link on the site follows (elements with data-discord).
+const DISCORD_INVITE = "https://discord.gg/Ndu38dVCma";
 const LINKS = {
   repo: "choochwain/choochie-releases",
   patreon: "https://www.patreon.com/ChooChwain",
   kofi: "https://ko-fi.com/dahmeows",
   beacons: "https://beacons.ai/choochwain",
-  discord: "https://discord.gg/Ndu38dVCma",          // your Discord invite, e.g. "https://discord.gg/xxxxxxx" (empty = hidden)
+  discord: DISCORD_INVITE,                            // empty = her link page instead (it lists the server)
 };
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -35,6 +38,16 @@ async function api(path, opts = {}) {
   return j;
 }
 
+// public, read-only server data (leaderboard, counts): no Authorization header, so no CORS preflight.
+// Her server may be asleep: one quiet retry after `retryMs`.
+async function pub(path, retryMs = 6000) {
+  for (let i = 0; ; i++) {
+    try { const r = await fetch(API + path); if (r.ok) return await r.json(); if (r.status < 500 || i) throw Object.assign(new Error("Something went wrong (" + r.status + ")"), { status: r.status }); }
+    catch (e) { if (i || e.status) throw e.status ? e : Object.assign(new Error("Her server is waking up - try again in a few seconds."), { status: 0 }); }
+    await new Promise(z => setTimeout(z, retryMs));
+  }
+}
+
 // a fresh login lands on account.html#t=<session>: keep it before the header draws
 (function takeSession() { const f = new URLSearchParams(location.hash.slice(1)); if (f.get("t")) Auth.set(f.get("t")); })();
 
@@ -46,6 +59,9 @@ const NAV = [
 ];
 // Discord: the invite when set, otherwise her link page (which lists it)
 const discordHref = () => LINKS.discord || LINKS.beacons;
+const ICON_DISCORD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A17 17 0 0 0 15.4 4l-.5 1.1a15.6 15.6 0 0 0-5.8 0L8.6 4a17 17 0 0 0-4.2 1.3C1.7 9.3 1 13.2 1.3 17a17.2 17.2 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.3 12.3 0 0 0 11.4 0l.4.3-1.7.8 1.1 1.8a17.1 17.1 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7zM8.5 14.7c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1zm7 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>';
+// every [data-discord] link on any page (static or drawn here) points at the one invite above
+function wireDiscord(root) { (root || document).querySelectorAll("a[data-discord]").forEach(a => { a.href = discordHref(); if (!a.target) { a.target = "_blank"; a.rel = "noopener"; } }); }
 function renderChrome() {
   const here = location.pathname.split("/").pop() || "index.html";
   document.documentElement.classList.add("js");
@@ -64,6 +80,7 @@ function renderChrome() {
       <a class="brand" href="index.html"><img src="img/favicon.png" alt="" width="28" height="28"><span>Choochie</span></a>
       <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
       <nav aria-label="Main">${NAV.map(([h, t]) => `<a href="${h}"${h === here ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
+        <a class="nav-discord" href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>${ICON_DISCORD}<span>Discord</span></a>
         ${Auth.signedIn
           ? `<a class="nav-account" href="account.html"${here === "account.html" ? ' aria-current="page"' : ""}><span class="avatar">${esc((name || "?")[0].toUpperCase())}</span>${esc(name || "Account")}</a>`
           : `<a class="btn btn-primary btn-sm" href="login.html">Log in</a>`}
@@ -75,12 +92,13 @@ function renderChrome() {
   if (foot) foot.innerHTML = `
     <div class="foot-cols">
       <div class="foot-brand"><strong>Choochie</strong><p class="fine">An AI-powered 3D desktop companion for Windows 10 / 11: a bratty anime cat-girl who lives on your screen, talks, listens and remembers you. 18+ only.</p>
-        <p class="fine">Sign-in (Discord, Patreon, X, or Google if offered) is only used to identify your account and sync energy/perks; it is never used to generate images.</p></div>
+        <p class="fine">Sign-in is only used to identify your account and sync your energy and perks.</p></div>
       <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
-      <div><strong>Community</strong><a href="${discordHref()}" target="_blank" rel="noopener">Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
+      <div><strong>Community</strong><a href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
       <div><strong>Legal</strong><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="privacy.html#delete">Delete your data</a><a href="privacy.html#contact">Contact</a></div>
     </div>
     <div class="foot-note"><span>© ${new Date().getFullYear()} Choochie. Fictional character; replies are AI-generated.</span><span>Not affiliated with or endorsed by Discord, Patreon, X or Google.</span></div>`;
+  wireDiscord();
 }
 
 // ---- scroll reveal + hero parallax (skipped when the visitor prefers less motion)
