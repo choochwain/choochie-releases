@@ -122,8 +122,8 @@ function render(v) {
   $("#ac-extra").textContent = fmt(v.energy.extra); $("#ac-pcs").textContent = v.devices; $("#ac-votes").textContent = (v.votes || [])[Math.min(v.tier, 3)] || 0;
   $("#ac-cta").innerHTML = (v.tier < 3 ? `<a class="btn btn-primary btn-sm" href="${LINKS.patreon}" target="_blank" rel="noopener">${v.tier > 0 ? "Upgrade on Patreon" : "Join on Patreon"}</a>` : "")
     + (v.energy.code ? `<a class="btn btn-ghost btn-sm" href="#energy">Buy extra energy</a>` : `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`);
-  $("#ac-adult-wrap").hidden = !v.features.includes("adult");
-  $("#ac-adult").checked = store.get("choochie.webAdult") === "1";
+  $("#ac-adult-wrap").hidden = false;
+  $("#ac-adult").checked = store.get("choochie.webAdult") === "1" && store.get("choochie.web18") === "1";
   const avail_ = providerMap({ providers: v.providers || {} });
   $("#ac-logins").innerHTML = PROV_ORDER.filter(p => p !== "google" || avail_.google || (v.logins || {}).google).map(p => {
     const on = (v.logins || {})[p], avail = avail_[p];
@@ -206,7 +206,13 @@ $("#ac-delete").addEventListener("click", async () => {
   if (prompt('This deletes your account and its extra energy. Type DELETE to confirm.') !== "DELETE") return;
   try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "index.html"; } catch (err) { toast(err.message, true); }
 });
-$("#ac-adult").addEventListener("change", e => store.set("choochie.webAdult", e.target.checked ? "1" : null));
+$("#ac-adult").addEventListener("change", e => {
+  if (e.target.checked && store.get("choochie.web18") !== "1") {
+    if (!confirm("18+ mode allows explicit adult chat.\n\nPlease confirm you are 18 or older.")) { e.target.checked = false; return; }
+    store.set("choochie.web18", "1");
+  }
+  store.set("choochie.webAdult", e.target.checked ? "1" : null);
+});
 
 </script>
 </body>
