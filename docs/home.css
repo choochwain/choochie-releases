@@ -52,8 +52,6 @@ html{overflow-x:clip}                 /* decorative glows/marquee never cause si
 /* ---- scroll reveal variants (on top of the shared .reveal) */
 .js .reveal.zoom{transform:translateY(20px) scale(.96)}
 .js .reveal.zoom.in{transform:none}
-.feature-media.reveal.in img{animation:kenburns 14s ease-in-out infinite alternate}
-@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.045)}}
 .feature-media{overflow:hidden}
 
 /* ---- Discord banner */
