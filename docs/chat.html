@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Talk to Choochie</title>
-<meta name="description" content="Talk to Choochie in your browser: she stands in her room, answers out loud and reacts to you. Type, send a picture, take a webcam snapshot or hold to talk. Uses the same energy as the desktop app.">
+<meta name="description" content="Talk to Choochie in your browser: she stands in her room, answers out loud and reacts to you. Type, send a picture, take a webcam snapshot, hold to talk or start a video call. Uses the same energy as the desktop app.">
 <meta name="theme-color" content="#140a0e">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="model/choochie.glb?v=3" as="fetch" crossorigin>
 <link rel="stylesheet" href="fonts/nunito.css">
 <link rel="stylesheet" href="style.css?v=8">
-<link rel="stylesheet" href="chat.css?v=4">
+<link rel="stylesheet" href="chat.css?v=5">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 <body class="c3" data-energy="self">
@@ -45,12 +45,23 @@
 
   <section class="c3-caption" id="caption" aria-live="polite"><span class="who">Choochie</span><p id="caption-t"></p><button type="button" class="c3-hear" id="hear" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg>tap to hear her</button></section>
 
+  <div class="c3-self" id="self" hidden><video id="self-v" playsinline muted autoplay aria-label="Your camera (mirrored preview)"></video><span class="c3-live" aria-hidden="true"><i></i>LIVE</span></div>
+
   <div class="c3-bottom">
+    <div class="c3-call" id="call" hidden role="region" aria-label="Video call">
+      <span class="c3-live"><i></i>LIVE</span>
+      <span class="c3-call-t" id="call-t" aria-label="Call length">0:00</span>
+      <span class="c3-call-e" title="Energy used in this call"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.2 2 4.5 13.4h6.1L9.8 22l8.7-11.4h-6.1z"/></svg><b id="call-e">0</b><small id="call-cost"></small></span>
+      <span class="c3-call-s" id="call-s" aria-live="polite"></span>
+      <button type="button" class="c3-ib sm" id="call-mic" aria-pressed="false" title="Mute your mic" aria-label="Mute your mic" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/><path class="off" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M1 1l22 22M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V4a3 3 0 0 0-5.9-.6M17 16.9A7 7 0 0 1 5 12v-2m14 0v2c0 .8-.1 1.5-.4 2.2M12 19v4M8 23h8"/></svg></button>
+      <button type="button" class="c3-end" id="call-end">End call</button>
+    </div>
     <form class="c3-comp" id="composer" hidden>
       <div class="c3-attach" id="attach" hidden><img id="attach-img" alt="Picture to send"><span>This picture goes with your next message.</span><button type="button" class="linkish" id="attach-x">Remove</button></div>
       <div class="c3-row">
         <button type="button" class="c3-ib" id="b-file" title="Send a picture" aria-label="Send a picture"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 15l-5-5L5 21M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg></button>
         <button type="button" class="c3-ib" id="b-cam" title="Webcam snapshot" aria-label="Take a webcam snapshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></button>
+        <button type="button" class="c3-ib vc" id="b-call" aria-pressed="false" title="Video call: she watches your webcam live" aria-label="Start a video call"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M23 7l-7 5 7 5zM14 5H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/></svg><span>Call</span></button>
         <input type="file" id="file" accept="image/*" hidden>
         <textarea id="text" rows="1" maxlength="800" placeholder="Talk to her…" aria-label="Message"></textarea>
         <button type="button" class="c3-ib" id="b-mic" title="Hold to talk" aria-label="Hold to talk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
@@ -81,8 +92,26 @@
   </div>
 </div>
 
+<div class="cam" id="callok" hidden role="dialog" aria-modal="true" aria-labelledby="callok-h">
+  <div class="cam-card callok">
+    <h3 id="callok-h" style="margin:0 0 6px">Video call with Choochie</h3>
+    <p class="fine" style="margin:0 0 10px">She watches your webcam live, reacts to what she sees and talks with you.</p>
+    <ul>
+      <li><b>Your camera is only on during the call.</b> She looks at a small, low-res snapshot now and then, and every time you talk.</li>
+      <li><b>Nothing is stored.</b> Each snapshot and voice clip is used for one reply and then dropped. Only her chat lines stay, in this tab.</li>
+      <li><b>End it any time</b> with End call. Leaving or hiding the page ends it too, and your camera and mic switch off.</li>
+      <li id="callok-cost">Each look uses a little energy.</li>
+    </ul>
+    <label class="switch" id="callok-microw"><input type="checkbox" id="callok-mic" checked> Hands-free talking: your mic listens during the call (you can mute it)</label>
+    <div class="row">
+      <button class="btn btn-primary btn-sm" id="callok-go" type="button">Start video call</button>
+      <button class="btn btn-ghost btn-sm" id="callok-x" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script src="site.js?v=10"></script>
 <script type="module" src="js/stage.js?v=3"></script>
-<script src="chat.js?v=10"></script>
+<script src="chat.js?v=11"></script>
 </body>
 </html>

@@ -118,6 +118,43 @@ body.c3{margin:0;min-height:100vh;min-height:100dvh;overflow:hidden;background:#
  .c3-fine{font-size:10.5px}
  .c3-brand b{font-size:16px}
 }
+/* video call: button, call bar (LIVE, time, energy used, status, mic, End call), mirrored self-view, consent card */
+.c3-ib.vc{width:auto;padding:0 13px 0 11px;gap:6px;display:inline-flex;align-items:center;font:800 13.5px var(--body,'Nunito',system-ui,sans-serif);border-color:rgba(255,92,138,.45);color:var(--rose-soft,#ffc2d4)}
+.c3-ib.vc svg{flex:none}
+.c3.incall #b-call,.c3.incall #b-cam,.c3.incall-hf #b-mic{display:none}
+.c3-call{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:6px 6px 6px 12px;border-radius:18px;background:rgba(24,14,19,.88);border:1px solid rgba(255,74,92,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 30px rgba(0,0,0,.35);font-size:13.5px}
+.c3-call[hidden]{display:none}
+.c3-live{display:inline-flex;align-items:center;gap:6px;flex:none;padding:3px 9px 3px 8px;border-radius:99px;background:#e0263a;color:#fff;font-weight:800;font-size:11.5px;letter-spacing:.08em;line-height:1.3}
+.c3-live i{width:7px;height:7px;border-radius:50%;background:#fff;animation:c3blink 1.2s ease-in-out infinite}
+@keyframes c3blink{50%{opacity:.25}}
+.c3-call-t{flex:none;font-weight:800;font-variant-numeric:tabular-nums}
+.c3-call-e{flex:none;display:inline-flex;align-items:center;gap:3px;color:var(--rose-soft,#ffc2d4);font-variant-numeric:tabular-nums}
+.c3-call-e svg{width:14px;height:14px}
+.c3-call-e small{margin-left:6px;font-size:12px;color:var(--faint,#968089)}
+.c3-call-s{flex:1;min-width:0;color:var(--dim,#bba7b0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c3-end{flex:none;margin-left:auto;border:0;border-radius:13px;padding:9px 15px;background:#e0263a;color:#fff;font:800 13.5px var(--body,'Nunito',system-ui,sans-serif);cursor:pointer;box-shadow:0 6px 18px rgba(224,38,58,.35)}
+.c3-end:hover{background:#f2364b}.c3-end:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#call-mic[hidden]{display:none}
+#call-mic .off{display:none}#call-mic[aria-pressed="true"] .on{display:none}#call-mic[aria-pressed="true"] .off{display:inline}
+#call-mic[aria-pressed="true"]{background:rgba(224,38,58,.28);border-color:#ff4a5c}
+.c3-self{position:absolute;left:max(16px,env(safe-area-inset-left));top:76px;width:208px;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:#000;border:2px solid rgba(255,255,255,.14);box-shadow:0 12px 34px rgba(0,0,0,.45);transition:border-color .2s,box-shadow .2s}
+.c3-self[hidden]{display:none}
+.c3-self video{display:block;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.c3-self .c3-live{position:absolute;left:7px;top:7px;padding:2px 7px;font-size:10px}
+.c3-self.talk{border-color:#ff5c8a;box-shadow:0 0 0 3px rgba(255,92,138,.4),0 12px 34px rgba(0,0,0,.45)}
+.c3-self.look::after{content:"";position:absolute;inset:0;border-radius:14px;box-shadow:inset 0 0 0 2px rgba(255,194,212,.75);animation:c3blink 1s ease-in-out infinite}
+.callok ul{margin:0 0 12px;padding-left:20px;text-align:left;font-size:14px;line-height:1.45;display:grid;gap:6px}
+.callok .switch{display:flex;align-items:flex-start;text-align:left;font-size:13.5px}
+.callok .switch input{margin-top:3px;flex:none}
+@media (max-width:1180px){.c3.flat.incall .c3-side{top:244px}}
+@media (max-width:520px){
+ .c3-ib.vc{width:38px;padding:0}.c3-ib.vc span{display:none}
+ .c3-self{width:124px;top:64px;border-radius:12px}.c3-self.look::after{border-radius:10px}
+ .c3-call{gap:8px;padding-left:9px;font-size:12.5px}.c3-call-e small{display:none}.c3-end{padding:8px 12px}
+ .c3.flat.incall .c3-side{top:166px}
+}
+@media (max-width:400px){.c3-call-s{display:none}}
+@media (prefers-reduced-motion:reduce){.c3-live i,.c3-self.look::after{animation:none}}
 /* no WebGL: the classic chat, centred */
 .c3.flat .c3-side{position:absolute;left:50%;right:auto;top:72px;bottom:calc(var(--bh,140px) + 12px);width:min(720px,calc(100vw - 32px));transform:translateX(-50%);opacity:1;pointer-events:auto;height:auto;background:rgba(20,11,15,.6)}
 .c3.flat .c3-caption,.c3.flat #b-hist,.c3.flat #side-x,.c3.flat .c3-load{display:none}
