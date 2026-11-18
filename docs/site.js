@@ -53,8 +53,7 @@ async function pub(path, retryMs = 6000) {
 const LOGIN_FRAG = new URLSearchParams(location.hash.slice(1));
 const sessionReady = (function takeSession() {
   const c = LOGIN_FRAG.get("c"), t = LOGIN_FRAG.get("t");
-  if (c || t) try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-  if (t && !c) Auth.set(t);   // TRANSITION ONLY (until the server sends codes): removed in the next commit
+  if (c || t) try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}   // a session (#t=) in a link is never taken: only cleared
   if (!c || !/^[0-9a-f]{48}$/.test(c)) return Promise.resolve(false);
   const swap = () => fetch(API + "/pet/ai/auth/exchange", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ c }) });
   return swap().catch(() => new Promise(z => setTimeout(z, 1500)).then(swap))

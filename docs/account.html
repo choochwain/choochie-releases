@@ -100,11 +100,11 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=12"></script>
+<script src="site.js?v=13"></script>
 <script>
 
 const frag = LOGIN_FRAG;   // site.js already read (and cleared) the address bar
-const freshLogin = !!(frag.get("c") || frag.get("t"));
+const freshLogin = !!frag.get("c");
 let view = null;
 const fmt = n => Number(n).toLocaleString();
 function render(v) {
