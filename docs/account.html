@@ -100,13 +100,11 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=11"></script>
+<script src="site.js?v=12"></script>
 <script>
 
-const frag = new URLSearchParams(location.hash.slice(1));
-if (frag.get("t")) { Auth.set(frag.get("t")); history.replaceState(null, "", location.pathname); }
-if (!Auth.signedIn) location.replace("login.html");
-else if (frag.get("t") && !frag.get("app")) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") location.replace("chat.html"); }
+const frag = LOGIN_FRAG;   // site.js already read (and cleared) the address bar
+const freshLogin = !!(frag.get("c") || frag.get("t"));
 let view = null;
 const fmt = n => Number(n).toLocaleString();
 function render(v) {
@@ -189,9 +187,14 @@ $("#lb-save").addEventListener("click", () => lbPost({ nickname: $("#lb-nick").v
 $("#lb-nick").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("#lb-save").click(); } });
 async function load() { try { render(await api("/pet/ai/v1/account")); } catch (e) { if (e.status === 401) location.replace("login.html"); else $("#ac-head .sub").textContent = e.message; } }
 const banner = (cls, html) => $("#ac-banner").innerHTML = `<div class="note ${cls}" style="margin-bottom:16px">${html}</div>`;
-if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
-else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with starter energy to get to know her.");
-load();
+sessionReady.then(fresh => {
+  if (fresh) renderChrome();                                           // the header was drawn before the session arrived
+  if (!Auth.signedIn) { location.replace(frag.get("c") ? "login.html?expired=1" : "login.html"); return; }
+  if (freshLogin && !frag.get("app")) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") { location.replace("chat.html"); return; } }
+  if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
+  else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with starter energy to get to know her.");
+  load();
+});
 
 document.addEventListener("click", async e => {
   const l = e.target.closest("[data-link]"), u = e.target.closest("[data-unlink]");
@@ -216,6 +219,6 @@ $("#ac-adult").addEventListener("change", e => {
 });
 
 </script>
-<script src="play.js?v=1" defer></script>
+<script src="play.js?v=3" defer></script>
 </body>
 </html>

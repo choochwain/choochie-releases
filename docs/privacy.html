@@ -37,7 +37,7 @@
 <div class="prose">
 
 <h2 id="summary">1. Summary</h2>
-<div class="callout"><p>Choochie is an AI desktop companion app for Windows, with an optional web chat on this site. Sign-in only identifies your account and syncs your energy and perks. We never ask for your e-mail address or password, we don't keep sign-in providers' access tokens, and we don't store your chat messages, pictures or voice messages. Her memory of you lives on your own PC. We don't sell your personal data, and there are no ads or tracking on this site or in the app.</p></div>
+<div class="callout"><p>Choochie is an AI desktop companion app for Windows, with an optional web chat on this site. Sign-in only identifies your account and syncs your energy and perks. We never ask for your e-mail address or password, we don't keep sign-in providers' access tokens, and we don't store your chat messages, pictures or voice messages. In the app, her memory of you lives on your own PC; for the web chat we keep only a short text memory of you that you can delete any time. We don't sell your personal data, and there are no ads or tracking on this site or in the app.</p></div>
 
 <h2 id="contact">2. Who we are and how to contact us</h2>
 <!-- Operator identity intentionally limited to e-mail contact (owner's decision). -->
@@ -60,8 +60,9 @@
 <h2 id="collect">4. What we collect and why</h2>
 <ul>
   <li><strong>Your account</strong> - to run it and give you what you're entitled to: an account id, your account name, your linked logins, the PCs signed in to it (up to 10), your energy balance, your Patreon tier, and your roadmap votes and ideas. If you join the leaderboard, your chosen nickname, level and points are shown publicly; leave any time.</li>
-  <li><strong>Web chat</strong> - to answer you: your message, the recent conversation (sent by your browser for context) and, only if you choose, a picture, webcam snapshot or voice message. These are passed to our AI providers to create her reply and are not stored by us. Your browser keeps the conversation in this tab only, until you close it. On a video call, small snapshots of your camera are sent the same way and never stored.</li>
+  <li><strong>Web chat</strong> - to answer you: your message, the recent conversation (sent by your browser for context) and, only if you choose, a picture, webcam snapshot or voice message. These are passed to our AI providers to create her reply and are not stored by us. Your browser keeps the conversation in this tab only, until you close it. On a video call, small snapshots of your camera are sent the same way and never stored; she keeps only a few short text notes of what she saw (for example "holding a mug, blue hoodie") in our server's working memory so she doesn't repeat herself. They are not written to our database and are gone 10 minutes after the call.</li>
   <li><strong>Her memory of you (signed-in accounts)</strong> - so she remembers you next time, we keep a short <em>text</em> summary and a few facts from your web chats (for example your nickname, things you like, topics you talked about, or a few words about what you showed her on a call). It never contains pictures, video or audio, and we try to keep sensitive details out of it. You can delete it any time with <strong>Forget me</strong> in the chat menu; it is also deleted with your account, or after 180 days without chatting.</li>
+  <li><strong>Play progress (signed-in accounts)</strong> - for the levels, streaks and games on this site: your bond level and XP, the days you visited (the last 60), your kisses, affection meter, badges, outfits unlocked and worn, today's quest progress and game stats (for example wins and best scores). It is kept with your account. If you join the leaderboard, your bond level, title and streak are shown next to your nickname.</li>
   <li><strong>Desktop app</strong> - your settings, her memories and your chat history stay on your PC. To create a reply, the app sends your message and, only when you turn them on or ask for them, screenshots, photos, webcam snapshots or your voice (only while you speak). Optional "notice what I'm doing" features read the active window's title and app name on your PC; only the type of app is sent, never titles or content, and password managers, banking and private windows are skipped.</li>
   <li><strong>Payments</strong> - you pay on Patreon, Ko-fi or Streamlabs; we never see your card details. We receive what we need to give you what you paid for (your Patreon tier, or a Ko-fi payment confirmation).</li>
   <li><strong>Security</strong> - to stop abuse (for example repeated free starter energy), we use short-term checks and keep a one-way fingerprint of PCs that already received starter energy. Our hosting provider keeps technical logs, which never contain your messages, pictures or audio.</li>
@@ -71,7 +72,7 @@
 <div class="table-wrap"><table class="data-table">
   <thead><tr><th scope="col">Provider</th><th scope="col">Role</th><th scope="col">What it receives</th></tr></thead>
   <tbody>
-    <tr><th scope="row">Venice.ai</th><td>AI provider</td><td>Chat text, pictures you send, and voice messages to turn into text</td></tr>
+    <tr><th scope="row">Venice.ai</th><td>AI provider</td><td>Chat text, pictures and video-call snapshots you send, and voice messages to turn into text</td></tr>
     <tr><th scope="row">Inworld</th><td>AI voice provider</td><td>The text of her replies, to speak them</td></tr>
     <tr><th scope="row">Render</th><td>Server hosting</td><td>Requests to our server</td></tr>
     <tr><th scope="row">Upstash</th><td>Database hosting</td><td>Your account data</td></tr>
@@ -95,13 +96,14 @@
 <ul>
   <li><strong>Chat messages, pictures, audio, video-call snapshots:</strong> not stored - used only to create the reply.</li>
   <li><strong>Her text memory of you (web chat):</strong> until you use Forget me, delete your account, or 180 days without chatting.</li>
+  <li><strong>Play progress:</strong> until you delete your account.</li>
   <li><strong>Account data:</strong> until you delete your account (roadmap vote rounds expire after about 400 days).</li>
   <li><strong>Short-term anti-abuse checks:</strong> no more than a day. <strong>Technical logs:</strong> a limited period, under our hosting provider's policy.</li>
   <li><strong>Starter-energy fingerprint:</strong> until you ask us to remove it.</li>
 </ul>
 
 <h2 id="delete">9. How to delete your data</h2>
-<p><strong>On the website:</strong> sign in, open your <a href="account.html">account page</a> and press <strong>Delete account</strong>. It's immediate and removes your account, all its logins, your energy, your linked PCs' plan, tester and Patreon links, energy bought on those PCs, their payment codes and Discord links, your Patreon membership record and all your roadmap votes. Roadmap ideas you posted stay without your name. We keep only the one-way starter-energy fingerprint (so free energy can't be farmed); e-mail us to remove that too.</p>
+<p><strong>On the website:</strong> sign in, open your <a href="account.html">account page</a> and press <strong>Delete account</strong>. It's immediate and removes your account, all its logins, your energy, your linked PCs' plan, tester and Patreon links, energy bought on those PCs, their payment codes and Discord links, your Patreon membership record, all your roadmap votes, your play progress and leaderboard entry, and her web chat memory of you. Roadmap ideas you posted stay without your name. We keep only the one-way starter-energy fingerprint (so free energy can't be farmed); e-mail us to remove that too.</p>
 <p>Deletion is from our live database; we don't keep our own backups, and any backups held by our database provider follow its own retention.</p>
 <!-- OWNER TODO: confirm Upstash's backup retention for your plan. -->
 <p>You can ask to see a copy of your data or have it deleted by e-mailing <a href="mailto:support.choochiespet@gmail.com">support.choochiespet@gmail.com</a>. <strong>On your PC:</strong> uninstall Choochie and delete its data folder (<code>%APPDATA%ClinglyPet</code>). Cancel a Patreon membership on Patreon.</p>
@@ -117,6 +119,6 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=11"></script>
+<script src="site.js?v=12"></script>
 </body>
 </html>

@@ -26,14 +26,14 @@ const Auth = {
   get signedIn() { return !!this.token; },
 };
 async function api(path, opts = {}) {
-  const headers = Object.assign({}, opts.headers || {});
-  if (Auth.token) headers.Authorization = "Bearer " + Auth.token;
+  const headers = Object.assign({}, opts.headers || {}), sent = Auth.token;
+  if (sent) headers.Authorization = "Bearer " + sent;
   if (opts.body && typeof opts.body !== "string") { headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(opts.body); }
   let r;
   try { r = await fetch(API + path, Object.assign({}, opts, { headers })); }
   catch (e) { throw Object.assign(new Error("Her server is waking up - try again in a few seconds."), { status: 0 }); }
   let j = null; try { j = await r.json(); } catch (e) {}
-  if (r.status === 401 && path.startsWith("/pet/ai/v1/account")) Auth.clear();
+  if (r.status === 401 && path.startsWith("/pet/ai/v1/account") && sent && sent === Auth.token) Auth.clear();   // only the session that was refused (not a newer one)
   if (!r.ok) throw Object.assign(new Error((j && j.error) || "Something went wrong (" + r.status + ")"), { status: r.status, data: j });
   return j;
 }
@@ -48,8 +48,18 @@ async function pub(path, retryMs = 6000) {
   }
 }
 
-// a fresh login lands on account.html#t=<session>: keep it before the header draws
-(function takeSession() { const f = new URLSearchParams(location.hash.slice(1)); if (f.get("t")) Auth.set(f.get("t")); })();
+// a fresh login lands on account.html#c=<one-time code>: the code leaves the address bar at once and is swapped for the session
+// (it works once, for 2 minutes), so a copied or shared link never signs anyone into the account. Pages that care wait for sessionReady.
+const LOGIN_FRAG = new URLSearchParams(location.hash.slice(1));
+const sessionReady = (function takeSession() {
+  const c = LOGIN_FRAG.get("c"), t = LOGIN_FRAG.get("t");
+  if (c || t) try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  if (t && !c) Auth.set(t);   // TRANSITION ONLY (until the server sends codes): removed in the next commit
+  if (!c || !/^[0-9a-f]{48}$/.test(c)) return Promise.resolve(false);
+  const swap = () => fetch(API + "/pet/ai/auth/exchange", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ c }) });
+  return swap().catch(() => new Promise(z => setTimeout(z, 1500)).then(swap))
+    .then(r => r.ok ? r.json() : null).then(j => { if (j && j.t) { Auth.set(j.t); return true; } return false; }).catch(() => false);
+})();
 
 // ---- header + footer
 const NAV = [
