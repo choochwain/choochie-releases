@@ -10,9 +10,9 @@ const EXT = {
 export const kindOfName = n => EXT.images.test(n) ? "images" : EXT.audio.test(n) ? "audio" : EXT.video.test(n) ? "video" : null;
 const kindOfType = t => /^image\//.test(t) ? "images" : /^audio\//.test(t) ? "audio" : /^video\//.test(t) ? "video" : null;
 
-// built-in defaults: used for a level (per kind) only while it has nothing of its own. The site's photos are big, so they
-// show at a set width; the owner's and the player's files always show at their real size.
-const S = n => "chat/sfx/" + n + ".mp3", I = (n, w) => ({ src: "img/" + n, w });
+// built-in defaults: used for a level (per kind) only while it has nothing of its own. They are small copies of the site's
+// photos (clicker/def/<name>-<width>.jpg) and, like every other picture, show at their own pixel size.
+const S = n => "chat/sfx/" + n + ".mp3", I = (n, w) => ({ src: "clicker/def/" + n.replace(/\.jpg$/, "") + "-" + w + ".jpg" });
 const DEF = [
   { img: [I("portrait-cta.jpg", 150)], snd: ["giggle_soft_01", "giggle_soft_02", "giggle_shy_01", "nya_cute_01", "eep_01"], words: ["hehe~", "again?", "boop", "hi cutie", "more~"] },
   { img: [I("portrait-cta.jpg", 190), I("shot-talk.jpg", 170)], snd: ["giggle_teasing_01", "giggle_teasing_02", "ehehe_01", "ehehe_02", "coo_soft_01", "nya_cute_02"], words: ["good pet~", "don't stop", "faster~", "mm, nice", "ehehe"] },
@@ -148,17 +148,18 @@ export function makeAudio(getVol) {
 
 // ------------------------------------------------------------------------------------------------ the pop-up layer
 // opts: { layer, reduced(), mediaVol(), onPop(el, x, y) when one is clicked, onGold(el, x, y) }
-export const MAX_POPS = 7, MAX_VIDEOS = 2;
+// how many show at once: opts.max() (the player's "Max pop-ups" setting, default 20); 2 of them videos at most
+export const MAX_POPS_DEFAULT = 20, MAX_POPS_LIMIT = 40, MAX_VIDEOS = 2;
 export function makePopups(opts) {
   const layer = opts.layer, live = new Set(), free = [];
   let videos = 0;
   const vw = () => document.documentElement.clientWidth, vh = () => window.innerHeight;
-  function take() { const d = free.pop() || document.createElement("button"); d.type = "button"; d.className = "ck-pop"; d.innerHTML = ""; d.removeAttribute("style"); d._fading = false; d._timer = 0; d.tabIndex = -1; return d; }
+  function take() { const d = free.pop() || document.createElement("button"); d.type = "button"; d.className = "ck-pop"; d.innerHTML = ""; d.removeAttribute("style"); d.removeAttribute("data-nat"); d._fading = false; d._timer = 0; d.tabIndex = -1; return d; }
   function done(d) {
     if (!live.has(d)) return;
     live.delete(d); clearTimeout(d._timer);
     const v = d.querySelector("video"); if (v) { try { v.pause(); v.removeAttribute("src"); v.load(); } catch (e) {} videos--; }
-    d.remove(); if (free.length < 12) free.push(d);
+    d.remove(); if (free.length < 24) free.push(d);
   }
   function fade(d, quick) {
     if (!live.has(d) || d._fading) return; d._fading = true; clearTimeout(d._timer);
@@ -173,9 +174,11 @@ export function makePopups(opts) {
     d.onpointerleave = e => { if (e.pointerType !== "mouse" || d._fading) return; arm(); };
     arm();
   }
+  // w, h = the file's own pixel size. Pictures and videos show at exactly that many CSS px (what the browser shows when you open
+  // the file at 100%), never stretched up; only when bigger than 85% of the play area are they scaled down to fit it.
   function place(d, w, h, x0, y0) {
     const A = opts.area ? opts.area() : { x: 0, y: 0, w: vw(), h: vh() };
-    const k = Math.min(1, (A.w * 0.85) / w, (A.h * 0.85) / h);   // shrink only to fit 85% of where they show
+    const k = Math.min(1, (A.w * 0.85) / w, (A.h * 0.85) / h);
     const W = Math.max(24, Math.round(w * k)), Hh = Math.max(24, Math.round(h * k));
     const x = x0 != null ? x0 - W / 2 : A.x + Math.random() * Math.max(0, A.w - W), y = y0 != null ? y0 - Hh / 2 : A.y + Math.random() * Math.max(0, A.h - Hh);
     d.style.left = Math.max(A.x, Math.min(A.x + A.w - W, x)) + "px"; d.style.top = Math.max(A.y, Math.min(A.y + A.h - Hh, y)) + "px";
@@ -183,7 +186,9 @@ export function makePopups(opts) {
     d.style.setProperty("--rot", ((Math.random() - 0.5) * (opts.reduced() ? 0 : 12)).toFixed(1) + "deg");
   }
   function show(d) { requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add("in"))); }
-  function makeRoom() { if (live.size >= MAX_POPS) { const oldest = [...live].find(x => !x._fading && !x.classList.contains("gold")); if (oldest) fade(oldest); } }
+  const maxPops = () => Math.max(1, Math.min(MAX_POPS_LIMIT, Math.round(opts.max ? opts.max() : MAX_POPS_DEFAULT)));
+  function makeRoom() { while (live.size - fading() >= maxPops()) { const oldest = [...live].find(x => !x._fading && !x.classList.contains("gold")); if (!oldest) break; fade(oldest); } }
+  const fading = () => { let n = 0; for (const d of live) if (d._fading) n++; return n; };
   function attach(d, tier, kind) {
     d.dataset.tier = tier + 1; d.dataset.kind = kind;
     d.setAttribute("aria-label", kind === "gold" ? "Golden heart: click it!" : "Pop-up: click it for bonus hearts");
@@ -202,7 +207,7 @@ export function makePopups(opts) {
       const v = document.createElement("video");
       v.playsInline = true; v.preload = "auto"; v.muted = opts.mediaVol() <= 0; v.volume = Math.min(1, Math.max(0, opts.mediaVol()));
       d.appendChild(v); d.classList.add("vid"); videos++;
-      v.addEventListener("loadedmetadata", () => { place(d, v.videoWidth || 320, v.videoHeight || 180); show(d); }, { once: true });
+      v.addEventListener("loadedmetadata", () => { place(d, v.videoWidth || 320, v.videoHeight || 180); d.dataset.nat = v.videoWidth + "x" + v.videoHeight; show(d); }, { once: true });
       v.addEventListener("ended", () => fade(d), { once: true });
       v.addEventListener("error", () => fade(d, true), { once: true });
       v.src = it.src;
@@ -215,7 +220,7 @@ export function makePopups(opts) {
     if (pick < nImg) {
       const it = pool.images[Math.floor(Math.random() * nImg)];
       const img = new Image(); img.decoding = "async"; img.alt = ""; img.draggable = false;
-      img.onload = () => { if (!live.has(d)) return; const w = it.w || img.naturalWidth, h = it.w ? it.w * img.naturalHeight / img.naturalWidth : img.naturalHeight; place(d, w, h); show(d); timer(d, life); };
+      img.onload = () => { if (!live.has(d)) return; place(d, img.naturalWidth || 200, img.naturalHeight || 200); d.dataset.nat = img.naturalWidth + "x" + img.naturalHeight; show(d); timer(d, life); };
       img.onerror = () => fade(d, true);
       if (it.def) d.classList.add("def");
       d.appendChild(img); attach(d, tier, "image"); img.src = it.src;

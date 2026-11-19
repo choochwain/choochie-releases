@@ -1,6 +1,6 @@
 // Choochie Heart Clicker: the tables. Mirrors the shared spec (CLICKER_SPEC v1.0) used by the desktop app, so both play
 // the same: same ids (they are saved), same numbers.
-export const SPEC_VERSION = "1.1";     // 1.1: nothing is capped (helpers, training, Softer Lips, levels, root skills, rebirths)
+export const SPEC_VERSION = "1.2";     // 1.1: nothing is capped; 1.2: wheel modes + Ko-fi tributes, 20 pop-ups, helpers on screen
 
 // helpers (auto-clickers). price of next = base * 1.15^owned * (1 - 0.05*rank(h_bulk))
 export const HELPERS = [
@@ -65,21 +65,46 @@ export const TIERS = TIER_AT.length;            // authored levels (= media fold
 export const tierAt = i => (i < TIER_AT.length ? TIER_AT[i] : TIER_AT[TIER_AT.length - 1] * Math.pow(30, i - TIER_AT.length + 1));
 export const tierName = i => (i < TIER_NAMES.length ? TIER_NAMES[i] : "Devilish +" + (i - TIER_NAMES.length + 1));
 
-// the Risky Wheel: 12 slices, alternating reward / penalty, equal odds
-export const WHEEL = [
-  { id: "lucky",  good: true,  icon: "💋", name: "Lucky Kiss",    desc: "+20% of your hearts (or 10 min of ♥/s)" },
-  { id: "tax",    good: false, icon: "🧾", name: "Taxed~",        desc: "lose 15% of your hearts" },
-  { id: "frenzy", good: true,  icon: "🔥", name: "FRENZY",        desc: "instant frenzy + clicks x7 for 20 s" },
-  { id: "nap",    good: false, icon: "😴", name: "Nap Time",      desc: "helpers sleep for 45 s" },
-  { id: "helper", good: true,  icon: "🎁", name: "Free Helper",   desc: "+1 of your best helper" },
-  { id: "butter", good: false, icon: "🧈", name: "Butterfingers", desc: "clicks x0.5 for 60 s" },
-  { id: "sp",     good: true,  icon: "🌟", name: "Skill Point",   desc: "+1 SP, forever" },
-  { id: "cold",   good: false, icon: "🧊", name: "Cold Shoulder", desc: "no pop-ups for 60 s" },
-  { id: "storm",  good: true,  icon: "⛈️", name: "Heart Storm",   desc: "♥/s x5 for 60 s" },
-  { id: "combo",  good: false, icon: "💔", name: "Combo Break",   desc: "heat to 0, builds half as fast for 30 s" },
-  { id: "peek",   good: true,  icon: "👀", name: "Sneak Peek",    desc: "3 pop-ups from the next locked level" },
-  { id: "slow",   good: false, icon: "🐌", name: "Slow Down",     desc: "♥/s x0.5 for 90 s" },
-];
+// the Wheel (spec 1.2 section 8): 12 slices, equal odds, two modes. kind: good | mild (normal only) | bad (risky only) | tribute.
+// A tribute is her asking for a real Ko-fi tip. It is always optional: "maybe later" only makes her sulk for a bit (in game).
+const W = (id, kind, icon, name, desc, amt) => ({ id, kind, good: kind === "good", tribute: kind === "tribute" ? amt : 0, icon, name, desc });
+const T = amt => W("trib" + amt, "tribute", "💸", "Tribute $" + amt, "a $" + amt + " Ko-fi tip to her (optional, real money)", amt);
+export const WHEELS = {
+  normal: [
+    W("n_lucky", "good", "💋", "Lucky Kiss", "+10% of your hearts (or 5 min of ♥/s)"),
+    W("n_tease", "mild", "😏", "Teased~", "clicks x0.75 for 20 s"),
+    W("n_storm", "good", "⛈️", "Heart Storm", "♥/s x3 for 45 s"),
+    W("n_helper", "good", "🎁", "Free Helper", "+1 of your best helper"),
+    W("n_yawn", "mild", "🥱", "Yawn", "♥/s x0.75 for 30 s"),
+    W("n_frenzy", "good", "🔥", "FRENZY", "instant frenzy"),
+    T(5),
+    W("n_rush", "good", "💨", "Kiss Rush", "clicks x3 for 30 s"),
+    W("n_token", "good", "🎡", "Free Spin", "+1 spin token"),
+    W("n_gold", "good", "💛", "Golden Heart", "a golden heart, right now"),
+    W("n_peek", "good", "👀", "Sneak Peek", "3 pop-ups from the next locked level"),
+    W("n_pocket", "good", "🪙", "Pocket Change", "+5% of your hearts (or 2 min of ♥/s)"),
+  ],
+  risky: [
+    W("lucky", "good", "💋", "Lucky Kiss", "+30% of your hearts (or 15 min of ♥/s)"),
+    W("tax", "bad", "🧾", "Taxed~", "lose 15% of your hearts"),
+    W("frenzy", "good", "🔥", "FRENZY", "instant frenzy + clicks x7 for 30 s"),
+    T(5),
+    W("helper", "good", "🎁", "Free Helpers", "+3 of your best helper"),
+    W("butter", "bad", "🧈", "Butterfingers", "clicks x0.5 for 60 s"),
+    W("sp", "good", "🌟", "Skill Points", "+2 SP, forever"),
+    T(10),
+    W("storm", "good", "⛈️", "Heart Storm", "♥/s x7 for 60 s"),
+    W("combo", "bad", "💔", "Combo Break", "heat to 0, builds half as fast for 30 s"),
+    W("peek", "good", "👀", "Sneak Peek", "5 pop-ups from the next locked level"),
+    T(15),
+  ],
+};
+export const wheelOf = mode => WHEELS[mode] || WHEELS.normal;
+// "maybe later" on a tribute (or Esc / a click outside / the 60 s timeout): she sulks. ♥/s only, in game only
+export const SULK = { normal: { mult: 0.8, sec: 30 }, risky: { mult: 0.5, sec: 60 } };
+export const TRIBUTE_CARD_SECONDS = 60, TRIBUTE_WINDOW = 86400;     // the card times out; a pending tribute waits 24 h
+// a tribute that really arrived ("Spoiled~"), k = amount / 5: hearts, clicks + ♥/s x3 for 10k min, +k tokens, +k SP
+export const SPOILED_MIN = 10, SPOILED_MULT = 3;
 export const TOKEN_MAX = 5, TOKEN_CLICKS = 250, TOKEN_SECONDS = 20 * 60;
 
 // achievements: each +1% production, every 4 = +1 SP. test(v) on a view of the state (see game.js achView)
@@ -145,4 +170,8 @@ export const LINES = {
   back: ["Missed me? Your helpers kept going~", "There you are. They worked, you didn't~", "Welcome back, pet~"],
   rebirth: ["Again from the start~ but stronger.", "Devoted. I like that."],
   idle: ["Hello? Did your finger fall off?", "Bored already?", "I'm waiting~"],
+  tribute: ["Tribute time~ ${amt}. Pay up, pet.", "The wheel says ${amt}. Who am I to argue~?", "${amt} for me. You know you want to~", "On your knees and open Ko-fi. ${amt}, pet~"],
+  sulk: ["Hmph. Cheapskate.", "Fine. I'm not talking to you for a bit.", "Maybe later? Tch. Noted.", "Wow. Okay. Sulking now."],
+  tributeOpen: ["Good pet~ I'll be waiting.", "Mm, that's what I like to see~"],
+  tributeThanks: ["You actually did it~ good pet. GOOD.", "Mmh, spoiled me. Here, take my blessing~"],
 };

@@ -1,7 +1,8 @@
 // Choochie Heart Clicker: the page. Input, her stage, juice (numbers, hearts, sounds), the panel tabs, the wheel, pop-ups.
 import * as G from "./game.js";
-import { HELPERS, SKILLS, BRANCHES, WHEEL, ACH, LINES, TIERS, tierAt, tierName, trainName, TOKEN_MAX, TOKEN_CLICKS, TOKEN_SECONDS } from "./data.js";
+import { HELPERS, SKILLS, BRANCHES, wheelOf, ACH, LINES, TIERS, tierAt, tierName, trainName, TOKEN_MAX, TOKEN_CLICKS, TOKEN_SECONDS, SULK, SPOILED_MIN, TRIBUTE_CARD_SECONDS } from "./data.js";
 import * as M from "./media.js";
+import { makeHelpers } from "./helpers.js";
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -14,6 +15,9 @@ const mq = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : 
 const calm = () => set.motion === "on" ? true : set.motion === "off" ? false : mq.matches;
 const vol = k => (set.muted ? 0 : set.vol * set[k]);
 function applyCalm() { document.body.classList.toggle("calm", calm()); }
+// menu size (side panel, HUD, top bar, cards, toasts): one number, 0.7 .. 1.6, saved in the settings
+function applyUi() { document.body.style.setProperty("--uiz", set.ui); }
+applyUi();
 applyCalm(); if (mq.addEventListener) mq.addEventListener("change", applyCalm);
 
 // ------------------------------------------------------------------------------------------------ sound
@@ -40,6 +44,8 @@ const sfx = {
   gold: () => { [0, 4, 7, 12].forEach((n, i) => setTimeout(() => tone(660 * Math.pow(2, n / 12), 0.16, "triangle", 0.12), i * 70)); },
   level: () => { [0, 4, 7, 12, 16].forEach((n, i) => setTimeout(() => tone(520 * Math.pow(2, n / 12), 0.22, "triangle", 0.13), i * 90)); },
   bad: () => { tone(330, 0.25, "sawtooth", 0.06, 0.6); },
+  tribute: () => { [0, 7, 12, 19].forEach((n, i) => setTimeout(() => tone(440 * Math.pow(2, n / 12), 0.2, "triangle", 0.12, 1.02), i * 85)); setTimeout(() => tone(1760, 0.3, "sine", 0.08), 380); },
+  htap: () => tone(900 + Math.random() * 300, 0.035, "sine", 0.05, 1.3),
 };
 const levelAudio = M.makeAudio(() => vol("media"));
 const voice = new Audio(); let voiceAt = 0;
@@ -92,13 +98,14 @@ const fx = $("#fx"), fctx = fx.getContext("2d"), parts = [];
 function sizeFx() { const r = play.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); fx.width = Math.max(1, r.width * d); fx.height = Math.max(1, r.height * d); fctx.setTransform(d, 0, 0, d, 0, 0); }
 sizeFx(); addEventListener("resize", sizeFx);
 const COLORS = ["#ff5c8a", "#ff4a5c", "#ffc2d4", "#fff3ec", "#e0263a"];
-function burst(x, y, n, gold) {
+function burst(x, y, n, gold, scale) {
   if (calm()) n = Math.min(n, 2);
+  const k = scale || 1;
   const r = play.getBoundingClientRect(); x -= r.left; y -= r.top;
   for (let i = 0; i < n; i++) {
     if (parts.length > 180) parts.shift();
     const a = Math.random() * Math.PI * 2, sp = calm() ? 20 : 120 + Math.random() * 240;
-    parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - (calm() ? 10 : 120), life: 0, max: 0.7 + Math.random() * 0.5, s: 6 + Math.random() * 9, c: gold ? "#ffd54a" : pick(COLORS), rot: Math.random() * 6 });
+    parts.push({ x, y, vx: Math.cos(a) * sp * k, vy: Math.sin(a) * sp * k - (calm() ? 10 : 120 * k), life: 0, max: (0.7 + Math.random() * 0.5) * (k < 1 ? 0.75 : 1), s: (6 + Math.random() * 9) * k, c: gold ? "#ffd54a" : pick(COLORS), rot: Math.random() * 6 });
   }
 }
 function heartPath(c, s) { c.beginPath(); c.moveTo(0, s * 0.3); c.bezierCurveTo(-s, -s * 0.4, -s * 0.45, -s * 1.1, 0, -s * 0.5); c.bezierCurveTo(s * 0.45, -s * 1.1, s, -s * 0.4, 0, s * 0.3); c.fill(); }
@@ -175,7 +182,7 @@ function milestone() {
 let levels = [], locals = [], pools = [];
 const area = () => { const r = play.getBoundingClientRect(), top = Math.max(r.top, 52); return { x: r.left + 6, y: top, w: r.width - 12, h: r.bottom - top - 6 }; };
 const popups = M.makePopups({
-  layer: $("#layer"), reduced: calm, mediaVol: () => vol("media"), area,
+  layer: $("#layer"), reduced: calm, mediaVol: () => vol("media"), area, max: () => set.maxPops,
   onPop(d, x, y) { const was = G.frenzyOn(rt), g = G.popClicked(S, rt); num(x, y, "+" + fmt(g), "crit"); burst(x, y, 10); sfx.crit(); if (!was && G.frenzyOn(rt)) onFrenzy(); },
   onGold(d, x, y) {
     const r = G.catchGold(S, rt); burst(x, y, 24, true); sfx.gold(); shake(4);
@@ -219,6 +226,51 @@ async function loadMedia() {
   if (tab === "media") render(true);
 }
 
+// ------------------------------------------------------------------------------------------------ helpers on screen (helpers.js)
+// her box on screen: her bones projected through the stage camera (refreshed every 1.2 s), else the 2D heart, else a guess
+let herBox = null, herBoxAt = -1e9, herBones = null;
+const hudEl = $("#hud");
+function helperArea() { const A = area(), hb = hudEl.getBoundingClientRect(), top = innerWidth <= 900 ? Math.max(A.y, hb.bottom - 10) : A.y; return { x: A.x, y: top, w: A.w, h: A.y + A.h - top }; }
+function projectHer() {
+  const T = stage && stage._three; if (!T || !T.root || !T.camera) return null;
+  // her body core (arms left out, so a wave doesn't push them away): works for "Hand_L" and "LeftHand" style names
+  if (!herBones) { herBones = []; T.root.traverse(o => { if (o.isBone && /^(Left|Right)?(Head|Neck|Chest|Hips|Shoulder|UpperLeg|LowerLeg|Foot)(_[LR])?$/i.test(o.name)) herBones.push(o); }); }
+  if (!herBones.length) return null;
+  const cv = T.renderer.domElement.getBoundingClientRect(), v = new T.THREE.Vector3();
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (const b of herBones) {
+    b.getWorldPosition(v); v.project(T.camera);
+    const x = cv.left + (v.x + 1) / 2 * cv.width, y = cv.top + (1 - v.y) / 2 * cv.height;
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  const h = y1 - y0; if (!(h > 20)) return null;
+  y0 -= h * 0.1; y1 += h * 0.02;                                     // the top of her head (and ears) sits above the head bone
+  const w = Math.max((x1 - x0) * 2.2, h * 0.3), cx = (x0 + x1) / 2;   // shoulders/hips + her arms, sleeves and clothes either side
+  return { x: cx - w / 2, y: y0, w, h: y1 - y0 };
+}
+function herRect() {
+  const t = performance.now(); if (herBox && t - herBoxAt < 1200) return herBox;
+  herBoxAt = t; let r = null;
+  try { r = projectHer(); } catch (e) { r = null; }
+  if (!r && !$("#flat").hidden) { const b = document.querySelector(".ck-heart").getBoundingClientRect(); if (b.width) r = { x: b.left, y: b.top, w: b.width, h: b.height }; }
+  if (!r) { const A = area(); r = { x: A.x + A.w * 0.34, y: A.y + A.h * 0.06, w: A.w * 0.32, h: A.h * 0.9 }; }
+  return (herBox = r);
+}
+const helpers = makeHelpers({
+  root: $("#helpers"), target: herRect, area: helperArea, calm, small: () => innerWidth <= 900, fmt,
+  onTap(x, y, i, amt, withNum) {
+    if (document.hidden) return;
+    burst(x, y, calm() ? 0 : 2, false, 0.55);
+    if (withNum && amt > 0) { num(x, y, "+" + fmt(amt), "tapn"); if (Math.random() < 0.35) sfx.htap(); }
+  },
+});
+helpers.setOn(set.helpersFx);
+function syncHelpers() {
+  const live = G.cps(S, rt), base = HELPERS.reduce((t, h, i) => t + G.helperOut(S, i), 0);
+  helpers.sync(S.owned.slice(), HELPERS.map((h, i) => (base > 0 ? live * G.helperOut(S, i) / base : 0)));
+}
+addEventListener("resize", () => { herBoxAt = -1e9; helpers.layout(); });
+
 // ------------------------------------------------------------------------------------------------ toasts + modal
 const toasts = $("#toasts");
 function toast(text, sub, cls) {
@@ -228,11 +280,12 @@ function toast(text, sub, cls) {
   setTimeout(() => { d.classList.add("bye"); setTimeout(() => d.remove(), 450); }, cls === "big" ? 2600 : 2200);
 }
 const modal = $("#modal"), modalC = $("#modal-c");
-let modalCb = null;
-function openModal(html, cb) { modalC.innerHTML = html; modal.hidden = false; modalCb = cb || null; const b = modalC.querySelector("button"); if (b) b.focus(); }
-function closeModal() { modal.hidden = true; modalCb = null; }
+let modalCb = null, modalDismiss = null;
+// dismiss: the answer a click outside, Esc or closing counts as (a tribute: "later"); none = just close
+function openModal(html, cb, dismiss) { modalC.innerHTML = html; modal.hidden = false; modalCb = cb || null; modalDismiss = dismiss || null; const b = modalC.querySelector("button"); if (b) b.focus(); }
+function closeModal(dismissed) { const cb = modalCb, d = modalDismiss; modal.hidden = true; modalCb = null; modalDismiss = null; if (dismissed && cb && d) cb(d); }
 modal.addEventListener("click", e => {
-  if (e.target === modal) { closeModal(); return; }
+  if (e.target === modal) { closeModal(true); return; }
   const b = e.target.closest("[data-m]"); if (!b) return;
   const cb = modalCb; closeModal(); if (cb) cb(b.dataset.m);
 });
@@ -305,45 +358,54 @@ function skillsHtml() {
 }
 function skillsSig() { return [tab, selSkill, JSON.stringify(S.skills), G.skillFree(S), S.devotion, G.canRebirth(S), G.devotionGain(S), Math.floor(Math.log10(S.runEarned + 1))].join("|"); }
 
-// ------------------------------------------------------------------------------------------------ the wheel
+// ------------------------------------------------------------------------------------------------ the wheel (normal / risky mode)
 let spin = null, wres = null, wAngle = 0;
+const curWheel = () => wheelOf(spin ? spin.r.mode : set.wheelMode);
+const KOFI = amt => ((typeof LINKS !== "undefined" && LINKS.kofi) || "https://ko-fi.com/dahmeows") + "?amount=" + amt;
+const signedIn = () => typeof Auth !== "undefined" && Auth.signedIn && typeof api === "function";
 function wheelHtml() {
-  const tl = G.spinPrice(S, rt), per = TOKEN_SECONDS / (G.rank(S, "l_wheelcharm") ? 2 : 1);
-  return `<h4>Risky Wheel <small>half rewards, half penalties</small></h4>
+  const tl = G.spinPrice(S, rt), per = TOKEN_SECONDS / (G.rank(S, "l_wheelcharm") ? 2 : 1), W = curWheel(), risky = set.wheelMode === "risky";
+  const mode = `<span class="ck-seg ck-mode" role="group" aria-label="Wheel mode">${[["normal", "Normal"], ["risky", "Risky 🔥"]].map(([v, l]) => `<button type="button" data-act="wmode" data-v="${v}" class="${set.wheelMode === v ? "on" : ""}" aria-pressed="${set.wheelMode === v}"${spin ? " disabled" : ""}>${l}</button>`).join("")}</span>`;
+  const pend = S.trib ? `<div class="ck-tpend"><span>💸 Waiting for your $${S.trib.amount}... it lands by itself once Ko-fi confirms.</span><button type="button" class="ck-mini gold" data-act="tclaim">Check now</button><button type="button" class="ck-mini" data-act="tdrop">Forget it</button></div>` : "";
+  return `<h4>Risky Wheel ${mode}</h4>
+    <p class="fine ck-wmode">${risky ? "Risky: bigger rewards, three real penalties and three tributes ($5, $10, $15)." : "Normal: mostly rewards, two tiny teases and one $5 tribute."} Tributes are optional real-money Ko-fi tips.</p>
     <div class="ck-wheel"><i class="ptr" aria-hidden="true"></i><canvas id="wheel" width="640" height="640" aria-label="The risky wheel"></canvas><span class="hub" aria-hidden="true">💗</span></div>
-    <div class="ck-wres ${wres ? (wres.good ? "good" : "bad") : ""}" id="wres" aria-live="polite">${wres ? `${wres.icon} ${esc(wres.name)}<small>${esc(wres.text)}</small>` : `<small>Spin for a reward... or a penalty. Feeling lucky?</small>`}</div>
+    <div class="ck-wres ${wres ? (wres.tribute ? "trib" : wres.good ? "good" : "bad") : ""}" id="wres" aria-live="polite">${wres ? `${wres.icon} ${esc(wres.name)}<small>${esc(wres.text)}</small>` : `<small>Spin for a reward... or a penalty. Feeling lucky?</small>`}</div>
+    ${pend}
     <div class="ck-wbtns">
       <button type="button" class="btn btn-primary btn-sm" data-act="spin"${S.tokens >= 1 && !spin ? "" : " disabled"}>Spin (🎡 ${S.tokens}/${TOKEN_MAX})</button>
       <button type="button" class="btn btn-ghost btn-sm" data-act="buyspin"${can(tl) && !spin ? "" : " disabled"}>Buy a spin · ${fmt(tl)} ♥</button>
     </div>
     <p class="fine" style="text-align:center">+1 token every ${TOKEN_CLICKS} clicks (${TOKEN_CLICKS - S.tokenClicks} to go) and every ${Math.round(per / 60)} min here (${G.fmtTime(per - S.tokenTime)}). Max ${TOKEN_MAX}.</p>
-    <div class="ck-legend">${WHEEL.map(w => `<span class="${w.good ? "g" : "b"}">${w.icon} <b>${esc(w.name)}</b> ${esc(w.desc)}</span>`).join("")}</div>`;
+    <div class="ck-legend">${W.map(w => `<span class="${w.tribute ? "t" : w.good ? "g" : w.kind === "mild" ? "m" : "b"}">${w.icon} <b>${esc(w.name)}</b> ${esc(w.desc)}</span>`).join("")}</div>`;
 }
-function wheelSig() { return [tab, S.tokens, !!spin, can(G.spinPrice(S, rt)), wres && wres.text, S.tokenClicks, Math.floor(S.tokenTime / 30)].join("|"); }
+function wheelSig() { return [tab, set.wheelMode, S.tokens, !!spin, can(G.spinPrice(S, rt)), wres && wres.text, S.tokenClicks, Math.floor(S.tokenTime / 30), S.trib && S.trib.amount].join("|"); }
 function drawWheel() {
   const cv = document.getElementById("wheel"); if (!cv) return;
-  const c = cv.getContext("2d"), R = 320, seg = Math.PI * 2 / WHEEL.length;
+  const W = curWheel(), c = cv.getContext("2d"), R = 320, seg = Math.PI * 2 / W.length;
   c.clearRect(0, 0, 640, 640); c.save(); c.translate(R, R); c.rotate(wAngle);
-  WHEEL.forEach((w, i) => {
+  W.forEach((w, i) => {
     const a0 = i * seg - Math.PI / 2 - seg / 2, a1 = a0 + seg;
     const g = c.createRadialGradient(0, 0, 40, 0, 0, R);
-    if (w.good) { g.addColorStop(0, "#ff8aa8"); g.addColorStop(1, i % 4 === 0 ? "#e0263a" : "#ff5c8a"); } else { g.addColorStop(0, "#3a2a36"); g.addColorStop(1, i % 4 === 1 ? "#1c1220" : "#2a1b2c"); }
+    if (w.tribute) { g.addColorStop(0, "#fff1a8"); g.addColorStop(0.55, "#ffc93a"); g.addColorStop(1, "#b97a10"); }
+    else if (w.kind === "mild") { g.addColorStop(0, "#8a5a6a"); g.addColorStop(1, "#5a3442"); }
+    else if (w.good) { g.addColorStop(0, "#ff8aa8"); g.addColorStop(1, i % 4 === 0 ? "#e0263a" : "#ff5c8a"); } else { g.addColorStop(0, "#3a2a36"); g.addColorStop(1, i % 4 === 1 ? "#1c1220" : "#2a1b2c"); }
     c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R - 8, a0, a1); c.closePath(); c.fillStyle = g; c.fill();
     c.strokeStyle = "rgba(255,243,236,.35)"; c.lineWidth = 3; c.stroke();
     c.save(); c.rotate(a0 + seg / 2); c.textAlign = "right"; c.textBaseline = "middle";
     c.font = "44px system-ui, 'Segoe UI Emoji', sans-serif"; c.fillText(w.icon, R - 30, 0);
-    c.font = "800 22px Nunito, system-ui, sans-serif"; c.fillStyle = w.good ? "#fff3ec" : "#cfd8ff"; c.fillText(w.name, R - 92, 0);
+    c.font = "800 22px Nunito, system-ui, sans-serif"; c.fillStyle = w.tribute ? "#4a2600" : w.good || w.kind === "mild" ? "#fff3ec" : "#cfd8ff"; c.fillText(w.name, R - 92, 0);
     c.restore();
   });
-  c.beginPath(); c.arc(0, 0, R - 6, 0, Math.PI * 2); c.lineWidth = 10; c.strokeStyle = "#fff3ec"; c.stroke();
-  for (let i = 0; i < WHEEL.length; i++) { const a = i * seg - Math.PI / 2 - seg / 2; c.beginPath(); c.arc(Math.cos(a) * (R - 6), Math.sin(a) * (R - 6), 7, 0, Math.PI * 2); c.fillStyle = "#ffd54a"; c.fill(); }
+  c.beginPath(); c.arc(0, 0, R - 6, 0, Math.PI * 2); c.lineWidth = 10; c.strokeStyle = set.wheelMode === "risky" && !spin || spin && spin.r.mode === "risky" ? "#ffd54a" : "#fff3ec"; c.stroke();
+  for (let i = 0; i < W.length; i++) { const a = i * seg - Math.PI / 2 - seg / 2; c.beginPath(); c.arc(Math.cos(a) * (R - 6), Math.sin(a) * (R - 6), 7, 0, Math.PI * 2); c.fillStyle = "#ffd54a"; c.fill(); }
   c.restore();
 }
 function doSpin(buy) {
   if (spin) return;
   const r = G.startSpin(S, rt, buy); if (!r) { sfx.no(); return; }
   ac();
-  const seg = Math.PI * 2 / WHEEL.length, dur = calm() ? 1200 : 4500;
+  const seg = Math.PI * 2 / wheelOf(r.mode).length, dur = calm() ? 1200 : 4500;
   // slice i sits under the pointer when the angle is -i*seg (mod 2pi); spin forward 5+ turns, land inside the slice
   const base = wAngle - (wAngle % (Math.PI * 2)), jitter = (Math.random() - 0.5) * seg * 0.7;
   const to = base + Math.PI * 2 * (calm() ? 2 : 6) + (Math.PI * 2 - r.index * seg) + jitter;
@@ -355,19 +417,77 @@ function stepSpin() {
   if (!spin) return;
   const p = Math.min(1, (performance.now() - spin.t0) / spin.dur), e = 1 - Math.pow(1 - p, 3.2);
   wAngle = spin.from + (spin.to - spin.from) * e;
-  const seg = Math.PI * 2 / WHEEL.length, k = Math.floor((wAngle + seg / 2) / seg);
+  const seg = Math.PI * 2 / curWheel().length, k = Math.floor((wAngle + seg / 2) / seg);
   if (k !== spin.lastSeg) { spin.lastSeg = k; sfx.tick(); }
   drawWheel();
 }
 function finishSpin() {
   if (!spin) return;
-  const sl = spin.r.slice; wAngle = spin.to % (Math.PI * 2); spin = null; drawWheel();
-  const text = G.applySpin(S, rt, sl, { spawnGold, peek: n => { const t = S.maxTier + 1, p = poolFor(t); if (!p) return false; for (let i = 0; i < n; i++) setTimeout(() => spawnPop(t, i === 0), i * 200); return true; } });
-  wres = { good: sl.good, icon: sl.icon, name: sl.name, text };
-  if (sl.good) { sfx.gold(); toast(sl.icon + " " + sl.name, text, "gold"); say("good", true); react("pouty", "pout"); herNoise(pick(["hmph_01", "tch_01", "whine_pouting_01"]), true); burst(innerWidth / 2, innerHeight / 2, 16, true); }
+  const sl = spin.r.slice, mode = spin.r.mode; wAngle = spin.to % (Math.PI * 2); spin = null; drawWheel();
+  const text = G.applySpin(S, rt, sl, { spawnGold, peek: n => { const t = S.maxTier + 1, p = poolFor(t); if (!p) return false; for (let i = 0; i < n; i++) setTimeout(() => spawnPop(t, i === 0), i * 200); return true; } }, mode);
+  wres = { good: sl.good, tribute: sl.tribute, icon: sl.icon, name: sl.name, text };
+  if (sl.tribute) { sfx.tribute(); react("smug", "laugh"); herNoise(pick(["chuckle_smug_01", "giggle_teasing_02", "laugh_breathy_01"]), true); tributeAsk(sl.tribute, mode); }
+  else if (sl.good) { sfx.gold(); toast(sl.icon + " " + sl.name, text, "gold"); say("good", true); react("pouty", "pout"); herNoise(pick(["hmph_01", "tch_01", "whine_pouting_01"]), true); burst(innerWidth / 2, innerHeight / 2, 16, true); }
   else { sfx.bad(); toast(sl.icon + " " + sl.name, text, "bad"); say("bad", true); react("smug", "laugh"); herNoise(pick(["laugh_taunting_01", "laugh_taunting_02", "chuckle_smug_01"]), true); shake(3); }
   render(true); save();
 }
+
+// ---- tributes (spec 8b): she asks for a real Ko-fi tip. Always optional, never blocking: "Maybe later", Esc, a click outside or
+// the 60 s timeout only make her sulk in the game. "Send" opens Ko-fi; for signed-in players the tribute then waits (24 h) and is
+// credited once the account's bought energy rises by >= 90% of amount x energy-per-dollar (Ko-fi tips with the account's CH- code
+// land there; GET /pet/ai/v1/account). Not signed in: nothing to verify, so no in-game reward (and no honour button).
+async function accountEnergy() { try { const a = await api("/pet/ai/v1/account"); return a && a.energy ? a.energy : null; } catch (e) { return null; } }
+let tribTimer = 0;
+function tributeAsk(amt, mode) {
+  const line = pick(LINES.tribute).replace("${amt}", "$" + amt), si = signedIn(), k = amt / 5, sk = SULK[mode] || SULK.normal;
+  say([line], true);
+  let code = "";
+  const energy = si ? accountEnergy() : Promise.resolve(null);
+  energy.then(e => { if (e && e.code) { code = e.code; const c = document.getElementById("tcode"); if (c) { c.textContent = e.code; c.closest("p").hidden = false; } } });
+  clearTimeout(tribTimer);
+  openModal(`<h3>💸 Tribute time~</h3>
+    <p class="ck-say"><em>"${esc(line)}"</em></p>
+    <div class="ck-trib"><b>$${amt}</b><small>real money · Ko-fi</small></div>
+    <p class="ck-opt"><b>Optional</b> - this is a real-money tip to Choochie's creator on Ko-fi. Nothing in the game is locked.</p>
+    <p class="fine">${si ? `Send it and once Ko-fi confirms: <b>Spoiled~</b> (a big pile of hearts, clicks and ♥/s x3 for ${SPOILED_MIN * k} min, +${k} spin token${k > 1 ? "s" : ""}, +${k} SP).` : `Signed in to her chat? Then a tip with your account code also spoils you in the game (hearts, x3 for ${SPOILED_MIN * k} min, tokens and SP).`}
+      "Maybe later": she sulks, ♥/s x${sk.mult} for ${sk.sec} s.</p>
+    ${si ? `<p class="fine" hidden>Put your code <code id="tcode"></code> in the Ko-fi message so she knows it's you (it also lands as chat energy).</p>` : ""}
+    <div class="ck-btns"><a class="btn btn-primary btn-sm" href="${esc(KOFI(amt))}" target="_blank" rel="noopener" data-m="kofi">Send $${amt} on Ko-fi ↗</a><button type="button" class="btn btn-ghost btn-sm" data-m="later">Maybe later</button></div>`,
+    m => {
+      clearTimeout(tribTimer);
+      if (m === "kofi") {
+        say("tributeOpen", true); react("flirty", "heart");
+        if (code) try { navigator.clipboard.writeText(code).catch(() => {}); } catch (e) {}
+        if (si) {
+          S.trib = { amount: amt, at: Date.now() / 1000, credits: null };          // one pending tribute; a new one replaces it
+          energy.then(e => { if (S.trib && S.trib.amount === amt && S.trib.credits == null && e) { S.trib.credits = e.extra; save(); } });
+          toast("💸 Waiting for your $" + amt, code ? "your code " + code + " is copied: paste it in the Ko-fi message" : "it lands by itself once Ko-fi confirms", "gold");
+        }
+      } else {
+        const t = G.sulk(S, mode); say("sulk", true); react("pouty", "pout"); herNoise(pick(["hmph_01", "tch_01"]), true); toast("😤 She's sulking", t, "bad");
+      }
+      render(true); save();
+    }, "later");
+  tribTimer = setTimeout(() => { if (!modal.hidden && modalC.querySelector(".ck-trib")) closeModal(true); }, TRIBUTE_CARD_SECONDS * 1000);
+}
+let claiming = false;
+async function checkTribute(quiet) {
+  const t = S.trib; if (!t || claiming) return;
+  if (Date.now() / 1000 - t.at > 86400) { S.trib = null; save(); render(true); return; }
+  if (!signedIn()) { if (!quiet) toast("Sign in on her chat page first", "", "bad"); return; }
+  claiming = true; const e = await accountEnergy(); claiming = false;
+  if (!e || S.trib !== t) { if (!quiet && !e) toast("Couldn't reach her server", "try again in a few seconds", "bad"); return; }
+  if (t.credits == null) { t.credits = e.extra; save(); if (!quiet) toast("Not there yet~", "Ko-fi can take a minute.", ""); return; }
+  const need = 0.9 * t.amount * (e.perDollar || 0);
+  if (e.extra > t.credits && e.extra - t.credits >= need) {
+    const v = G.spoiled(S, rt, t.amount);
+    sfx.level(); shake(4); burst(innerWidth / 2, innerHeight / 2, 30, true);
+    toast("👑 Spoiled~", "+" + fmt(v) + " ♥ · clicks and ♥/s x3", "big"); say("tributeThanks", true); react("flirty", "heart", 5000);
+    herNoise(pick(["kiss_blown_01", "giggle_flirty_01"]), true);
+    render(true); save();
+  } else if (!quiet) toast("Not there yet~", "Ko-fi can take a minute (with your code in the message).", "");
+}
+setInterval(() => { if (S.trib && !document.hidden) checkTribute(true); }, 45000);
 
 // ------------------------------------------------------------------------------------------------ badges, media, more
 function achHtml() {
@@ -398,8 +518,14 @@ function mediaHtml() {
 function moreHtml() {
   const r = (k, l) => `<label>${l}<input type="range" min="0" max="1" step="0.05" value="${set[k]}" data-set="${k}"></label>`;
   const c = (k, l) => `<label>${l}<input type="checkbox" data-set="${k}"${set[k] ? " checked" : ""}></label>`;
-  return `<h4>Sound</h4><div class="ck-set">${r("vol", "Volume")}${r("media", "Pop-up sounds and videos")}${r("sfx", "Clicks and her voice")}${c("muted", "Mute everything")}</div>
-    <h4>Show</h4><div class="ck-set">${c("popups", "Pop-ups")}${c("defaults", "Built-in pictures when a level is empty")}${c("herLines", "Her speech bubbles")}
+  const SZ = [[0.85, "S"], [1, "M"], [1.2, "L"], [1.4, "XL"]];
+  return `<h4>Size <small>panel, counters and menus</small></h4><div class="ck-set">
+      <label>Menu size<span class="ck-seg" role="group" aria-label="Menu size">${SZ.map(([v, l]) => `<button type="button" data-act="uisz" data-v="${v}" class="${Math.abs(set.ui - v) < 0.01 ? "on" : ""}">${l}</button>`).join("")}</span></label>
+      <label>Fine tune <output id="uiv">${Math.round(set.ui * 100)}%</output><input type="range" min="0.7" max="1.6" step="0.05" value="${set.ui}" data-set="ui" aria-label="Menu size"></label></div>
+    <h4>Sound</h4><div class="ck-set">${r("vol", "Volume")}${r("media", "Pop-up sounds and videos")}${r("sfx", "Clicks and her voice")}${c("muted", "Mute everything")}</div>
+    <h4>Show</h4><div class="ck-set">${c("popups", "Pop-ups")}
+      <label>Max pop-ups at once<select data-set="maxPops">${[3, 5, 7, 10, 15, 20, 30].concat([3, 5, 7, 10, 15, 20, 30].includes(set.maxPops) ? [] : [set.maxPops]).sort((a, b) => a - b).map(v => `<option value="${v}"${v === set.maxPops ? " selected" : ""}>${v}${v === 20 ? " (default)" : ""}</option>`).join("")}</select></label>
+      ${c("defaults", "Built-in pictures when a level is empty")}${c("helpersFx", "Show helpers around her")}${c("herLines", "Her speech bubbles")}
       <label>Less motion<select data-set="motion"><option value="auto"${set.motion === "auto" ? " selected" : ""}>like my system</option><option value="on"${set.motion === "on" ? " selected" : ""}>on</option><option value="off"${set.motion === "off" ? " selected" : ""}>off</option></select></label>
       ${c("lite", "Lite mode (2D heart instead of her 3D model; reloads)")}</div>
     <h4>Your save</h4><p class="fine">Saved in this browser automatically. Copy it to move it to another browser. The clicker's hearts are only for this game: they never turn into kisses or energy.</p>
@@ -431,6 +557,10 @@ body.addEventListener("click", async e => {
     openModal(`<h3>🌸 Rebirth?</h3><p>You get <b>+${fmt(G.devotionGain(S))} Devotion</b> (+3% everything each, forever) and +2 SP. Hearts, helpers, training and Softer Lips start over.</p><div class="ck-btns"><button type="button" class="btn btn-primary btn-sm" data-m="yes">Rebirth</button><button type="button" class="btn btn-ghost btn-sm" data-m="no">Not yet</button></div>`,
       m => { if (m !== "yes") return; const g = G.rebirth(S, rt); if (g) { sfx.level(); toast("🌸 Reborn: +" + fmt(g) + " Devotion", "", "big"); say("rebirth", true); react("flirty", "heart"); save(); render(true); } });
   }
+  else if (a === "wmode") { if (!spin) { set.wheelMode = b.dataset.v === "risky" ? "risky" : "normal"; save(); } }
+  else if (a === "tclaim") { checkTribute(false); return; }
+  else if (a === "tdrop") { S.trib = null; save(); }
+  else if (a === "uisz") { set.ui = +b.dataset.v; applyUi(); save(); helpers.layout(); }
   else if (a === "spin") doSpin(false);
   else if (a === "buyspin") doSpin(true);
   else if (a === "add") { pickLevel = +b.dataset.l; const p = document.getElementById("pick"); if (p) p.click(); return; }
@@ -454,8 +584,10 @@ function flashBuy(b) { const r = b.getBoundingClientRect(); if (!calm()) b.anima
 body.addEventListener("input", e => {
   const el = e.target.closest("[data-set]"); if (!el) return;
   const k = el.dataset.set;
-  set[k] = el.type === "checkbox" ? el.checked : el.type === "range" ? +el.value : el.value;
+  set[k] = el.type === "checkbox" ? el.checked : el.type === "range" || k === "maxPops" ? +el.value : el.value;
   if (k === "motion") applyCalm();
+  if (k === "ui") { applyUi(); const o = document.getElementById("uiv"); if (o) o.textContent = Math.round(set.ui * 100) + "%"; body.querySelectorAll('[data-act="uisz"]').forEach(x => x.classList.toggle("on", Math.abs(set.ui - +x.dataset.v) < 0.01)); herBoxAt = -1e9; helpers.layout(); }
+  if (k === "helpersFx") { helpers.setOn(set.helpersFx); if (set.helpersFx) syncHelpers(); }
   if (k === "muted") muteBtn();
   if (k === "defaults") pools = M.buildPools(levels, locals, Math.max(TIERS, levels.length), set.defaults);
   if (k === "lite") { save(); location.reload(); }
@@ -504,7 +636,7 @@ function leave() { save(); if (document.referrer && new URL(document.referrer, l
 $("#b-x").addEventListener("click", leave);
 addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  if (!modal.hidden) { closeModal(); return; }
+  if (!modal.hidden) { closeModal(true); return; }
   leave();
 });
 
@@ -530,10 +662,11 @@ function logic() {
     achT = 0;
     for (const a of G.checkAch(S, rt)) { toast("🏅 " + a.name, a.desc + " · +1% everything", "gold"); sfx.gold(); }
   }
-  // her helpers tapping her: small numbers now and then
+  // her helpers: the sprites tap her (helpers.js); with them switched off, a small number now and then instead
   helperT += dt;
   const c = G.cps(S, rt);
-  if (c > 0 && helperT > 1.1 && !document.hidden) {
+  if (set.helpersFx) { if (helperT > 0.4) { helperT = 0; syncHelpers(); } }
+  else if (c > 0 && helperT > 1.1 && !document.hidden) {
     helperT = 0;
     const own = HELPERS.map((h, i) => [h, i]).filter(([h, i]) => S.owned[i] > 0);
     if (own.length) { const [h] = pick(own), A = area(); const x = A.x + A.w * (0.3 + Math.random() * 0.4), y = A.y + A.h * (0.3 + Math.random() * 0.4); num(x, y, h.icon + " +" + fmt(c * 1.1), "small"); }
@@ -547,7 +680,7 @@ setInterval(logic, 100);
 let lastF = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - lastF) / 1000); lastF = t;
-  hud(dt); drawParts(dt); stepSpin();
+  hud(dt); if (set.helpersFx && !document.hidden) helpers.tick(dt); drawParts(dt); stepSpin();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -567,4 +700,4 @@ render(true);
 bootStage();
 loadMedia();
 if (S.clicks > 0) $("#hint").classList.add("off");
-Object.assign(window.ChoochieClicker, { spawnPop, spawnGold, doClick });
+Object.assign(window.ChoochieClicker, { spawnPop, spawnGold, doClick, popups, helpers, herRect, tributeAsk, M });

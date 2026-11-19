@@ -1,6 +1,6 @@
 // Choochie Heart Clicker: the rules (shared spec v1.0 with the desktop app). State, production, buying, heat + frenzy,
 // buffs, wheel, golden hearts, rebirth, achievements, saving. No DOM here: ui.js draws it.
-import { HELPERS, COST_GROWTH, trainNeed, TAP_COST, SKILLS, tierAt, WHEEL, TOKEN_MAX, TOKEN_CLICKS, TOKEN_SECONDS, ACH } from "./data.js";
+import { HELPERS, COST_GROWTH, trainNeed, TAP_COST, SKILLS, tierAt, wheelOf, SULK, SPOILED_MIN, SPOILED_MULT, TRIBUTE_WINDOW, TOKEN_MAX, TOKEN_CLICKS, TOKEN_SECONDS, ACH } from "./data.js";
 
 export const SAVE_KEY = "choochie.clicker.v1";
 const nowS = () => Date.now() / 1000;
@@ -11,8 +11,10 @@ export function fresh() {
     v: 1, hearts: 0, runEarned: 0, allTimeEarned: 0, clicks: 0, clicksRun: 0, tap: 0,
     owned: Array(H).fill(0), train: Array(H).fill(0), skills: {}, bonusSP: 0, devotion: 0, rebirths: 0, achievements: [],
     tokens: 1, tokenClicks: 0, tokenTime: 0, frenzies: 0, goldens: 0, spins: 0, penalties: 0, rewards: 0, popClicks: 0, crits: 0,
-    bestRate: 0, lastTick: nowS(), maxTier: 0, buffs: [], afk: 0,
-    settings: { vol: 0.7, media: 0.8, sfx: 0.5, muted: false, popups: true, defaults: true, herLines: true, buyN: 1, motion: "auto", lite: false },
+    bestRate: 0, lastTick: nowS(), maxTier: 0, buffs: [], afk: 0, tributeAsks: 0, tributes: 0, tributed: 0, trib: null,
+    // sv = settings version (2: maxPops default 7 -> 20). ui = size of the side panel, HUD and menus (0.7 .. 1.6)
+    settings: { sv: 2, vol: 0.7, media: 0.8, sfx: 0.5, muted: false, popups: true, maxPops: 20, defaults: true, herLines: true, helpersFx: true, buyN: 1, motion: "auto", lite: false,
+      ui: 1, wheelMode: "normal" },
   };
 }
 export function sane(j) {
@@ -20,12 +22,21 @@ export function sane(j) {
   if (!j || typeof j !== "object") return s;
   const N = (v, d) => (typeof v === "number" && isFinite(v) && v >= 0 ? v : d);
   for (const k of ["hearts", "runEarned", "allTimeEarned", "clicks", "clicksRun", "tap", "bonusSP", "devotion", "rebirths", "tokens", "tokenClicks", "tokenTime",
-    "frenzies", "goldens", "spins", "penalties", "rewards", "popClicks", "crits", "bestRate", "lastTick", "maxTier", "afk"]) s[k] = N(j[k], s[k]);
+    "frenzies", "goldens", "spins", "penalties", "rewards", "popClicks", "crits", "bestRate", "lastTick", "maxTier", "afk", "tributeAsks", "tributes", "tributed"]) s[k] = N(j[k], s[k]);
+  // a tribute the player chose to send, waiting for Ko-fi to confirm it (signed-in players): spec 8b trib { amount, at (unix s), credits }
+  // credits = the account's bought energy when it was sent (null until her server answered)
+  if (j.trib && [5, 10, 15].includes(j.trib.amount) && N(j.trib.at, 0) > nowS() - TRIBUTE_WINDOW) s.trib = { amount: j.trib.amount, at: j.trib.at, credits: typeof j.trib.credits === "number" ? j.trib.credits : null };
   for (const k of ["owned", "train"]) if (Array.isArray(j[k])) for (let i = 0; i < H; i++) s[k][i] = Math.floor(N(j[k][i], 0));
   if (j.skills && typeof j.skills === "object") for (const k of SKILLS) { const r = Math.floor(N(j.skills[k.id], 0)); if (r) s.skills[k.id] = Math.min(k.ranks, r); }
   if (Array.isArray(j.achievements)) s.achievements = ACH.map(a => a.id).filter(id => j.achievements.includes(id));
   if (Array.isArray(j.buffs)) s.buffs = j.buffs.filter(b => b && typeof b.id === "string" && BUFF[b.id] && N(b.until, 0) > nowS()).map(b => ({ id: b.id, until: b.until, mult: N(b.mult, 1) })).slice(0, 20);
-  if (j.settings && typeof j.settings === "object") for (const k in s.settings) if (typeof j.settings[k] === typeof s.settings[k]) s.settings[k] = j.settings[k];
+  if (j.settings && typeof j.settings === "object") {
+    for (const k in s.settings) if (k !== "sv" && typeof j.settings[k] === typeof s.settings[k]) s.settings[k] = j.settings[k];
+    if (!(j.settings.sv >= 2) && j.settings.maxPops === 7) s.settings.maxPops = 20;      // kept the old default -> the new one
+  }
+  const st = s.settings;
+  st.maxPops = Math.max(1, Math.min(30, Math.round(st.maxPops) || 20)); st.ui = Math.max(0.7, Math.min(1.6, +st.ui || 1));
+  if (!["normal", "risky"].includes(st.wheelMode)) st.wheelMode = "normal";
   s.tap = Math.floor(s.tap); s.tokens = Math.min(TOKEN_MAX, Math.floor(s.tokens)); s.maxTier = Math.floor(s.maxTier);
   s.allTimeEarned = Math.max(s.allTimeEarned, s.runEarned);
   return s;
@@ -66,6 +77,12 @@ export const BUFF = {
   w_cold:   { kind: "pause", name: "Cold Shoulder", icon: "🧊", good: false },
   w_combo:  { kind: "heat",  name: "Combo Break",   icon: "💔", good: false },
   w_slow:   { kind: "cps",   name: "Slow Down",     icon: "🐌", good: false },
+  w_tease:  { kind: "click", name: "Teased~",       icon: "😏", good: false },
+  w_yawn:   { kind: "cps",   name: "Yawn",          icon: "🥱", good: false },
+  w_rush:   { kind: "click", name: "Kiss Rush",     icon: "💨", good: true },
+  sulk:     { kind: "cps",   name: "She's sulking", icon: "😤", good: false },
+  spoiled_c:{ kind: "click", name: "Spoiled~",      icon: "👑", good: true },
+  spoiled_s:{ kind: "cps",   name: "Spoiled~",      icon: "👑", good: true },
 };
 export function addBuff(s, id, mult, sec) {
   const until = nowS() + sec, b = s.buffs.find(x => x.id === id);
@@ -228,32 +245,61 @@ export function startSpin(s, rt, buy) {
   if (s.tokens >= 1 && !buy) s.tokens--;
   else { const p = spinPrice(s, rt); if (s.hearts < p) return null; s.hearts -= p; }
   s.spins++;
-  const i = Math.floor(Math.random() * WHEEL.length);
-  return { index: i, slice: WHEEL[i] };
+  const W = wheelOf(s.settings.wheelMode), i = Math.floor(Math.random() * W.length);
+  return { index: i, slice: W[i], mode: s.settings.wheelMode };
 }
 // fx: { spawnGold(n), peek(n) -> bool (false when every level is unlocked) }
-export function applySpin(s, rt, slice, fx) {
-  const soft = rank(s, "l_wheelcharm") ? 0.5 : 1;
+// mode: the wheel mode the spin was paid in. A tribute slice only counts here; ui.js shows her card.
+// fx: { spawnGold(n), peek(n) -> bool (false when no locked level has media) }
+export function applySpin(s, rt, slice, fx, mode) {
+  const soft = rank(s, "l_wheelcharm") ? 0.5 : 1, cp = clickPower(s), c = cps(s, rt);
+  if (slice.tribute) { s.tributeAsks++; return "$" + slice.tribute + " tribute on Ko-fi (optional, real money)"; }
   if (slice.good) s.rewards++; else s.penalties++;
+  const gain = v => { earn(s, v); return `+${fmt(v)} ♥`; };
+  const best = n0 => { let b = -1, bv = 0; for (let i = 0; i < H; i++) { const v = helperOut(s, i); if (v > bv) { bv = v; b = i; } } return b; };
+  const peek = n => { if (fx && fx.peek && fx.peek(n)) return "a peek at the next level~"; if (fx && fx.spawnGold) fx.spawnGold(n); return `${n} golden hearts!`; };
   switch (slice.id) {
-    case "lucky": { const v = Math.max(s.hearts * 0.2, cps(s, rt) * 600, clickPower(s) * 200); earn(s, v); return `+${fmt(v)} ♥`; }
-    case "frenzy": startFrenzy(s, rt); addBuff(s, "w_frenzy", 7, 20); return "FRENZY! clicks x7 for 20 s";
-    case "helper": {
-      let best = -1, bv = 0; for (let i = 0; i < H; i++) { const v = helperOut(s, i); if (v > bv) { bv = v; best = i; } }
-      if (best < 0) { s.owned[0] += 5; return "+5 Paw Cursors"; }
-      s.owned[best]++; return `+1 ${HELPERS[best].name}`;
-    }
-    case "sp": s.bonusSP++; return "+1 skill point, forever";
-    case "storm": addBuff(s, "w_storm", 5, 60); return "♥/s x5 for 60 s";
-    case "peek": if (fx && fx.peek && fx.peek(3)) return "a peek at the next level~"; if (fx && fx.spawnGold) fx.spawnGold(3); return "3 golden hearts!";
+    // normal
+    case "n_lucky": return gain(Math.max(s.hearts * 0.10, c * 300, cp * 100));
+    case "n_pocket": return gain(Math.max(s.hearts * 0.05, c * 120, cp * 50));
+    case "n_tease": addBuff(s, "w_tease", 0.75, 20 * soft); return "clicks x0.75 for " + Math.round(20 * soft) + " s";
+    case "n_yawn": addBuff(s, "w_yawn", 0.75, 30 * soft); return "♥/s x0.75 for " + Math.round(30 * soft) + " s";
+    case "n_storm": addBuff(s, "w_storm", 3, 45); return "♥/s x3 for 45 s";
+    case "n_helper": { const b = best(); if (b < 0) { s.owned[0] += 5; return "+5 Paw Cursors"; } s.owned[b]++; return `+1 ${HELPERS[b].name}`; }
+    case "n_frenzy": startFrenzy(s, rt); return "FRENZY!";
+    case "n_rush": addBuff(s, "w_rush", 3, 30); return "clicks x3 for 30 s";
+    case "n_token": if (s.tokens < TOKEN_MAX) { s.tokens++; return "+1 spin token"; } return "tokens full: " + gain(Math.max(s.hearts * 0.10, c * 300, cp * 100));
+    case "n_gold": if (fx && fx.spawnGold) fx.spawnGold(1); return "catch it!";
+    case "n_peek": return peek(3);
+    // risky
+    case "lucky": return gain(Math.max(s.hearts * 0.30, c * 900, cp * 300));
+    case "frenzy": startFrenzy(s, rt); addBuff(s, "w_frenzy", 7, 30); return "FRENZY! clicks x7 for 30 s";
+    case "helper": { const b = best(); if (b < 0) { s.owned[0] += 10; return "+10 Paw Cursors"; } s.owned[b] += 3; return `+3 ${HELPERS[b].name}s`; }
+    case "sp": s.bonusSP += 2; return "+2 skill points, forever";
+    case "storm": addBuff(s, "w_storm", 7, 60); return "♥/s x7 for 60 s";
+    case "peek": return peek(5);
     case "tax": { const v = s.hearts * 0.15 * soft; s.hearts = Math.max(0, s.hearts - v); return `-${fmt(v)} ♥`; }
-    case "nap": addBuff(s, "w_nap", 0, 45 * soft); return "helpers asleep for " + Math.round(45 * soft) + " s";
     case "butter": addBuff(s, "w_butter", 0.5, 60 * soft); return "clicks x0.5 for " + Math.round(60 * soft) + " s";
-    case "cold": addBuff(s, "w_cold", 1, 60 * soft); return "no pop-ups for " + Math.round(60 * soft) + " s";
     case "combo": rt.heat = 0; rt.frenzyUntil = 0; addBuff(s, "w_combo", 0.5, 30 * soft); return "heat gone, builds slower for " + Math.round(30 * soft) + " s";
-    case "slow": addBuff(s, "w_slow", 0.5, 90 * soft); return "♥/s x0.5 for " + Math.round(90 * soft) + " s";
   }
   return "";
+}
+
+// ------------------------------------------------------------------------------------------------ tributes (spec 8b: real Ko-fi tips, always optional)
+// "maybe later" / Esc / a click outside / the card's timeout: she sulks (normal ♥/s x0.8 for 30 s, risky x0.5 for 60 s). Nothing else.
+export function sulk(s, mode) {
+  const k = SULK[mode] || SULK.normal, soft = rank(s, "l_wheelcharm") ? 0.5 : 1;
+  s.penalties++; addBuff(s, "sulk", k.mult, k.sec * soft);
+  return `♥/s x${k.mult} for ${Math.round(k.sec * soft)} s`;
+}
+// the pending tribute was confirmed: "Spoiled~" (k = amount / 5)
+export function spoiled(s, rt, amount) {
+  const k = Math.max(1, amount / 5), v = Math.max(s.hearts * 0.5 * k, cps(s, rt) * 1800 * k, clickPower(s) * 1000 * k);
+  earn(s, v);
+  addBuff(s, "spoiled_c", SPOILED_MULT, SPOILED_MIN * 60 * k); addBuff(s, "spoiled_s", SPOILED_MULT, SPOILED_MIN * 60 * k);
+  s.tokens = Math.min(TOKEN_MAX, s.tokens + k); s.bonusSP += k;
+  s.tributes++; s.tributed += amount; s.trib = null;
+  return v;
 }
 
 // ------------------------------------------------------------------------------------------------ rebirth (spec 10)
