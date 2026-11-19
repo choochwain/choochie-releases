@@ -1,4 +1,6 @@
 // Home page only: latest version next to the download buttons, the member count, and the light motion layer.
+// its own reduced-motion flag, so this file never depends on site.js having finished loading
+const calmHome = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 (async function release() {
   const hv = document.getElementById("hero-version"), meta = document.getElementById("dl-meta");
   try {
@@ -23,7 +25,7 @@ const MIN_MEMBERS = 10;                          // below this the line stays hi
   lab.textContent = n === 1 ? "member" : "members";
   box.hidden = false;
   const fmt = v => v.toLocaleString();
-  if (calm) { num.textContent = fmt(n); return; }
+  if (calmHome) { num.textContent = fmt(n); return; }
   const run = () => {
     const t0 = performance.now(), dur = Math.min(1800, 700 + n / 4);
     const step = t => { const k = Math.min(1, (t - t0) / dur); num.textContent = fmt(Math.round(n * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
@@ -36,7 +38,7 @@ const MIN_MEMBERS = 10;                          // below this the line stays hi
 // floating sparkles + hearts in the hero: a dozen CSS-animated spans, nothing per frame in JS
 (function sparkles() {
   const hero = document.querySelector(".hero");
-  if (!hero || calm) return;
+  if (!hero || calmHome) return;
   const heart = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3.1 4.5 6.7 4.5c2.1 0 3.6 1.1 4.4 2.6h1.8c.8-1.5 2.3-2.6 4.4-2.6 3.6 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>';
   const spark = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.5l2.2 7.3 7.3 2.2-7.3 2.2L12 20.5l-2.2-7.3L2.5 11l7.3-2.2z"/></svg>';
   const colors = ["var(--rose)", "var(--red-light)", "var(--rose-soft)", "#ff8fab"];
@@ -52,7 +54,7 @@ const MIN_MEMBERS = 10;                          // below this the line stays hi
 
 // hover tilt on cards and plan tiles (mouse / pen only; touch keeps the plain hover)
 (function tilt() {
-  if (calm || !matchMedia("(hover:hover) and (pointer:fine)").matches) return;
+  if (calmHome || !matchMedia("(hover:hover) and (pointer:fine)").matches) return;
   document.querySelectorAll(".grid .card, .trust .card, .tiers .tier").forEach(el => {
     el.classList.add("tilt");
     let raf = 0;

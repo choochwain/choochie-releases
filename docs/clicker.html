@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Heart Clicker · Choochie</title>
+<meta name="description" content="Heart Clicker: click Choochie for hearts, hire cute helpers that click for you, grow a skill tree, spin the risky wheel and unlock better and better pop-ups. Plays in your browser, free.">
+<meta name="theme-color" content="#140a0e">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/nunito.css">
+<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="clicker/clicker.css?v=1">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body class="ck">
+<div class="ck-room" aria-hidden="true"><i class="lamp"></i><i class="floor"></i></div>
+<div class="ck-vig" aria-hidden="true"></div>
+
+<div class="ck-play" id="play">
+  <canvas class="ck-stage" id="stage" aria-hidden="true"></canvas>
+  <div class="ck-flat" id="flat" hidden><div class="ck-heart"><img src="img/portrait-cta.jpg" alt="" width="360" height="360"></div></div>
+  <div class="ck-load" id="load"><span>she's getting ready…</span><b id="load-n">0%</b><div class="bar"><i id="load-bar"></i></div></div>
+  <button type="button" class="ck-hit" id="hit" aria-label="Kiss her: click for hearts (Space works too)"></button>
+  <canvas class="ck-fx" id="fx" aria-hidden="true"></canvas>
+  <div class="ck-nums" id="nums" aria-hidden="true"></div>
+  <div class="ck-bubble" id="bubble" aria-live="polite"></div>
+  <div class="ck-hint" id="hint">tap her!</div>
+</div>
+
+<header class="ck-top">
+  <a class="ck-brand" href="chat.html" aria-label="Back to Choochie's chat"><img src="img/favicon.png" alt="" width="28" height="28"><span><b>Heart Clicker</b><em>back to her chat</em></span></a>
+  <div class="ck-topr">
+    <span class="ck-tok" id="tok" title="Spin tokens for the Risky Wheel">🎡 <b>1</b></span>
+    <button type="button" class="ck-ib" id="b-mute" aria-pressed="false" aria-label="Mute sound" title="Mute sound">🔊</button>
+    <button type="button" class="ck-ib" id="b-x" aria-label="Close the clicker" title="Close (Esc)">✕</button>
+  </div>
+</header>
+
+<section class="ck-hud" id="hud" aria-label="Your hearts">
+  <div class="ck-bank"><b id="hearts">0</b><span>♥</span></div>
+  <div class="ck-rates"><span><b id="cps">0</b> ♥/s</span><span><b id="pk">1</b> per kiss</span></div>
+  <div class="ck-heat" id="heat" role="meter" aria-label="Heat" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="heat-i"></i><em id="heat-t">heat</em></div>
+  <div class="ck-buffs" id="buffs"></div>
+</section>
+
+<aside class="ck-panel" id="panel" aria-label="Shop and more">
+  <nav class="ck-tabs" role="tablist">
+    <button type="button" role="tab" data-tab="shop" aria-selected="true">🛍️<span>Shop</span></button>
+    <button type="button" role="tab" data-tab="skills">🌳<span>Skills</span><i class="dot" id="dot-skills" hidden></i></button>
+    <button type="button" role="tab" data-tab="wheel">🎡<span>Wheel</span><i class="dot" id="dot-wheel" hidden></i></button>
+    <button type="button" role="tab" data-tab="ach">🏅<span>Badges</span></button>
+    <button type="button" role="tab" data-tab="media">🖼️<span>Media</span></button>
+    <button type="button" role="tab" data-tab="more">⚙️<span>More</span></button>
+  </nav>
+  <div class="ck-body" id="body"></div>
+</aside>
+
+<div class="ck-toasts" id="toasts" aria-live="polite"></div>
+<div class="ck-layer" id="layer"></div>
+<div class="ck-modal" id="modal" hidden><div class="ck-card" role="dialog" aria-modal="true" id="modal-c"></div></div>
+<noscript><p style="padding:80px 20px;text-align:center">The clicker needs JavaScript.</p></noscript>
+<script src="site.js?v=14"></script>
+<script type="module" src="clicker/ui.js?v=1"></script>
+</body>
+</html>

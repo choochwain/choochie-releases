@@ -1,0 +1,75 @@
+{
+ "version": 1,
+ "levels": [
+  {
+   "id": "level1",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level2",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level3",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level4",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level5",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level6",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level7",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level8",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level9",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  },
+  {
+   "id": "level10",
+   "title": "",
+   "images": [],
+   "audio": [],
+   "video": []
+  }
+ ]
+}

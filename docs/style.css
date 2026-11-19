@@ -625,3 +625,5 @@ body.emodal-open{overflow:hidden}
 .nav nav a.nav-discord:hover{color:#fff;border-color:var(--rose);background:rgba(255,92,138,.16)}
 .nav-discord svg{width:16px;height:16px;flex:none}
 @media (max-width:860px){.nav nav a.nav-discord{justify-content:flex-start;padding:10px 12px;margin:4px 0}}
+/* mid-width nav: one line (Privacy and Terms stay in the footer) */
+@media (min-width:861px) and (max-width:1180px){.nav nav{gap:13px}.nav nav a{white-space:nowrap}.nav nav a[href="privacy.html"],.nav nav a[href="terms.html"]{display:none}}

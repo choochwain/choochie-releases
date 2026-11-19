@@ -1,0 +1,31 @@
+name: Clicker media manifest
+# Rebuilds docs/clicker/media/manifest.json whenever files are added to or removed from the clicker's level folders,
+# so new pictures, sounds and videos show up in the game without running anything locally.
+on:
+  push:
+    branches: [main]
+    paths: ["docs/clicker/media/**", "tools/clicker_manifest.js"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: clicker-manifest
+  cancel-in-progress: false
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node tools/clicker_manifest.js
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- docs/clicker/media/manifest.json; then echo "manifest unchanged"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898729+github-actions[bot]@users.noreply.github.com"
+          git add docs/clicker/media/manifest.json
+          git commit -m "Clicker: update media manifest"
+          git pull --rebase
+          git push

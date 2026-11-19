@@ -62,7 +62,7 @@ const sessionReady = (function takeSession() {
 
 // ---- header + footer
 const NAV = [
-  ["index.html#features", "Features"], ["chat.html", "Talk to her"], ["plans.html", "Plans"],
+  ["index.html#features", "Features"], ["chat.html", "Talk to her"], ["clicker.html", "Clicker"], ["plans.html", "Plans"],
   ["downloads.html", "Download"], ["updates.html", "Updates"], ["roadmap.html", "Roadmap"], ["leaderboard.html", "Leaderboard"],
   ["privacy.html", "Privacy"], ["terms.html", "Terms"],
 ];
@@ -102,7 +102,7 @@ function renderChrome() {
     <div class="foot-cols">
       <div class="foot-brand"><strong>Choochie</strong><p class="fine">An AI-powered 3D desktop companion for Windows 10 / 11: a bratty anime cat-girl who lives on your screen, talks, listens and remembers you. 18+ only.</p>
         <p class="fine">Sign-in is only used to identify your account and sync your energy and perks.</p></div>
-      <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
+      <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="clicker.html">Heart Clicker</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
       <div><strong>Community</strong><a href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
       <div><strong>Legal</strong><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="privacy.html#delete">Delete your data</a><a href="privacy.html#contact">Contact</a></div>
     </div>
