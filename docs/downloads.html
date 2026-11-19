@@ -60,7 +60,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=14"></script>
+<script src="site.js?v=15"></script>
 <script>
 
 (async () => {
@@ -73,7 +73,7 @@
   if (!Auth.signedIn) return;
   try {
     const v = await api("/pet/ai/v1/account"), ok = v.features.includes("earlyAccess"), body = $("#ea-body");
-    if (!ok) { body.innerHTML = `<span class="lock">🔒 Obsessed plan</span><p class="fine">You're on ${esc(v.tier > 0 ? v.tierName : "the free plan")}. Early access comes with Obsessed.</p><a class="btn btn-ghost btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">See it on Patreon</a>`; return; }
+    if (!ok) { body.innerHTML = `<span class="lock">🔒 Obsessed plan</span><p class="fine">You're on ${esc(v.tier > 0 ? v.tierName : "the free plan")}. Early access comes with Obsessed.</p>${PATREON_LIVE ? `<a class="btn btn-ghost btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">See it on Patreon</a>` : `<a class="btn btn-ghost btn-block" href="${BUY_HREF}">Get Obsessed</a>`}`; return; }
     if (!pre || (stable && new Date(pre.published_at) < new Date(stable.published_at))) { body.innerHTML = `<p class="note good">You're in. There's no early build right now - the stable one is the newest.</p>`; return; }
     const a = setupAsset(pre);
     body.innerHTML = `<a class="btn btn-primary btn-block" href="${esc(/^https:\/\//.test(a.browser_download_url) ? a.browser_download_url : "https://github.com/" + LINKS.repo + "/releases")}">Download ${esc(pre.tag_name.replace(/^v/, ""))}</a><p class="meta">${esc(a.name)} · ${(a.size / 1048576).toFixed(0)} MB · ${fmtDate(pre.published_at)}</p>`;

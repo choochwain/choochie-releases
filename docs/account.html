@@ -39,6 +39,14 @@
       </div>
       <div class="row" style="margin-top:18px" id="ac-cta"></div>
     </div>
+    <div class="panel" id="redeem" style="scroll-margin-top:84px">
+      <h3>Redeem a code</h3>
+      <p class="fine" style="margin:0 0 12px">Bought a plan through a ticket on her <a href="plans.html#buy">Discord</a>? Paste the code you got. The plan goes to this account: the web chat and the app on every PC signed in to it.</p>
+      <form id="redeem-form" novalidate>
+        <label class="field"><span>Your code</span><input type="text" id="redeem-code" autocomplete="off" required maxlength="60" spellcheck="false" placeholder="CHOO-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX" style="text-transform:uppercase"></label>
+        <div class="row" style="margin-top:14px"><button type="submit" class="btn btn-primary btn-sm" id="redeem-btn">Redeem</button><span class="fine" id="redeem-msg" role="status" style="margin:0"></span></div>
+      </form>
+    </div>
     <div class="panel" id="leaderboard" style="scroll-margin-top:84px">
       <div class="spread"><h3 style="margin:0">Leaderboard</h3><a class="btn btn-ghost btn-sm" href="leaderboard.html">View leaderboard</a></div>
       <div style="margin-top:14px">
@@ -79,7 +87,7 @@
   <div>
     <div class="panel">
       <h3>Logins</h3>
-      <p class="fine">Any of these opens this same account. Add Patreon to get your plan.</p>
+      <p class="fine">Any of these opens this same account.</p>
       <div class="login-list" id="ac-logins"></div>
     </div>
     <div class="panel">
@@ -95,14 +103,14 @@
         <button class="btn btn-ghost btn-sm" id="ac-signout-pcs">Sign out all PCs</button>
         <button class="btn btn-ghost btn-sm" id="ac-delete">Delete account</button>
       </div>
-      <p class="fine">Deleting is immediate and removes your account, logins, energy, linked PCs' perks and roadmap votes (<a href="privacy.html#delete">details</a>). Cancel a Patreon membership on Patreon, and revoke Choochie in your Discord, Patreon, X or Google settings if you like. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+      <p class="fine">Deleting is immediate and removes your account, logins, energy, linked PCs' perks and roadmap votes (<a href="privacy.html#delete">details</a>). Revoke Choochie in your Discord, X or Google settings if you like. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
     </div>
   </div>
 </div>
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=14"></script>
+<script src="site.js?v=15"></script>
 <script>
 
 const frag = LOGIN_FRAG;   // site.js already read (and cleared) the address bar
@@ -115,13 +123,14 @@ function render(v) {
   $("#ac-main").hidden = false;
   $("#ac-av").textContent = (v.name || "?")[0].toUpperCase(); $("#ac-name").textContent = v.name || "You";
   const planName = v.tier > 0 ? v.tierName : "Free account";
-  $("#ac-plan").textContent = planName + (v.until ? " · renews " + fmtDate(v.until) : "");
+  $("#ac-plan").textContent = planName + (v.tier > 0 && v.lifetime ? " · lifetime" : v.until ? (v.planCode ? " · until " : " · renews ") + fmtDate(v.until) : "");
   const max = v.energy.max, left = v.energy.left;
   $("#ac-elabel").textContent = max > 0 ? `${fmt(left)} / ${fmt(max)}` : "No daily refill";
   $("#ac-meter").style.width = (max > 0 ? Math.round(left / max * 100) : (v.energy.extra > 0 ? 100 : 0)) + "%";
   $("#ac-enote").textContent = max > 0 ? "Refills every day at midnight UTC. When it's gone she uses your extra energy." : "Free accounts run on the extra energy below. Join a plan for a daily refill.";
   $("#ac-extra").textContent = fmt(v.energy.extra); $("#ac-pcs").textContent = v.devices; $("#ac-votes").textContent = (v.votes || [])[Math.min(v.tier, 3)] || 0;
-  $("#ac-cta").innerHTML = (v.tier < 3 ? `<a class="btn btn-primary btn-sm" href="${LINKS.patreon}" target="_blank" rel="noopener">${v.tier > 0 ? "Upgrade on Patreon" : "Join on Patreon"}</a>` : "")
+  $("#ac-cta").innerHTML = (PATREON_LIVE ? (v.tier < 3 ? `<a class="btn btn-primary btn-sm" href="${LINKS.patreon}" target="_blank" rel="noopener">${v.tier > 0 ? "Upgrade on Patreon" : "Join on Patreon"}</a>` : "")
+      : (v.admin || v.lifetime && v.tier >= 3 ? "" : `<a class="btn btn-primary btn-sm" href="${BUY_HREF}">${v.tier > 0 ? "Upgrade or extend" : "Get a plan"}</a>`) + `<a class="btn btn-ghost btn-sm" href="#redeem">Redeem a code</a>`)
     + (v.energy.code ? `<a class="btn btn-ghost btn-sm" href="#energy">Buy extra energy</a>` : `<a class="btn btn-ghost btn-sm" href="${LINKS.kofi}" target="_blank" rel="noopener">Buy extra energy</a>`);
   $("#ac-adult-wrap").hidden = false;
   $("#ac-adult").checked = store.get("choochie.webAdult") === "1" && store.get("choochie.web18") === "1";
@@ -130,7 +139,7 @@ function render(v) {
     const on = (v.logins || {})[p], avail = avail_[p];
     return `<div class="login-item"><span class="who">${ICONS[p]}${PROV_NAMES[p]}</span>${on
       ? `<button class="btn btn-ghost btn-sm" data-unlink="${p}">Remove</button>`
-      : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">soon</span>`}</div>`; }).join("");
+      : avail ? `<button class="btn btn-ghost btn-sm" data-link="${p}">Add</button>` : `<span class="fine">coming soon</span>`}</div>`; }).join("");
   if (v.leaderboard) renderLb(v.leaderboard);
   renderEnergy(v.energy);
   Energy.set(v.energy, true);   // the bar at the top
@@ -143,6 +152,20 @@ function renderEnergy(e) {
   $("#ac-energy").innerHTML = energyBuyHTML(e, "#claim");
 }
 // ---- claim a Ko-fi tip sent without a code, by the e-mail used there
+$("#redeem-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = $("#redeem-code").value.trim(), msg = $("#redeem-msg"), btn = $("#redeem-btn");
+  if (code.replace(/[^A-Za-z0-9]/g, "").length < 25) { msg.textContent = "That's too short - paste the whole code (CHOO-...)."; $("#redeem-code").focus(); return; }
+  btn.disabled = true; msg.textContent = "Checking…";
+  try {
+    const v = await api("/pet/ai/v1/account/redeem", { method: "POST", body: { code } });
+    render(v); $("#redeem-code").value = "";
+    const r = v.redeemed || {};
+    msg.textContent = `Unlocked: ${r.name || v.tierName}${r.lifetime ? ", for life" : r.until ? " until " + fmtDate(r.until) : ""}.`; toast(msg.textContent);
+  } catch (err) {
+    msg.textContent = (err.data && err.data.message) || (err.status === 429 ? "Too many tries - wait an hour and try again." : err.message);
+  } finally { btn.disabled = false; }
+});
 $("#claim-form").addEventListener("submit", async e => {
   e.preventDefault();
   const email = $("#claim-email").value.trim(), msg = $("#claim-msg"), btn = $("#claim-btn");

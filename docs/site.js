@@ -10,6 +10,11 @@ const LINKS = {
   beacons: "https://beacons.ai/choochwain",
   discord: DISCORD_INVITE,                            // empty = her link page instead (it lists the server)
 };
+// Patreon is "coming soon" (waiting on Patreon's ID check). Plans are bought meanwhile through a ticket on her Discord and
+// unlocked with a code (plans.html#buy, account page > Redeem a code). When Patreon is live: set this to true AND set
+// PET_PATREON_ENABLED=1 on the server - every Patreon button and link comes back.
+const PATREON_LIVE = false;
+const BUY_HREF = "plans.html#buy";
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -103,7 +108,7 @@ function renderChrome() {
       <div class="foot-brand"><strong>Choochie</strong><p class="fine">An AI-powered 3D desktop companion for Windows 10 / 11: a bratty anime cat-girl who lives on your screen, talks, listens and remembers you. 18+ only.</p>
         <p class="fine">Sign-in is only used to identify your account and sync your energy and perks.</p></div>
       <div><strong>App</strong><a href="downloads.html">Download</a><a href="chat.html">Talk to her</a><a href="clicker.html">Heart Clicker</a><a href="plans.html">Plans</a><a href="updates.html">Updates</a><a href="roadmap.html">Roadmap</a></div>
-      <div><strong>Community</strong><a href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>Discord</a><a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a><a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
+      <div><strong>Community</strong><a href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>Discord</a>${PATREON_LIVE ? `<a href="${LINKS.patreon}" target="_blank" rel="noopener">Patreon</a>` : `<a href="${BUY_HREF}">Buy a plan</a>`}<a href="${LINKS.kofi}" target="_blank" rel="noopener">Ko-fi</a><a href="${LINKS.beacons}" target="_blank" rel="noopener">All links</a></div>
       <div><strong>Legal</strong><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="privacy.html#delete">Delete your data</a><a href="privacy.html#contact">Contact</a></div>
     </div>
     <div class="foot-note"><span>© ${new Date().getFullYear()} Choochie. Fictional character; replies are AI-generated.</span><span>Not affiliated with or endorsed by Discord, Patreon, X or Google.</span></div>`;
@@ -174,7 +179,8 @@ function renderPlans(el, current) {
       <div class="plan${p.popular ? " popular" : ""}${current === i ? " current" : ""}">
         ${current === i ? '<span class="plan-tag">Your plan</span>' : p.popular ? '<span class="plan-tag">Most popular</span>' : ""}
         <h3>${p.name}</h3><div class="plan-price">${p.price}</div><p>${p.blurb}</p>
-        ${p.tier ? `<a class="btn ${p.popular ? "btn-primary" : "btn-ghost"} btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">${current === i ? "Manage on Patreon" : "Join on Patreon"}</a>`
+        ${p.tier ? (PATREON_LIVE ? `<a class="btn ${p.popular ? "btn-primary" : "btn-ghost"} btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">${current === i ? "Manage on Patreon" : "Join on Patreon"}</a>`
+            : `<a class="btn ${p.popular ? "btn-primary" : "btn-ghost"} btn-block" href="${BUY_HREF}">${current === i ? "Extend on Discord" : "Buy on Discord"}</a><button type="button" class="btn btn-ghost btn-block btn-sm plan-soon" style="margin-top:8px" disabled title="Patreon is coming soon">Patreon - coming soon</button>`)
           : p.key === "free" ? (Auth.signedIn ? `<a class="btn btn-ghost btn-block" href="account.html">Your account</a>` : `<a class="btn btn-ghost btn-block" href="login.html">Log in free</a>`)
           : `<a class="btn btn-ghost btn-block" href="downloads.html">Download</a>`}
       </div>`).join("")}
@@ -183,7 +189,7 @@ function renderPlans(el, current) {
       <thead><tr><th scope="col">What you get</th>${PLANS.map((p, i) => `<th scope="col"${current === i ? ' class="current"' : ""}>${p.name}</th>`).join("")}</tr></thead>
       <tbody>${ROWS.map(([label, vals]) => `<tr><th scope="row">${label}</th>${vals.map((v, i) => `<td${current === i ? ' class="current"' : ""}>${cell(v, i)}</td>`).join("")}</tr>`).join("")}</tbody>
     </table></div>
-    <p class="fine">* Generous daily fair-use limit to prevent abuse. Plans are paid through Patreon (Patreon may add taxes where you live). Subscriptions renew monthly through Patreon until you cancel there. Every plan talks to the same brain - supporting only adds energy and features. Ko-fi treats buy extra energy that never expires. Patreon unlocks within seconds of logging in with it.</p>`;
+    <p class="fine">* Generous daily fair-use limit to prevent abuse. ${PATREON_LIVE ? "Plans are paid through Patreon (Patreon may add taxes where you live). Subscriptions renew monthly through Patreon until you cancel there." : "Patreon is coming soon. Until then you buy a plan through a ticket on her Discord and pay directly; you get a code that unlocks the plan for the time you paid for (it doesn't renew by itself)."} Every plan talks to the same brain - supporting only adds energy and features. Ko-fi treats buy extra energy that never expires.</p>`;
 }
 
 // ---- latest release info from GitHub (used by home + downloads)
@@ -336,7 +342,7 @@ const Energy = (() => {
     modal.innerHTML = `<div class="emodal-card" tabindex="-1">
       <div class="emodal-h"><span class="emodal-bolt" aria-hidden="true">${bolt}</span><h3 id="em-h">Get more energy</h3><button type="button" class="emodal-x" aria-label="Close">✕</button></div>
       <p class="emodal-lead" id="em-lead"></p><div id="em-body"></div>
-      <p class="emodal-plans"><a href="plans.html">See plans</a> - a Patreon plan gives you more energy every day.</p></div>`;
+      <p class="emodal-plans"><a href="plans.html">See plans</a> - a plan gives you more energy every day.</p></div>`;
     document.body.appendChild(modal);
     $(".emodal-x", modal).addEventListener("click", close);
     modal.addEventListener("click", ev => { if (ev.target === modal) close(); });
