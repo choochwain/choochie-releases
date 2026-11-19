@@ -100,7 +100,7 @@
       <div class="row">
         <button class="btn btn-ghost btn-sm" id="ac-logout">Log out here</button>
         <button class="btn btn-ghost btn-sm" id="ac-admin">Admin code</button>
-        <button class="btn btn-ghost btn-sm" id="ac-signout-pcs">Sign out all PCs</button>
+        <button class="btn btn-ghost btn-sm" id="ac-signout-pcs">Sign out everywhere</button>
         <button class="btn btn-ghost btn-sm" id="ac-delete">Delete account</button>
       </div>
       <p class="fine">Deleting is immediate and removes your account, logins, energy, linked PCs' perks and roadmap votes (<a href="privacy.html#delete">details</a>). Revoke Choochie in your Discord, X or Google settings if you like. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
@@ -230,7 +230,7 @@ document.addEventListener("click", async e => {
 });
 $("#ac-logout").addEventListener("click", () => { Auth.clear(); location.href = "index.html"; });
 $("#ac-admin").addEventListener("click", async () => { const code = prompt("Admin code (owner only):"); if (!code) return; try { render(await api("/pet/ai/v1/account/admin", { method: "POST", body: { code: code.trim() } })); toast("Admin unlocked on this account: unlimited energy in web chat."); } catch (err) { toast(err.message, true); } });
-$("#ac-signout-pcs").addEventListener("click", async () => { if (!confirm("Sign out of Choochie on every PC?")) return; try { render(await api("/pet/ai/v1/account/signout-pcs", { method: "POST", body: {} })); toast("All PCs signed out."); } catch (err) { toast(err.message, true); } });
+$("#ac-signout-pcs").addEventListener("click", async () => { if (!confirm("Sign out of Choochie on every PC and every other browser?")) return; try { const v = await api("/pet/ai/v1/account/signout-pcs", { method: "POST", body: {} }); if (v && typeof v.t === "string") Auth.set(v.t); render(v); toast("Signed out everywhere else."); } catch (err) { toast(err.message, true); } });
 $("#ac-delete").addEventListener("click", async () => {
   if (prompt('This deletes your account and its extra energy. Type DELETE to confirm.') !== "DELETE") return;
   try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "index.html"; } catch (err) { toast(err.message, true); }
