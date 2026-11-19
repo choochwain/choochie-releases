@@ -76,7 +76,7 @@
     if (!ok) { body.innerHTML = `<span class="lock">🔒 Obsessed plan</span><p class="fine">You're on ${esc(v.tier > 0 ? v.tierName : "the free plan")}. Early access comes with Obsessed.</p><a class="btn btn-ghost btn-block" href="${LINKS.patreon}" target="_blank" rel="noopener">See it on Patreon</a>`; return; }
     if (!pre || (stable && new Date(pre.published_at) < new Date(stable.published_at))) { body.innerHTML = `<p class="note good">You're in. There's no early build right now - the stable one is the newest.</p>`; return; }
     const a = setupAsset(pre);
-    body.innerHTML = `<a class="btn btn-primary btn-block" href="${a.browser_download_url}">Download ${esc(pre.tag_name.replace(/^v/, ""))}</a><p class="meta">${esc(a.name)} · ${(a.size / 1048576).toFixed(0)} MB · ${fmtDate(pre.published_at)}</p>`;
+    body.innerHTML = `<a class="btn btn-primary btn-block" href="${esc(/^https:\/\//.test(a.browser_download_url) ? a.browser_download_url : "https://github.com/" + LINKS.repo + "/releases")}">Download ${esc(pre.tag_name.replace(/^v/, ""))}</a><p class="meta">${esc(a.name)} · ${(a.size / 1048576).toFixed(0)} MB · ${fmtDate(pre.published_at)}</p>`;
   } catch (e) {}
 })();
 

@@ -65,15 +65,15 @@ const isTechdom = x => x.id === "seed-techdom" || /^techdom features$/i.test(Str
 function item(it, rank) {
   if (isTechdom(it)) it = Object.assign({}, it, { brief: "" });
   const left = data.me ? data.me.allowance - data.me.used : 0, done = it.status === "done";
-  return `<div class="rm-item ${it.status}">
+  return `<div class="rm-item ${esc(it.status)}">
     ${rank ? `<span class="rm-rank">${rank}</span>` : "<span></span>"}
     <div><h3>${esc(it.title)} ${it.own ? '<span class="pill">yours</span>' : ""}</h3>${it.brief ? `<p>${esc(it.brief)}</p>` : ""}
-      ${admin && adminCode() ? `<div class="admin-row">${["candidate", "working", "done"].map(s => `<button class="btn btn-ghost" data-st="${s}" data-id="${it.id}">${s}</button>`).join("")}${it.kind === "suggestion" ? `<button class="btn btn-ghost" data-promote="${it.id}">make official</button>` : ""}<button class="btn btn-ghost" data-del="${it.id}">delete</button></div>` : ""}
-      ${it.own && it.status === "candidate" && !(admin && adminCode()) ? `<button class="linkish" data-withdraw="${it.id}">Withdraw</button>` : ""}</div>
+      ${admin && adminCode() ? `<div class="admin-row">${["candidate", "working", "done"].map(s => `<button class="btn btn-ghost" data-st="${s}" data-id="${esc(it.id)}">${s}</button>`).join("")}${it.kind === "suggestion" ? `<button class="btn btn-ghost" data-promote="${esc(it.id)}">make official</button>` : ""}<button class="btn btn-ghost" data-del="${esc(it.id)}">delete</button></div>` : ""}
+      ${it.own && it.status === "candidate" && !(admin && adminCode()) ? `<button class="linkish" data-withdraw="${esc(it.id)}">Withdraw</button>` : ""}</div>
     ${done ? `<span class="fine">${fmtDate(it.done)}</span>` : `<div class="vote">
-      <button class="vbtn" data-vote="-1" data-id="${it.id}" aria-label="Take back a vote" ${it.mine > 0 ? "" : "disabled"}>−</button>
-      <b title="votes this month">${it.votes}</b>
-      <button class="vbtn${it.mine ? " mine" : ""}" data-vote="1" data-id="${it.id}" aria-label="Vote" ${data.me && left > 0 ? "" : "disabled"}>+</button></div>`}
+      <button class="vbtn" data-vote="-1" data-id="${esc(it.id)}" aria-label="Take back a vote" ${it.mine > 0 ? "" : "disabled"}>−</button>
+      <b title="votes this month">${esc(it.votes)}</b>
+      <button class="vbtn${it.mine ? " mine" : ""}" data-vote="1" data-id="${esc(it.id)}" aria-label="Vote" ${data.me && left > 0 ? "" : "disabled"}>+</button></div>`}
   </div>`;
 }
 function draw() {
@@ -108,7 +108,7 @@ document.addEventListener("click", async e => {
 $("#rm-title").addEventListener("input", e => {
   const words = new Set(e.target.value.toLowerCase().split(/\W+/).filter(w => w.length > 3)), box = $("#rm-matches");
   const hits = !data || !words.size ? [] : data.items.filter(x => x.status !== "done" && x.title.toLowerCase().split(/\W+/).some(w => words.has(w))).slice(0, 4);
-  box.hidden = !hits.length; box.innerHTML = hits.length ? "<li><strong>Similar ideas - vote on one instead?</strong></li>" + hits.map(h => `<li>${esc(h.title)} (${h.votes} votes)</li>`).join("") : "";
+  box.hidden = !hits.length; box.innerHTML = hits.length ? "<li><strong>Similar ideas - vote on one instead?</strong></li>" + hits.map(h => `<li>${esc(h.title)} (${esc(h.votes)} votes)</li>`).join("") : "";
 });
 $("#rm-form").addEventListener("submit", async e => {
   e.preventDefault();
