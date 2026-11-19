@@ -33,30 +33,35 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=14"></script>
+<script src="site.js?v=16"></script>
 <script>
 (async () => {
-  const q = new URLSearchParams(location.search), dev = q.get("dev") || "";
-  const okDev = /^[A-Za-z0-9-]{8,64}$/.test(dev);
+  const q = new URLSearchParams(location.search), pairT = q.get("pair") || "";
+  const okPair = Pair.ok(pairT), oldApp = !okPair && /^[A-Za-z0-9-]{8,64}$/.test(q.get("dev") || "");   // ?dev= = an app from before 0.9.33: signs in, can't link
+  if (okPair) { Pair.save(pairT); try { q.delete("pair"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); } catch (e) {} }
   const next = q.get("next") === "chat" ? "chat.html" : "account.html";
   const back = new URL(next, location.href).href;
   const box = $("#lg-providers");
   const wire = a => { const p = a.dataset.p;
     a.innerHTML = ICONS[p] + "<span>Continue with " + PROV_NAMES[p] + "</span>";
-    a.href = API + "/pet/ai/auth/start?p=" + encodeURIComponent(p) + "&return=" + encodeURIComponent(back) + (okDev ? "&dev=" + encodeURIComponent(dev) : ""); };
+    a.href = API + "/pet/ai/auth/start?p=" + encodeURIComponent(p) + "&return=" + encodeURIComponent(back) + (okPair ? "&pair=" + encodeURIComponent(pairT) : ""); };
   box.querySelectorAll(".prov").forEach(wire);
   // the server always lands on account.html; remember to hop on to the chat afterwards
   box.addEventListener("click", e => { if (e.target.closest('[aria-disabled="true"]')) { e.preventDefault(); return; } try { next === "chat.html" ? sessionStorage.setItem("choochie.next", "chat") : sessionStorage.removeItem("choochie.next"); } catch (e) {} });
-  if (okDev) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, and the app on this PC signs in by itself. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>, plus a little every day. <br><small class='fine'>Only continue if the Choochie app on <em>your own</em> PC opened this page. If someone sent you this link, close it: it would sign their PC in to your account.</small>"; }
-  // already signed in on this browser + coming from the app: connect this PC in one click
-  if (okDev && Auth.signedIn) {
-    const at = $("#lg-attach"); at.hidden = false;
-    at.innerHTML = `You're already logged in as <strong>${esc(store.get("choochie.name") || "you")}</strong>. <div class="row" style="margin-top:10px"><button class="btn btn-primary btn-sm" id="lg-connect">Connect this PC</button><span class="fine">or pick another login below</span></div><p class="fine" style="margin-top:8px">Only connect if the Choochie app on your own PC opened this page - never from a link someone sent you.</p>`;
-    $("#lg-connect").addEventListener("click", async e => {
-      e.target.disabled = true;
-      try { await api("/pet/ai/v1/account/attach", { method: "POST", body: { dev } }); location.href = "account.html#app=1"; }
-      catch (err) { toast(err.message, true); e.target.disabled = false; }
-    });
+  // the app sent a one-time pairing token: the PC is linked only after the user confirms its code (here when already signed in,
+  // otherwise on the account page right after logging in). A login by itself never links a PC.
+  if (okPair) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, then confirm the code your app shows to link this PC. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>."; }
+  const at = $("#lg-attach");
+  if (okPair && Auth.signedIn) {
+    at.hidden = false; at.className = ""; at.style.marginTop = "16px";
+    Pair.ask(at, pairT, () => { $("#lg-sub").textContent = "Done - you can close this tab."; });
+  } else if (okPair) {
+    at.hidden = false; at.className = "note"; at.textContent = "Checking the code from your app…";
+    Pair.code(pairT).then(c => { at.innerHTML = `After you log in you'll be asked to link the PC showing the code <strong style="letter-spacing:.08em">${esc(c)}</strong>. Check that it matches Choochie on your screen.`; })
+      .catch(e => { if (e.status === 410) { Pair.clear(); at.className = ""; at.innerHTML = Pair.expiredHTML; } else at.textContent = "You'll confirm linking your PC after you log in."; });
+  } else if (oldApp) {
+    at.hidden = false; at.className = "note warn";
+    at.innerHTML = "<strong>Your Choochie app needs an update to link this PC.</strong> You can still log in here. Then update the app (tray menu > Check for updates, or get it from <a href='downloads.html'>Downloads</a>) and press Log in in the app again.";
   }
   // ask the server which logins are switched on (it may be asleep: retry for ~1 minute)
   let j = null;

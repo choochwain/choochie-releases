@@ -76,9 +76,10 @@
     </div>
     <div class="panel" id="claim" style="scroll-margin-top:84px">
       <h3>Claim a tip</h3>
-      <p class="fine" style="margin:0 0 12px">Tipped on Ko-fi but forgot to paste your code? Claim it here with the e-mail you used there. We never store your e-mail - it's only matched against the tip.</p>
+      <p class="fine" style="margin:0 0 12px">Tipped on Ko-fi but forgot to paste your code? Claim it here: enter the <strong>transaction ID from your Ko-fi receipt</strong> e-mail and the e-mail you paid with. Both are needed, so nobody else can take your tip. We never store your e-mail - it's only matched against the tip.</p>
       <form id="claim-form" novalidate>
-        <label class="field"><span>The e-mail you used on Ko-fi</span><input type="email" id="claim-email" autocomplete="email" required maxlength="200" spellcheck="false"></label>
+        <label class="field"><span>Transaction ID (from your Ko-fi receipt e-mail)</span><input type="text" id="claim-tx" required maxlength="80" spellcheck="false" autocomplete="off" placeholder="e.g. 1a2b3c4d-..."></label>
+        <label class="field" style="margin-top:10px"><span>The e-mail you used on Ko-fi</span><input type="email" id="claim-email" autocomplete="email" required maxlength="200" spellcheck="false"></label>
         <p class="fine" style="margin:6px 0 0">It's added as extra energy for this account: the web chat and the app on every PC signed in to it.</p>
         <div class="row" style="margin-top:14px"><button type="submit" class="btn btn-primary btn-sm" id="claim-btn">Claim</button><span class="fine" id="claim-msg" role="status" style="margin:0"></span></div>
       </form>
@@ -110,7 +111,7 @@
 
 </main>
 <footer id="site-foot"></footer>
-<script src="site.js?v=15"></script>
+<script src="site.js?v=16"></script>
 <script>
 
 const frag = LOGIN_FRAG;   // site.js already read (and cleared) the address bar
@@ -168,17 +169,18 @@ $("#redeem-form").addEventListener("submit", async e => {
 });
 $("#claim-form").addEventListener("submit", async e => {
   e.preventDefault();
-  const email = $("#claim-email").value.trim(), msg = $("#claim-msg"), btn = $("#claim-btn");
+  const email = $("#claim-email").value.trim(), tx = $("#claim-tx").value.trim(), msg = $("#claim-msg"), btn = $("#claim-btn");
+  if (!/^\{?[A-Za-z0-9-]{8,64}\}?$/.test(tx)) { msg.textContent = "Enter the transaction ID from your Ko-fi receipt e-mail."; $("#claim-tx").focus(); return; }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = "Enter the e-mail address you used on Ko-fi."; $("#claim-email").focus(); return; }
   btn.disabled = true; msg.textContent = "Checking…";
   try {
-    const v = await api("/pet/ai/v1/account/claim", { method: "POST", body: { email } });
-    render(v); $("#claim-email").value = "";
+    const v = await api("/pet/ai/v1/account/claim", { method: "POST", body: { email, tx } });
+    render(v); $("#claim-email").value = ""; $("#claim-tx").value = "";
     const c = v.claimed || {}, n = fmt(c.amount || 0);
     msg.textContent = `Added ${n} energy.`; toast(msg.textContent);
   } catch (err) {
-    msg.textContent = err.status === 404 ? "Nothing found for that e-mail. Check the spelling, or wait a minute if you just tipped."
-      : err.status === 400 ? "That doesn't look like an e-mail address."
+    msg.textContent = err.status === 404 ? "No unclaimed tip matches that transaction ID and e-mail. Check both, or wait a minute if you just tipped."
+      : err.status === 400 ? ((err.data && err.data.message) || "Check the transaction ID and the e-mail address.")
       : err.status === 429 ? "Too many tries - wait an hour and try again."
       : err.message;
   } finally { btn.disabled = false; }
@@ -215,9 +217,11 @@ const banner = (cls, html) => $("#ac-banner").innerHTML = `<div class="note ${cl
 sessionReady.then(fresh => {
   if (fresh) renderChrome();                                           // the header was drawn before the session arrived
   if (!Auth.signedIn) { location.replace(frag.get("c") ? "login.html?expired=1" : "login.html"); return; }
-  if (freshLogin && !frag.get("app")) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") { location.replace("chat.html"); return; } }
+  const pendingPair = Pair.get();                                     // came from the app's Log in: confirm its code before the PC is linked
+  if (freshLogin && !frag.get("app") && !pendingPair) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") { location.replace("chat.html"); return; } }
   if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
   else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with starter energy to get to know her.");
+  if (pendingPair) { const box = document.createElement("div"); $("#ac-banner").prepend(box); Pair.ask(box, pendingPair, v => render(v)); }
   load();
 });
 

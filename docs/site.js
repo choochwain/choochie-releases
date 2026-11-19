@@ -43,6 +43,32 @@ async function api(path, opts = {}) {
   return j;
 }
 
+// ---- "Link this PC": the app's Log in opens login.html?pair=<one-time token> (10 min). A PC is only linked after the signed-in
+// user confirms its short code here, so a link someone else sent can't quietly attach THEIR PC to your account.
+const Pair = {
+  key: "choochie.pair",
+  ok: t => /^p1\.[A-Za-z0-9_-]{20,400}\.[A-Za-z0-9_-]{20,64}$/.test(t || ""),
+  save(t) { try { sessionStorage.setItem(this.key, JSON.stringify({ t, at: Date.now() })); } catch (e) {} },
+  get() { try { const o = JSON.parse(sessionStorage.getItem(this.key) || "null"); if (o && this.ok(o.t) && Date.now() - o.at < 600000) return o.t; } catch (e) {} this.clear(); return null; },
+  clear() { try { sessionStorage.removeItem(this.key); } catch (e) {} },
+  async code(t) { const r = await fetch(API + "/pet/ai/auth/pair?t=" + encodeURIComponent(t)); if (!r.ok) throw Object.assign(new Error("expired"), { status: r.status }); return (await r.json()).code; },
+  expiredHTML: '<div class="note warn" style="margin-bottom:16px">That link from the app expired or was already used. Press <strong>Log in</strong> in Choochie again to get a fresh one.</div>',
+  // the confirm box: "Link this PC: K7Q-2M9?" -> POST /account/attach { pair }
+  async ask(el, t, done) {
+    let code; try { code = await this.code(t); } catch (e) { this.clear(); el.innerHTML = e.status === 410 ? this.expiredHTML : '<div class="note warn" style="margin-bottom:16px">Her server is waking up - reload this page in a few seconds to link your PC.</div>'; return; }
+    el.innerHTML = `<div class="note good" style="margin-bottom:16px"><strong style="font-size:17px">Link this PC: <span style="letter-spacing:.08em;font-family:ui-monospace,Consolas,monospace">${esc(code)}</span>?</strong>
+      <p style="margin:6px 0 0">Choochie on your PC shows a code right now. Link it only if it's <strong>exactly this code</strong> and you just pressed Log in in the app yourself. Got this link from someone else? Don't link it.</p>
+      <div class="row" style="margin-top:10px"><button class="btn btn-primary btn-sm" data-pair-yes>Yes, link this PC</button><button class="btn btn-ghost btn-sm" data-pair-no>Not my PC</button></div></div>`;
+    try { el.scrollIntoView({ block: "center" }); } catch (e) {}
+    $("[data-pair-no]", el).addEventListener("click", () => { this.clear(); el.innerHTML = '<div class="note" style="margin-bottom:16px">Not linked. Nothing was connected to your account.</div>'; });
+    $("[data-pair-yes]", el).addEventListener("click", async e => {
+      e.target.disabled = true;
+      try { const v = await api("/pet/ai/v1/account/attach", { method: "POST", body: { pair: t } }); this.clear(); el.innerHTML = '<div class="note good" style="margin-bottom:16px"><strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.</div>'; if (done) done(v); }
+      catch (err) { if (err.status === 410) { this.clear(); el.innerHTML = this.expiredHTML; } else { toast((err.data && err.data.message) || err.message, true); e.target.disabled = false; } }
+    });
+  },
+};
+
 // public, read-only server data (leaderboard, counts): no Authorization header, so no CORS preflight.
 // Her server may be asleep: one quiet retry after `retryMs`.
 async function pub(path, retryMs = 6000) {
@@ -258,7 +284,7 @@ function energyBuyHTML(e, claimHref) {
       <li><span class="ob-n" aria-hidden="true">3</span><div><strong>Paste the code in the Ko-fi message box before you pay</strong> <span class="ob-dim">(the "Say something nice" field) - the code is how we know it's you.</span></div></li>
       <li><span class="ob-n" aria-hidden="true">4</span><div><strong>Energy arrives within a minute or two</strong> <button type="button" class="linkish" data-energy-refresh>Refresh balance</button></div></li>
     </ol>
-    <p class="fine ob-fine">Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim with e-mail</a>. Bought energy never expires, is used after your daily energy, and works everywhere: this website's chat and the desktop app on every PC signed in to your account.</p>
+    <p class="fine ob-fine">Forgot the code? <a href="${esc(claimHref || "account.html#claim")}">Claim it with your Ko-fi receipt</a>. Bought energy never expires, is used after your daily energy, and works everywhere: this website's chat and the desktop app on every PC signed in to your account.</p>
   </div>`;
 }
 
