@@ -531,7 +531,7 @@ function moreHtml() {
     <h4>Your save</h4><p class="fine">Saved in this browser automatically. Copy it to move it to another browser. The clicker's hearts are only for this game: they never turn into kisses or energy.</p>
     <div class="ck-btns"><button type="button" class="ck-mini" data-act="export">Copy save</button><button type="button" class="ck-mini" data-act="import">Load a save</button><button type="button" class="ck-mini" data-act="reset">Start over</button></div>
     <h4>How to play</h4><p class="fine">Click her for hearts. Click fast to build heat: full heat starts a FRENZY (clicks x3). Pop-ups come faster the faster you click; click them for bonus hearts. Catch golden hearts. Helpers earn while you're away. Spin the Risky Wheel if you dare. Esc or ✕ takes you back to her chat; your progress is kept.</p>
-    <div class="ck-btns" style="margin-top:10px"><a class="btn btn-ghost btn-sm" href="chat.html">Back to her chat</a><a class="btn btn-ghost btn-sm" href="index.html">Home</a></div>`;
+    <div class="ck-btns" style="margin-top:10px"><a class="btn btn-ghost btn-sm" href="chat.html">Back to her chat</a><a class="btn btn-ghost btn-sm" href="/">Home</a></div>`;
 }
 
 function render(force) {

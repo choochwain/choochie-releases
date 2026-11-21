@@ -232,12 +232,12 @@ document.addEventListener("click", async e => {
     if (u) { if (!confirm("Remove the " + PROV_NAMES[u.dataset.unlink] + " login from this account?")) return; render(await api("/pet/ai/v1/account/unlink", { method: "POST", body: { p: u.dataset.unlink } })); toast("Removed."); }
   } catch (err) { toast(err.message === "last login" ? "That's your only login - add another one first." : err.message, true); }
 });
-$("#ac-logout").addEventListener("click", () => { Auth.clear(); location.href = "index.html"; });
+$("#ac-logout").addEventListener("click", () => { Auth.clear(); location.href = "/"; });
 $("#ac-admin").addEventListener("click", async () => { const code = prompt("Admin code (owner only):"); if (!code) return; try { render(await api("/pet/ai/v1/account/admin", { method: "POST", body: { code: code.trim() } })); toast("Admin unlocked on this account: unlimited energy in web chat."); } catch (err) { toast(err.message, true); } });
 $("#ac-signout-pcs").addEventListener("click", async () => { if (!confirm("Sign out of Choochie on every PC and every other browser?")) return; try { const v = await api("/pet/ai/v1/account/signout-pcs", { method: "POST", body: {} }); if (v && typeof v.t === "string") Auth.set(v.t); render(v); toast("Signed out everywhere else."); } catch (err) { toast(err.message, true); } });
 $("#ac-delete").addEventListener("click", async () => {
   if (prompt('This deletes your account and its extra energy. Type DELETE to confirm.') !== "DELETE") return;
-  try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "index.html"; } catch (err) { toast(err.message, true); }
+  try { await api("/pet/ai/v1/account/delete", { method: "POST", body: {} }); Auth.clear(); location.href = "/"; } catch (err) { toast(err.message, true); }
 });
 $("#ac-adult").addEventListener("change", e => {
   if (e.target.checked && store.get("choochie.web18") !== "1") {

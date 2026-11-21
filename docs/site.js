@@ -93,7 +93,7 @@ const sessionReady = (function takeSession() {
 
 // ---- header + footer
 const NAV = [
-  ["index.html#features", "Features"], ["chat.html", "Talk to her"], ["clicker.html", "Clicker"], ["plans.html", "Plans"],
+  ["/#features", "Features"], ["chat.html", "Talk to her"], ["clicker.html", "Clicker"], ["plans.html", "Plans"],
   ["downloads.html", "Download"], ["updates.html", "Updates"], ["roadmap.html", "Roadmap"], ["leaderboard.html", "Leaderboard"],
   ["privacy.html", "Privacy"], ["terms.html", "Terms"],
 ];
@@ -102,6 +102,8 @@ const discordHref = () => LINKS.discord || LINKS.beacons;
 const ICON_DISCORD = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A17 17 0 0 0 15.4 4l-.5 1.1a15.6 15.6 0 0 0-5.8 0L8.6 4a17 17 0 0 0-4.2 1.3C1.7 9.3 1 13.2 1.3 17a17.2 17.2 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.3 12.3 0 0 0 11.4 0l.4.3-1.7.8 1.1 1.8a17.1 17.1 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7zM8.5 14.7c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1zm7 0c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>';
 // every [data-discord] link on any page (static or drawn here) points at the one invite above
 function wireDiscord(root) { (root || document).querySelectorAll("a[data-discord]").forEach(a => { a.href = discordHref(); if (!a.target) { a.target = "_blank"; a.rel = "noopener"; } }); }
+// old links to .../index.html: show the clean address (same page, no reload)
+try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(null, "", location.pathname.replace(/index\.html$/, "") + location.search + location.hash); } catch (_) {}
 function renderChrome() {
   const here = location.pathname.split("/").pop() || "index.html";
   document.documentElement.classList.add("js");
@@ -117,7 +119,7 @@ function renderChrome() {
     nav.className = "nav";
     const name = store.get("choochie.name");
     nav.innerHTML = `
-      <a class="brand" href="index.html"><img src="img/favicon.png" alt="" width="28" height="28"><span>Choochie</span></a>
+      <a class="brand" href="/"><img src="img/favicon.png" alt="" width="28" height="28"><span>Choochie</span></a>
       <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
       <nav aria-label="Main">${NAV.map(([h, t]) => `<a href="${h}"${h === here ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
         <a class="nav-discord" href="${esc(discordHref())}" target="_blank" rel="noopener" data-discord>${ICON_DISCORD}<span>Discord</span></a>
