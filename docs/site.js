@@ -192,7 +192,6 @@ const ROWS = [
   ["She looks at your screen or webcam (when you ask)", [0, 0, 0, 1, 1]],
   ["Watch & play together", [0, 0, 0, 1, 1]],
   ["She hangs out in your Discord server", [0, 0, 0, 0, 1]],
-  ["Streaming tools (Choochie Cam)", [0, 0, 0, 0, 1]],
   ["Early-access builds", [0, 0, 0, 0, 1]],
   ["Roadmap votes per month", ["-", "1", "3", "6", "12"]],
 ];
