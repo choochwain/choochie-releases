@@ -2,7 +2,7 @@
 const API = "https://api.choochie.app";
 // The public Discord invite - the ONLY place it lives. The owner is moving to a new server soon:
 // paste the new invite here and every Discord button and link on the site follows (elements with data-discord).
-const DISCORD_INVITE = "https://discord.gg/49ZngUE9qc";
+const DISCORD_INVITE = "https://discord.gg/xvGchM39Kf";
 const LINKS = {
   repo: "choochwain/choochie-releases",
   patreon: "https://www.patreon.com/ChooChwain",
