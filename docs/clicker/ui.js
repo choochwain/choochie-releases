@@ -575,7 +575,7 @@ body.addEventListener("click", async e => {
   }
   else if (a === "reset") {
     openModal(`<h3>Start over?</h3><p>Everything goes: hearts, helpers, skills, Devotion and badges. Your own media files stay.</p><div class="ck-btns"><button type="button" class="btn btn-primary btn-sm" data-m="yes">Yes, wipe it</button><button type="button" class="btn btn-ghost btn-sm" data-m="no">Keep playing</button></div>`,
-      m => { if (m !== "yes") return; wiping = true; try { localStorage.removeItem(G.SAVE_KEY); } catch (err) {} location.reload(); });
+      async m => { if (m !== "yes") return; wiping = true; try { localStorage.removeItem(G.SAVE_KEY); } catch (err) {} if (signedIn()) { try { await api(CLOUD, { method: "POST", body: { op: "clear" } }); } catch (err) {} } location.reload(); });
     return;
   }
   render(true);
@@ -642,7 +642,32 @@ addEventListener("keydown", e => {
 
 // ------------------------------------------------------------------------------------------------ loops
 let wiping = false;
-function save() { if (!wiping && !window.ChoochieClicker.noSave) G.save(S); }
+function save() { if (!wiping && !window.ChoochieClicker.noSave) { G.save(S); cloudPush(false); } }
+// ---- cloud save (signed in): the account keeps the game, so another browser, device or a cleared browser picks it up.
+// On load the save that is further along (all-time hearts, then the newer one) wins - nobody gets rolled back.
+var CLOUD = "/pet/ai/v1/account/clicker";
+var cloudAt = 0, cloudBusy = false, cloudReady = false;
+var progressOf = x => (x && +x.allTimeEarned) || 0;
+function cloudPush(final) {
+  if (!signedIn() || !cloudReady || wiping || window.ChoochieClicker.noSave) return;
+  const now = Date.now(); if (!final && (cloudBusy || now - cloudAt < 30000)) return;
+  cloudAt = now; cloudBusy = true;
+  const body = JSON.stringify({ save: S });
+  fetch(API + CLOUD, { method: "POST", keepalive: !!final && body.length < 60000, headers: { "Content-Type": "application/json", Authorization: "Bearer " + Auth.token }, body })
+    .catch(() => {}).finally(() => { cloudBusy = false; });
+}
+async function cloudPull(tries = 0) {
+  if (!signedIn() || window.ChoochieClicker.noSave) return;
+  try {
+    const r = await api(CLOUD), c = r && r.save;
+    if (c && (progressOf(c) > progressOf(S) || (progressOf(c) === progressOf(S) && (+c.lastTick || 0) > (+S.lastTick || 0) + 5))) {
+      const n = G.importSave(G.exportSave(c));                       // same checks as an imported save
+      wiping = true; try { localStorage.setItem(G.SAVE_KEY, JSON.stringify(n)); } catch (e) {}
+      location.reload(); return;                                     // restart the page on the account's game
+    }
+    cloudReady = true; cloudPush(false);
+  } catch (e) { if (e.status !== 401 && tries < 5) setTimeout(() => cloudPull(tries + 1), 20000); }
+}
 let last = performance.now(), achT = 0, saveT = 0, helperT = 0, idleT = 0;
 function logic() {
   const t = performance.now(), dt = Math.min(5, (t - last) / 1000); last = t;
@@ -684,8 +709,9 @@ function frame(t) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
-addEventListener("pagehide", save);
+document.addEventListener("visibilitychange", () => { if (document.hidden) { save(); cloudPush(true); } });
+addEventListener("pagehide", () => { save(); cloudPush(true); });
+cloudPull();
 
 // ------------------------------------------------------------------------------------------------ start
 function welcome() {
