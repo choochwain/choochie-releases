@@ -5,7 +5,7 @@ const API = "https://api.choochie.app";
 const DISCORD_INVITE = "https://discord.gg/xvGchM39Kf";
 const LINKS = {
   repo: "choochwain/choochie-releases",
-  patreon: "https://www.patreon.com/ChooChwain",
+  patreon: "https://www.patreon.com/Choochie",
   kofi: "https://ko-fi.com/dahmeows",
   beacons: "https://beacons.ai/choochwain",
   discord: DISCORD_INVITE,                            // empty = her link page instead (it lists the server)
