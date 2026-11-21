@@ -20,7 +20,7 @@
 <div class="auth-card">
   <div class="panel">
     <h1 id="lg-title">Log in</h1>
-    <p class="muted" id="lg-sub">New here? Any login makes your account - with <strong><span id="lg-starter">500</span> starter energy</strong>.</p>
+    <p class="muted" id="lg-sub">New here? Any login makes your account - with a <strong><span id="lg-starter">300</span> energy welcome bonus</strong>.</p>
     <div id="lg-attach" hidden class="note good" style="margin-top:16px"></div>
     <div class="providers" id="lg-providers" aria-live="polite">
       <a class="prov discord" data-p="discord" href="#">Continue with Discord</a>
@@ -50,7 +50,7 @@
   box.addEventListener("click", e => { if (e.target.closest('[aria-disabled="true"]')) { e.preventDefault(); return; } try { next === "chat.html" ? sessionStorage.setItem("choochie.next", "chat") : sessionStorage.removeItem("choochie.next"); } catch (e) {} });
   // the app sent a one-time pairing token: the PC is linked only after the user confirms its code (here when already signed in,
   // otherwise on the account page right after logging in). A login by itself never links a PC.
-  if (okPair) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, then confirm the code your app shows to link this PC. A brand-new account gets <strong><span id='lg-starter'>500</span> starter energy</strong>."; }
+  if (okPair) { $("#lg-title").textContent = "Sign in to Choochie"; $("#lg-sub").innerHTML = "Pick how you log in, then confirm the code your app shows to link this PC. A brand-new account gets a <strong><span id='lg-starter'>300</span> energy welcome bonus</strong>."; }
   const at = $("#lg-attach");
   if (okPair && Auth.signedIn) {
     at.hidden = false; at.className = ""; at.style.marginTop = "16px";

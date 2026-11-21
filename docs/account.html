@@ -220,7 +220,7 @@ sessionReady.then(fresh => {
   const pendingPair = Pair.get();                                     // came from the app's Log in: confirm its code before the PC is linked
   if (freshLogin && !frag.get("app") && !pendingPair) { let n = null; try { n = sessionStorage.getItem("choochie.next"); sessionStorage.removeItem("choochie.next"); } catch (e) {} if (n === "chat") { location.replace("chat.html"); return; } }
   if (frag.get("app")) banner("good", "<strong>This PC is signed in.</strong> Go back to Choochie - she picks it up in a few seconds.");
-  else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with starter energy to get to know her.");
+  else if (frag.get("new")) banner("good", "<strong>Welcome~</strong> Your account is ready, with a welcome bonus of energy to get to know her.");
   if (pendingPair) { const box = document.createElement("div"); $("#ac-banner").prepend(box); Pair.ask(box, pendingPair, v => render(v)); }
   load();
 });
