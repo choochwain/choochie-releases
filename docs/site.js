@@ -183,18 +183,22 @@ const PLANS = [
   { key: "obsessed", name: "Obsessed", price: "$39.99 / mo", blurb: "Unlimited* everyday use, her in your Discord server, builds before anyone else.", tier: 3 },
 ];
 const ROWS = [
-  ["Lives on your desktop, outfits, games", [1, 1, 1, 1, 1]],
+  ["Lives on your desktop, outfits, tasks and mini games", [1, 1, 1, 1, 1]],
   ["AI chat and her voice", [0, 1, 1, 1, 1]],
   ["Energy", ["-", "500 to start + 50 / day", "250 / day", "500 / day", "Unlimited*"]],
   ["Long-term memory and her diary", [0, 1, 1, 1, 1]],
-  ["Chat with her on this website", [0, 1, 1, 1, 1]],
-  ["18+ mode", [0, 0, 1, 1, 1]],
-  ["Send her pictures", [0, 0, 1, 1, 1]],
-  ["Discord DMs - she texts you first", [0, 0, 0, 1, 1]],
+  ["Chat on this website: text, pictures, voice and video calls", [0, 1, 1, 1, 1]],
+  ["Monthly leaderboard", [0, 1, 1, 1, 1]],
+  ["18+ mode in the app", [0, 0, 1, 1, 1]],
+  ["Send her photos in the app", [0, 0, 1, 1, 1]],
+  ["Text her on Discord", [0, 0, 0, 1, 1]],
+  ["She messages you first on Discord", [0, 0, 0, 1, 1]],
   ["She looks at your screen or webcam (when you ask)", [0, 0, 0, 1, 1]],
+  ["She peeks at what you're doing on her own (opt-in)", [0, 0, 0, 1, 1]],
   ["Watch & play together", [0, 0, 0, 1, 1]],
   ["She hangs out in your Discord server", [0, 0, 0, 0, 1]],
   ["Early-access builds", [0, 0, 0, 0, 1]],
+  ["Add your ideas to the project", [0, 0, 0, 0, 1]],
   ["Roadmap votes per month", ["-", "1", "3", "6", "12"]],
 ];
 function planIndexFor(view) { if (!view) return -1; return view.tier > 0 ? Math.min(4, view.tier + 1) : 1; }
