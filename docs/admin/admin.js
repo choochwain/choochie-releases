@@ -1,7 +1,7 @@
 // Choochie usage dashboard. The data never lives on this site: it is fetched live from the server with the admin code,
 // which is kept in sessionStorage only (gone when the tab closes, or with "Forget code"). Vanilla JS + inline SVG.
 (function () {
-  const API = 'https://stream-alerts-bot.onrender.com/pet/ai/v1/admin/stats';
+  const API = 'https://api.choochie.app/pet/ai/v1/admin/stats';
   const KEY = 'choochie-admin-code';
   const C = { rose: '#ff5c8a', red: '#e0263a', redDark: '#8e0a14', soft: '#ffc2d4', cream: '#fff3ec', grid: 'rgba(255,255,255,.06)', track: '#241a21' };
   const TIER_COLORS = ['#5a4650', '#ff5c8a', '#e0263a', '#ffc2d4', '#8e0a14', '#b5a1aa'];
